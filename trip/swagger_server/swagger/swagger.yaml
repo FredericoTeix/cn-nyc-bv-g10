@@ -157,7 +157,7 @@ paths:
               schema:
                 type: string
       x-openapi-router-controller: swagger_server.controllers.trip_controller
-  /trip/location/{id}:
+  /trip/location/{location_id}:
     get:
       tags:
       - Trip
@@ -165,7 +165,7 @@ paths:
       description: Returns LocationID object.
       operationId: get_location_by_id
       parameters:
-      - name: id
+      - name: location_id
         in: path
         description: The ID of the Location to return.
         required: true
@@ -286,4 +286,3 @@ components:
       schema:
         minimum: 0
         type: integer
-

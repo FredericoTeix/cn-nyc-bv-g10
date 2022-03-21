@@ -10,7 +10,7 @@ import pymongo
 
 client = pymongo.MongoClient(
     "mongodb+srv://rAlexandre:F4cFUl5yW77ynldv@cn.9ah4l.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
-db = client.test
+db = client.main
 
 
 def add_trip(trip):
@@ -21,25 +21,52 @@ def add_trip(trip):
 
     :rtype: str
     """
-    dict_trip = trip.to_json()
+    year_p = trip.pickup_datetime.year - 2000
+    year_d = trip.dropoff_datetime.year - 2000
+    month_p = year_p * 12 + trip.pickup_datetime.month
+    month_d = year_d * 12 + trip.dropoff_datetime.month
+    day_p = month_p * 31 + month_p
+    day_d = month_d * 31 + month_d
 
+    increment_trip_counter("year", year_p)
+    increment_trip_counter("year", year_d)
+    increment_trip_counter("month", month_p)
+    increment_trip_counter("month", month_d)
+    increment_trip_counter("day", day_p)
+    increment_trip_counter("day", day_d)
+
+    dict_trip = trip.to_dict()
     created_trip = db["trips"].insert_one(dict_trip)
     # print(created_trip.inserted_id, file=sys.stderr)
 
     return str(created_trip.inserted_id)
 
 
-def get_location_by_id(id):  # noqa: E501
+def increment_trip_counter(unit, n):
+    db["trips_" + unit].update_one(
+        {
+            unit: n
+        },
+        {
+            "$inc": {"counter": 1}
+        },
+        upsert=True
+    )
+
+
+def get_location_by_id(location_id):  # noqa: E501
     """Find location description by ID
 
     Returns LocationID object.
 
-    :param id: The ID of the Location to return.
-    :type id: str
+    :param location_id: The ID of the Location to return.
+    :type location_id: str
 
     :rtype: Location
     """
-    return 'do some magic!'
+    zone = db.zones.find_one({"location_id": location_id})
+    zone.pop('_id')
+    return zone
 
 
 def get_trip_between_date_time(start_date=None, end_date=None, limit=10):  # noqa: E501

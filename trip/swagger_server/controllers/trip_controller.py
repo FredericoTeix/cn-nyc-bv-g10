@@ -24,17 +24,18 @@ def add_trip(body=None):  # noqa: E501
     return result
 
 
-def get_location_by_id(id):  # noqa: E501
+def get_location_by_id(location_id):  # noqa: E501
     """Find location description by ID
 
     Returns LocationID object. # noqa: E501
 
-    :param id: The ID of the Location to return.
-    :type id: int
+    :param location_id: The ID of the Location to return.
+    :type location_id: int
 
     :rtype: Location
     """
-    return 'do some magic!'
+    result = bo.get_location_by_id(location_id)
+    return result
 
 
 def get_trip_between_date_time(start_date=None, end_date=None, limit=None):  # noqa: E501

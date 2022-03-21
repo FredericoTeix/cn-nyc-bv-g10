@@ -1,0 +1,11 @@
+FROM  ubuntu:18.04
+USER root
+
+WORKDIR /home/app
+COPY ./scripts/mongosh-0.13.2-linux-x64.tgz mongosh.tgz
+RUN tar -zxvf mongosh.tgz
+RUN mv bin/mongosh /usr/local/bin/
+RUN mv bin/mongocryptd-mongosh /usr/local/bin/
+
+COPY ./scripts/setup_mongo.sh setup_mongo.sh
+ENTRYPOINT ["./setup_mongo.sh"]

@@ -93,14 +93,14 @@ paths:
               schema:
                 type: string
       x-openapi-router-controller: swagger_server.controllers.trip_controller
-  /trip/{id}:
+  /trip/{trip_id}:
     put:
       tags:
       - Trip
       summary: Change a trip in the data used to calculate the value
       operationId: update_trip
       parameters:
-      - name: id
+      - name: trip_id
         in: path
         description: ID of the trip to delete
         required: true
@@ -113,7 +113,20 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Trip'
+              type: object
+              properties:
+                pickup_datetime:
+                  type: string
+                  format: date-time
+                dropoff_datetime:
+                  type: string
+                  format: date-time
+                pickup_location_id:
+                  type: integer
+                dropoff_location_id:
+                  type: integer
+                passenger_count:
+                  type: integer
       responses:
         "200":
           description: OK
@@ -137,7 +150,7 @@ paths:
       summary: Remove a trip in the data used to calculate the value
       operationId: remove_trip
       parameters:
-      - name: id
+      - name: trip_id
         in: path
         description: ID of the trip to delete
         required: true
@@ -172,7 +185,7 @@ paths:
         style: simple
         explode: false
         schema:
-          type: integer
+          type: string
       responses:
         "200":
           description: OK

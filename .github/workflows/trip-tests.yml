@@ -9,6 +9,10 @@ jobs:
       - name: Start containers
         run: docker-compose -f "trip/docker-compose.yml" up -d --build
 
+      - name: Wait for container
+        run: sleep 5
+        shell: bash
+
       - uses: matt-ball/newman-action@master
         with:
           collection: trip/tests/Trip.postman_collection.json

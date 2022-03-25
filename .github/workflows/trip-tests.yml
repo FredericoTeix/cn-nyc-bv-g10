@@ -6,9 +6,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Install Newman dependency
-        run: npm install --prefix tests/postman/
-
       - name: Start containers
         run: docker-compose -f "trip/docker-compose.yml" up -d --build
 

@@ -65,7 +65,7 @@ def get_location_by_id(location_id):  # noqa: E501
 
     :rtype: Location
     """
-    zone = db.zones.find_one({"location_id": location_id})
+    zone = db.zones.find_one({"_id": int(location_id)})
     zone.pop('_id')
     return zone
 

@@ -1,4 +1,7 @@
 from __future__ import print_function
+
+from datetime import datetime
+
 from swagger_server.models.location import Location  # noqa: E501
 from swagger_server.models.trip import Trip  # noqa: E501
 from swagger_server.models.trips import Trips  # noqa: E501
@@ -14,11 +17,13 @@ client = pymongo.MongoClient(os.getenv('MONGO_URL'))
 db = client["trips-db"]
 
 
-def add_trip(trip):
+def add_trip(trip, trip_id=None):
     """Add a trip to the data used to calculate the value
 
     :param trip: A object containing trip information
     :type trip: Trip
+    :param trip_id: Optional id to put in trip
+    :type trip_id: bson.ObjectId
 
     :rtype: str
     """
@@ -37,6 +42,10 @@ def add_trip(trip):
     increment_trip_counter("day", day_d, trip.passenger_count)
 
     dict_trip = trip.to_dict()
+    dict_trip['pickup_datetime'] = datetime.strptime(dict_trip['pickup_datetime'][:-7], "%Y-%m-%d:%H:%M:%S")
+    dict_trip['dropoff_datetime'] = datetime.strptime(dict_trip['dropoff_datetime'][:-7], "%Y-%m-%d:%H:%M:%S")
+    if trip_id:
+        dict_trip["_id"] = bson.ObjectId(trip_id)
     created_trip = db["trips"].insert_one(dict_trip)
     # print(created_trip.inserted_id, file=sys.stderr)
 
@@ -50,6 +59,18 @@ def increment_trip_counter(unit, counter, n):
         },
         {
             "$inc": {"counter": n}
+        },
+        upsert=True
+    )
+
+
+def decrement_trip_counter(unit, counter, n):
+    db["trips_" + unit].update_one(
+        {
+            unit: counter
+        },
+        {
+            "$inc": {"counter": -n}
         },
         upsert=True
     )
@@ -95,8 +116,21 @@ def remove_trip(trip_id):  # noqa: E501
 
     :rtype: None
     """
-    # TODO: Update trip counters
-    db.trips.delete_one({"_id": bson.ObjectId(trip_id)})
+    deleted_trip = db.trips.find_one_and_delete({"_id": bson.ObjectId(trip_id)})
+
+    year_p = deleted_trip['pickup_datetime'].year - 2000
+    year_d = deleted_trip['dropoff_datetime'].year - 2000
+    month_p = year_p * 12 + deleted_trip['pickup_datetime'].month
+    month_d = year_d * 12 + deleted_trip['dropoff_datetime'].month
+    day_p = month_p * 31 + deleted_trip['pickup_datetime'].day
+    day_d = month_d * 31 + deleted_trip['dropoff_datetime'].day
+
+    decrement_trip_counter("year", year_p, deleted_trip['passenger_count'])
+    decrement_trip_counter("year", year_d, deleted_trip['passenger_count'])
+    decrement_trip_counter("month", month_p, deleted_trip['passenger_count'])
+    decrement_trip_counter("month", month_d, deleted_trip['passenger_count'])
+    decrement_trip_counter("day", day_p, deleted_trip['passenger_count'])
+    decrement_trip_counter("day", day_d, deleted_trip['passenger_count'])
 
 
 def update_trip(trip_id, trip):  # noqa: E501
@@ -110,9 +144,8 @@ def update_trip(trip_id, trip):  # noqa: E501
 
     :rtype: str
     """
+    remove_trip(trip_id)
+    print(trip.to_dict(), file=sys.stderr)
+    add_trip(trip)
     trip_dict = {k: v for k, v in trip.to_dict().items() if v}
-    trip_id = bson.ObjectId(trip_id)
-    updated_trip = db.trips.find_one_and_update({'_id': trip_id}, {"$set": trip_dict}, return_document=pymongo.ReturnDocument.AFTER)
-    updated_trip.pop('_id')
-    # TODO: Update trip counters
-    return updated_trip
+    return trip_dict

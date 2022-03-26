@@ -1,0 +1,68 @@
+syntax = "proto3";
+
+package trips;
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+message Trip {
+	// The ID of the Locations (pickup and dropoff)
+    string pickup_location_id = 1;
+    string dropoff_location_id = 2;
+    
+	// The datetime of the trip (pickup and dropoff)
+    google.protobuf.Timestamp pickup_datetime = 3;
+    google.protobuf.Timestamp dropoff_datetime = 4;
+    
+    // Number of passengers
+    int32 passenger_count = 5;
+}
+
+message Location {
+	string zone = 1;
+	string borough = 2;
+	int32 location_id = 3;
+	string service_zone = 4;
+}
+
+message TripID {
+    // ID of the trip
+    string trip_id = 1;
+}
+
+message LocationID {
+    // The ID of the Location to return.
+    string location_id = 1;
+}
+
+message GetCountTripsInLocationRequest {
+    // Every value data up to this date will be filtered out. If not specified no filtering is applied
+    google.protobuf.Timestamp start_date = 1;    
+    
+    // Every value data after this date will be filtered out. If not specified no filtering is applied
+    google.protobuf.Timestamp end_date = 2;
+    
+    string location_id = 3;
+}
+
+message GetCountTripsInLocationResponse {
+	int64 count = 1;
+}
+
+service TripsService {
+    // Add a trip to the data used to calculate the value
+    rpc AddTrip(Trip) returns (TripID) {}
+
+    // Find location description by ID
+    // 
+    // Returns LocationID object.
+    rpc GetLocationById(LocationID) returns (Location) {}
+
+    // Remove a trip in the data used to calculate the value
+    rpc RemoveTrip(TripID) returns (google.protobuf.Empty) {}
+
+    // Change a trip in the data used to calculate the value
+    rpc UpdateTrip(TripID) returns (Trip) {}
+    
+    rpc GetCountTripsInLocation(GetCountTripsInLocationRequest) returns (GetCountTripsInLocationResponse) {}
+}

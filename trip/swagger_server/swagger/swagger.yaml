@@ -64,7 +64,7 @@ paths:
               explode: false
               schema:
                 type: string
-      x-openapi-router-controller: swagger_server.controllers.trip_controller
+      x-openapi-router-controller: swagger_server.controllers.rest_controller
     post:
       tags:
       - Trip
@@ -92,7 +92,7 @@ paths:
               explode: false
               schema:
                 type: string
-      x-openapi-router-controller: swagger_server.controllers.trip_controller
+      x-openapi-router-controller: swagger_server.controllers.rest_controller
   /trip/{trip_id}:
     put:
       tags:
@@ -143,7 +143,7 @@ paths:
               explode: false
               schema:
                 type: string
-      x-openapi-router-controller: swagger_server.controllers.trip_controller
+      x-openapi-router-controller: swagger_server.controllers.rest_controller
     delete:
       tags:
       - Trip
@@ -169,7 +169,7 @@ paths:
               explode: false
               schema:
                 type: string
-      x-openapi-router-controller: swagger_server.controllers.trip_controller
+      x-openapi-router-controller: swagger_server.controllers.rest_controller
   /trip/location/{location_id}:
     get:
       tags:
@@ -201,7 +201,7 @@ paths:
               explode: false
               schema:
                 type: string
-      x-openapi-router-controller: swagger_server.controllers.trip_controller
+      x-openapi-router-controller: swagger_server.controllers.rest_controller
 components:
   schemas:
     Trip:

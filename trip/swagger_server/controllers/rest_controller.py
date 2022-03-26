@@ -1,12 +1,10 @@
-import sys
-
 import connexion
 
 from swagger_server.models.location import Location  # noqa: E501
 from swagger_server.models.trip import Trip  # noqa: E501
 from swagger_server.models.trips import Trips  # noqa: E501
 from swagger_server.models.trip_id_body import TripIdBody  # noqa: E501
-from swagger_server.logic import basic_operations as bo 
+from swagger_server.controllers import operations as bo
 from swagger_server import util
 
 

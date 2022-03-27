@@ -1,13 +1,15 @@
+# some_file.py
+import sys
+# insert at 1, 0 is the script path (or '' in REPL)
+sys.path.insert(1, '..')
+
 import grpc
-import os
-
-print("Current working directory: {0}".format(os.getcwd()))
-os.chdir('..')
-print("Current working directory: {0}".format(os.getcwd()))
-
+from swagger_server.proto import trips_pb2_grpc
+from swagger_server.proto import trips_pb2
 
 from datetime import datetime
 from google.protobuf.timestamp_pb2 import Timestamp
+
 
 host = 'localhost'
 server_port = 50051

@@ -17,6 +17,7 @@ services:
         - 'database'
       ports:
         - '8080:8080'
+        - '50051:50051'
       environment:
         - MONGO_URL=mongodb://rhythmfishing:Jw8HsxQtQHFPzDQj7W8b@mongo-trips:27017/trips-db
       build:

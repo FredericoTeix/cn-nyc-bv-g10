@@ -55,7 +55,6 @@ def add_trip(trip, trip_id=None):
     """
     modify_trip_counters(trip.pickup_datetime, trip.passenger_count)
     modify_trip_counters(trip.dropoff_datetime, trip.passenger_count)
-
     dict_trip = trip.to_dict()
     dict_trip['pickup_datetime'] = datetime.strptime(dict_trip['pickup_datetime'][:-7], "%Y-%m-%d:%H:%M:%S")
     dict_trip['dropoff_datetime'] = datetime.strptime(dict_trip['dropoff_datetime'][:-7], "%Y-%m-%d:%H:%M:%S")

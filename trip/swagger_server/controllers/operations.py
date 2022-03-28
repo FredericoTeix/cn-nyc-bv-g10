@@ -74,7 +74,7 @@ def get_location_by_id(location_id):  # noqa: E501
     :param location_id: The ID of the Location to return.
     :type location_id: str
 
-    :rtype: Location
+    :rtype: dict
     """
     zone = db.zones.find_one({"_id": int(location_id)})
     zone.pop('_id')
@@ -121,7 +121,7 @@ def update_trip(trip_id, trip):  # noqa: E501
     :param trip: A object containing trip information
     :type trip: TripIdBody
 
-    :rtype: str
+    :rtype: dict
     """
     trip_dict = {k: v for k, v in trip.to_dict().items() if v is not None}
 

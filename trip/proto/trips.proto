@@ -35,6 +35,11 @@ message LocationID {
     string location_id = 1;
 }
 
+message RemoveTripRequest {
+  TripID trip_id = 1;
+  Trip trip = 2;
+}
+
 message GetCountTripsInLocationRequest {
     // Every value data up to this date will be filtered out. If not specified no filtering is applied
     google.protobuf.Timestamp start_date = 1;    
@@ -59,7 +64,7 @@ service Trips {
     rpc GetLocationById(LocationID) returns (Location) {}
 
     // Remove a trip in the data used to calculate the value
-    rpc RemoveTrip(TripID) returns (google.protobuf.Empty) {}
+    rpc RemoveTrip(RemoveTripRequest) returns (google.protobuf.Empty) {}
 
     // Change a trip in the data used to calculate the value
     rpc UpdateTrip(TripID) returns (Trip) {}

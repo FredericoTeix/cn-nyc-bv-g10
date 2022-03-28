@@ -1,0 +1,54 @@
+{
+	"info": {
+		"_postman_id": "7cd1f760-b1bb-4c0a-bbae-5c3ff978dfe2",
+		"name": "Trip",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "http://localhost:8080/trip/location/1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"})",
+							"",
+							"pm.test(\"Content-Type is application json\", function () {",
+							"    pm.response.to.be.header(\"Content-Type\", \"application/json\")",
+							"})",
+							"",
+							"pm.test(\"Location id 1 response body is correct\", function () {",
+							"    const responseJson = pm.response.json();",
+							"    pm.expect(responseJson.borough).to.eql(\"EWR\");",
+							"    pm.expect(responseJson.service_zone).to.eql(\"EWR\");",
+							"    pm.expect(responseJson.zone).to.eql(\"Newark Airport\");",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/trip/location/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"trip",
+						"location",
+						"1"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

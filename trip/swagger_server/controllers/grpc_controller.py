@@ -3,7 +3,7 @@ from datetime import datetime
 from google.protobuf.empty_pb2 import Empty
 from google.protobuf.timestamp_pb2 import Timestamp
 
-from swagger_server.models.trip_id_body import TripIdBody
+from swagger_server.models.trip import Trip
 from swagger_server.proto import trips_pb2
 from swagger_server.proto import trips_pb2_grpc
 
@@ -41,7 +41,7 @@ class TripsServicer(trips_pb2_grpc.TripsServicer):
         return Empty()
 
     def UpdateTrip(self, request, context):
-        trip = TripIdBody(
+        trip = Trip(
             pickup_datetime=datetime.fromtimestamp(
                 request.trip.pickup_datetime.seconds + request.trip.pickup_datetime.nanos / 1e9),
             dropoff_datetime=datetime.fromtimestamp(

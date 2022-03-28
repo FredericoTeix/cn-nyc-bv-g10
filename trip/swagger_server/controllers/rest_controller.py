@@ -3,7 +3,6 @@ import connexion
 from swagger_server.models.location import Location  # noqa: E501
 from swagger_server.models.trip import Trip  # noqa: E501
 from swagger_server.models.trips import Trips  # noqa: E501
-from swagger_server.models.trip_id_body import TripIdBody  # noqa: E501
 from swagger_server.controllers import operations as bo
 from swagger_server import util
 
@@ -34,7 +33,7 @@ def get_location_by_id(location_id):  # noqa: E501
     return bo.get_location_by_id(location_id)
 
 
-def get_trip_between_date_time(start_date=None, end_date=None, limit=None):  # noqa: E501
+def get_trips_count(start_date=None, end_date=None, limit=None):  # noqa: E501
     """Find trips between pickup_datetime and dropoff_datetime.
 
     Returns an array of Trip objects. # noqa: E501
@@ -50,7 +49,7 @@ def get_trip_between_date_time(start_date=None, end_date=None, limit=None):  # n
     """
     start_date = util.deserialize_datetime(start_date)
     end_date = util.deserialize_datetime(end_date)
-    return bo.get_trip_between_date_time(start_date, end_date, limit)
+    return bo.get_trips_count(start_date, end_date, limit)
 
 
 def remove_trip(trip_id):  # noqa: E501
@@ -58,8 +57,8 @@ def remove_trip(trip_id):  # noqa: E501
 
      # noqa: E501
 
-    :param id: ID of the trip to delete
-    :type id: str
+    :param trip_id: ID of the trip to delete
+    :type trip_id: str
 
     :rtype: None
     """
@@ -79,5 +78,5 @@ def update_trip(trip_id, body=None):  # noqa: E501
     :rtype: str
     """
     if connexion.request.is_json:
-        body = TripIdBody.from_dict(connexion.request.get_json())  # noqa: E501
+        body = Trip.from_dict(connexion.request.get_json())  # noqa: E501
     return bo.update_trip(trip_id, body)

@@ -7,7 +7,6 @@ from pymongo import ReturnDocument
 
 from swagger_server.models.location import Location  # noqa: E501
 from swagger_server.models.trip import Trip  # noqa: E501
-from swagger_server.models.trip_id_body import TripIdBody
 from swagger_server.models.trips import Trips  # noqa: E501
 from swagger_server import util
 
@@ -81,7 +80,7 @@ def get_location_by_id(location_id):  # noqa: E501
     return zone
 
 
-def get_trip_between_date_time(start_date=None, end_date=None, limit=10):  # noqa: E501
+def get_trips_count(start_date=None, end_date=None, limit=10):  # noqa: E501
     """Find trips between pickup_datetime and dropoff_datetime.
 
     Returns an array of Trip objects.
@@ -95,6 +94,7 @@ def get_trip_between_date_time(start_date=None, end_date=None, limit=10):  # noq
 
     :rtype: Trips
     """
+
     return 'do some magic!'
 
 
@@ -119,7 +119,7 @@ def update_trip(trip_id, trip):  # noqa: E501
     :param trip_id: ID of the trip to delete
     :type trip_id: str
     :param trip: A object containing trip information
-    :type trip: TripIdBody
+    :type trip: Trip
 
     :rtype: dict
     """

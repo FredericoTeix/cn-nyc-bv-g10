@@ -1,5 +1,6 @@
 package pt.fcul.keys
 
+import javax.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -11,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController
 import pt.fcul.keys.model.KeyConsume
 import pt.fcul.keys.model.KeyInfo
 import pt.fcul.keys.model.KeyInput
-import pt.fcul.keys.utils.Links
+import pt.fcul.keys.common.Links
 
 const val API_KEY_HEADER = "x-api-key"
 
@@ -22,7 +23,7 @@ class KeyController(
 
     @PostMapping(Links.Key)
     suspend fun generateKey(
-        @RequestBody input: KeyInput
+        @Valid @RequestBody input: KeyInput
     ): ResponseEntity<KeyInfo> {
         val info = service.generateKey(input)
         return ResponseEntity.ok(info)
@@ -48,7 +49,7 @@ class KeyController(
 
     @PutMapping(Links.Key)
     suspend fun editKeyInfo(
-        @RequestBody info: KeyInfo
+        @Valid @RequestBody info: KeyInfo
     ): ResponseEntity<Unit> {
         service.editKeyInfo(info)
         return ResponseEntity.ok().build()

@@ -3,9 +3,9 @@ package pt.fcul.keys.repository
 import org.springframework.stereotype.Repository
 import pt.fcul.keys.model.KeyInfo
 import pt.fcul.keys.model.KeyScope
-import pt.fcul.keys.utils.DuplicateKeyException
-import pt.fcul.keys.utils.KeyDoesntExistException
-import pt.fcul.keys.utils.KeyQuotaExceededException
+import pt.fcul.keys.exceptions.DuplicateKeyException
+import pt.fcul.keys.exceptions.KeyDoesntExistException
+import pt.fcul.keys.exceptions.KeyQuotaExceededException
 
 val ADMIN_KEY = KeyInfo(
     "user@mail.com",

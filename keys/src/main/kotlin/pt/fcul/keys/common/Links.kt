@@ -1,4 +1,4 @@
-package pt.fcul.keys.utils
+package pt.fcul.keys.common
 
 private const val API = ""
 

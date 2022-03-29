@@ -1,4 +1,4 @@
-package pt.fcul.keys.common
+package pt.fcul.keys.exceptions
 
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
@@ -11,26 +11,17 @@ open class HttpException(
     val httpHeaders = HttpHeaders()
 }
 
-class UnauthorizedException : HttpException(HttpStatus.UNAUTHORIZED.reasonPhrase, HttpStatus.UNAUTHORIZED)
-class ForbiddenAuthorization : HttpException(HttpStatus.FORBIDDEN.reasonPhrase, HttpStatus.FORBIDDEN)
+open class UnauthorizedException(
+    message: String = HttpStatus.UNAUTHORIZED.reasonPhrase
+) : HttpException(HttpStatus.UNAUTHORIZED.reasonPhrase, HttpStatus.UNAUTHORIZED)
+
+open class ForbiddenAuthorization(
+    message: String = HttpStatus.FORBIDDEN.reasonPhrase
+) : HttpException(message, HttpStatus.FORBIDDEN)
 
 open class BadRequestException(
-    message: String, invalidParams: List<InvalidParam>? = null
+    message: String,
+    invalidParams: List<InvalidParam>? = null
 ) : HttpException(message, HttpStatus.BAD_REQUEST, invalidParams)
 
 open class NotFoundException(message: String) : HttpException(message, HttpStatus.NOT_FOUND)
-
-open class UnprocessableEntityException(message: String) : HttpException(message, HttpStatus.UNPROCESSABLE_ENTITY)
-
-data class DuplicateKeyException(
-    val key: String
-): Exception("An API Key with hash $key already exists")
-
-data class KeyDoesntExistException(
-    val key: String
-): NotFoundException("The API Key with hash $key doesn't exist")
-
-data class KeyQuotaExceededException(
-    val key: String,
-    val quota: Int
-): UnprocessableEntityException("The API Key with hash $key exceeded its quota of $quota")

@@ -1,0 +1,9 @@
+version: '3'
+services:
+    trips:
+      ports:
+        - '8080:8080'
+      build:
+        context: .
+        dockerfile: Dockerfile
+      stop_signal: SIGINT

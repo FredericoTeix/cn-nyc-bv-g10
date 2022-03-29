@@ -1,0 +1,610 @@
+openapi: 3.0.1
+info:
+  title: NYC Value
+  description: >-
+    This service is built to serve data about the value of businesses and
+    locations in New York City
+  version: 1.0.0
+paths:
+  /value/business/{business_id}:
+    get:
+      tags:
+        - Value
+      summary: Get the value associated to a business in a given time range
+      operationId: value_by_business
+      parameters:
+        - name: business_id
+          in: path
+          description: ID of the business to get value
+          required: true
+          schema:
+            type: string
+        - $ref: '#/components/parameters/start_date'
+        - $ref: '#/components/parameters/end_date'
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ValueResponseBusiness'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+      x-openapi-router-controller: swagger_server.controllers.value_controller
+  /value/top/businesses:
+    get:
+      tags:
+        - Value
+      summary: Get the top valued businesses in a given time range
+      operationId: top_value_businesses
+      parameters:
+        - name: num_results
+          in: query
+          description: number of top businesses to be returned
+          required: true
+          schema:
+            type: number
+        - $ref: '#/components/parameters/start_date'
+        - $ref: '#/components/parameters/end_date'
+        - name: categories
+          in: query
+          description: >-
+            A comma-separated list of categories (check businesses categories
+            documentation for more info)
+          style: form
+          explode: false
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Businesses'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+      x-openapi-router-controller: swagger_server.controllers.value_controller
+  /trip:
+    post:
+      tags:
+        - Trip
+      summary: Add a trip to the data used to calculate the value
+      operationId: add_trip
+      requestBody:
+        description: A JSON object containing trip information
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Trip'
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain:
+              schema:
+                type: string
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+      x-openapi-router-controller: swagger_server.controllers.trip_controller
+  /trip/{trip_id}:
+    put:
+      tags:
+        - Trip
+      summary: Change a trip in the data used to calculate the value
+      operationId: update_trip
+      parameters:
+        - name: trip_id
+          in: path
+          description: ID of the trip to delete
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: A JSON object containing trip information
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Trip'
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain:
+              schema:
+                type: string
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+      x-openapi-router-controller: swagger_server.controllers.trip_controller
+    delete:
+      tags:
+        - Trip
+      summary: Remove a trip in the data used to calculate the value
+      operationId: remove_trip
+      parameters:
+        - name: trip_id
+          in: path
+          description: ID of the trip to delete
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+      x-openapi-router-controller: swagger_server.controllers.trip_controller
+  /business:
+    post:
+      tags:
+        - Business
+      summary: Add a business to the data used to calculate the value
+      operationId: add_business
+      requestBody:
+        description: A JSON object containing business information
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Business'
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain:
+              schema:
+                type: string
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+      x-openapi-router-controller: swagger_server.controllers.business_controller
+  /business/{business_id}:
+    put:
+      tags:
+        - Business
+      summary: Change a business in the data used to calculate the value
+      operationId: update_business
+      parameters:
+        - name: business_id
+          in: path
+          description: ID of the trip to delete
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: A JSON object containing business information
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Business'
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain:
+              schema:
+                type: string
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+      x-openapi-router-controller: swagger_server.controllers.business_controller
+    delete:
+      tags:
+        - Business
+      summary: Remove a business in the data used to calculate the value
+      operationId: remove_business
+      parameters:
+        - name: business_id
+          in: path
+          description: ID of the trip to delete
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+      x-openapi-router-controller: swagger_server.controllers.business_controller
+    get:
+      tags:
+        - Business
+      summary: Get the details of a business
+      operationId: get_business
+      description: Retrieves information regarding a specific business
+      parameters:
+        - name: business_id
+          in: path
+          description: ID of the business to retrieve
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Business'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          description: Not Found
+      x-openapi-router-controller: swagger_server.controllers.business_controller
+  /business/:
+    get:
+      tags:
+        - Business
+      summary: Get a list of businesses within the radius of the coordinate given
+      operationId: get_businesses
+      description: Retrieves a list of businesses
+      parameters:
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/skip'
+        - $ref: '#/components/parameters/latitude'
+        - $ref: '#/components/parameters/longitude'
+        - $ref: '#/components/parameters/radius'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Businesses'
+        '400':
+          description: Bad Request
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+      x-openapi-router-controller: swagger_server.controllers.business_controller
+  /value/location/{location_id}:
+    get:
+      tags:
+        - Value
+      summary: >-
+        Get the number of trips between pickup_datetime and dropoff_datetime in
+        a given location.
+      description: Returns an array of Trip objects.
+      operationId: get_trips_count
+      parameters:
+        - $ref: '#/components/parameters/start_date'
+        - $ref: '#/components/parameters/end_date'
+        - name: location_id
+          in: path
+          description: The ID of the Location
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Trips'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          description: A location with the specified ID was not found.
+      x-openapi-router-controller: swagger_server.controllers.value_controller
+  /key:
+    post:
+      tags:
+        - API Key
+      summary: Generate an API Key
+      operationId: generate_key
+      parameters:
+        - name: quota
+          in: query
+          description: maximum number of requests allowed
+          required: false
+          schema:
+            type: number
+        - name: contact
+          in: query
+          description: contact of key consumer
+          required: true
+          schema:
+            type: string
+      responses:
+        '201':
+          description: OK
+          headers:
+            location:
+              description: Location of the generated API Key
+              schema:
+                type: string
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+      x-openapi-router-controller: swagger_server.controllers.api_key_controller
+    delete:
+      tags:
+        - API Key
+      summary: Revoke an API Key
+      operationId: revoke_key
+      parameters:
+        - name: id
+          in: query
+          description: The API Key.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+      x-openapi-router-controller: swagger_server.controllers.api_key_controller
+    get:
+      tags:
+        - API Key
+      summary: Get contact and quota of an API Key
+      operationId: inspect_key
+      parameters:
+        - name: id
+          in: query
+          description: The API Key.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Key'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+      x-openapi-router-controller: swagger_server.controllers.api_key_controller
+    put:
+      tags:
+        - API Key
+      summary: Update API Key quota or contact
+      operationId: edit_key_info
+      parameters:
+        - name: id
+          in: query
+          description: The API Key.
+          required: true
+          schema:
+            type: string
+        - name: quota
+          in: query
+          description: The API Key maximum requests.
+          required: true
+          schema:
+            type: string
+        - name: contact
+          in: query
+          description: The API Key consumer contact.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+      x-openapi-router-controller: swagger_server.controllers.api_key_controller
+  /key/refresh:
+    put:
+      tags:
+        - API Key
+      summary: Change the API Key
+      operationId: refresh_key
+      parameters:
+        - name: id
+          in: query
+          description: The API Key.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Key'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+      x-openapi-router-controller: swagger_server.controllers.api_key_controller
+components:
+  schemas:
+    ValueResponseBusiness:
+      required:
+        - certainty
+        - first_record
+        - last_record
+        - value
+      type: object
+      properties:
+        value:
+          type: integer
+          description: Value of the business
+        certainty:
+          type: integer
+          description: Scales with the number of total data used to calculate the value
+        first_record:
+          type: string
+          description: The date of the first date used for calculating the value
+          format: date-time
+        last_record:
+          type: string
+          description: The date of the last date used for calculating the value
+          format: date-time
+    ValueResponseLocation:
+      required:
+        - certainty
+        - first_record
+        - last_record
+        - value
+      type: object
+      properties:
+        value:
+          type: integer
+          description: Value of the business
+        certainty:
+          type: integer
+          description: Scales with the number of total data used to calculate the value
+        first_record:
+          type: string
+          description: The date of the first date used for calculating the value
+          format: date-time
+        last_record:
+          type: string
+          description: The date of the last date used for calculating the value
+          format: date-time
+        number_businesses:
+          type: number
+          description: Number of businesses in the location given to calculate the value
+    Business:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        address:
+          type: string
+        latitude:
+          type: number
+        longitude:
+          type: number
+    Businesses:
+      type: array
+      items:
+        $ref: '#/components/schemas/Business'
+    Trip:
+      type: object
+      properties:
+        pickup_datetime:
+          type: string
+          format: date-time
+        dropoff_datetime:
+          type: string
+          format: date-time
+        pickup_location_id:
+          type: number
+        dropoff_location_id:
+          type: number
+        passenger_count:
+          type: number
+          default: 1
+      required:
+        - pickup_datetime
+        - dropoff_datetime
+        - pickup_location_id
+        - dropoff_location_id
+        - passenger_count
+    Trips:
+      type: array
+      items:
+        $ref: '#/components/schemas/Trip'
+    Location:
+      type: object
+      properties:
+        location_id:
+          type: integer
+        borough:
+          type: string
+        zone:
+          type: string
+        service_zone:
+          type: string
+      required:
+        - location_id
+        - borough
+        - zone
+        - service_zone
+    Key:
+      type: object
+      properties:
+        id:
+          type: string
+        contact:
+          type: string
+        quota:
+          type: integer
+        used:
+          type: integer
+  parameters:
+    latitude:
+      name: lat
+      in: query
+      description: Search coordinates that match or are like 'latitude'
+      required: true
+      schema:
+        type: string
+    longitude:
+      name: lng
+      in: query
+      description: Search coordinates that match or are like 'longitude'
+      required: true
+      schema:
+        type: string
+    start_date:
+      name: start_date
+      in: query
+      description: >-
+        Every value data up to this date will be filtered out. If not specified
+        no filtering is applied
+      schema:
+        type: string
+        format: date-time
+    end_date:
+      name: end_date
+      in: query
+      description: >-
+        Every value data after this date will be filtered out. If not specified
+        no filtering is applied
+      schema:
+        type: string
+        format: date-time
+    minutes:
+      name: minutes
+      in: query
+      description: Time in minutes
+      required: true
+      schema:
+        maximum: 59
+        minimum: 0
+        type: number
+    radius:
+      name: radius
+      in: query
+      description: Radius Area considered to search
+      required: true
+      schema:
+        type: number
+    skip:
+      name: skip
+      in: query
+      description: Number of elements to be skipped
+      schema:
+        type: integer
+        minimum: 0
+    limit:
+      name: limit
+      in: query
+      description: Number of elements to be returned
+      schema:
+        type: integer
+        minimum: 0
+  responses:
+    UnauthorizedError:
+      description: API key is missing or invalid
+      headers:
+        WWW_Authenticate:
+          schema:
+            type: string
+  securitySchemes:
+    api_key:
+      type: apiKey
+      in: header
+      name: X-API-KEY
+      x-apikeyInfoFunc: swagger_server.controllers.authorization_controller.check_api_key
+security:
+  - api_key: []
+externalDocs:
+  description: Businesses categories documentation
+  url: https://apidocs.geoapify.com/docs/places/#categories

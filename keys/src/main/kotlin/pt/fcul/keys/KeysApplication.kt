@@ -42,7 +42,6 @@ class WebConfiguration : WebMvcConfigurer {
 
 //		converters.add(0, SirenMessageConverter(mapper))
 //		converters.add(0, ProblemJsonConverter(mapper))
-//		converters.add(0, JsonHomeConverter(mapper))
 	}
 
 //	@Bean

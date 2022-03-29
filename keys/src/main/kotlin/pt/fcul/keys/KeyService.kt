@@ -2,7 +2,6 @@ package pt.fcul.keys
 
 import java.util.*
 import org.springframework.stereotype.Service
-import pt.fcul.keys.model.Key
 import pt.fcul.keys.model.KeyConsume
 import pt.fcul.keys.model.KeyInfo
 import pt.fcul.keys.model.KeyInput
@@ -28,7 +27,7 @@ class KeyService(
     }
 
     // TODO principal needs to have ADMIN scope, or inspecting itself
-    fun inspectKey(key: Key): KeyInfo = repo.readKey(key.key.sha256())
+    fun inspectKey(key: String): KeyInfo = repo.readKey(key.sha256())
 
     fun editKeyInfo(info: KeyInfo): KeyInfo {
         // TODO principal needs to have ADMIN scope
@@ -37,13 +36,13 @@ class KeyService(
     }
 
     // TODO principal needs to have ADMIN scope, or revoking itself
-    fun revokeKey(key: Key) = repo.deleteKey(key.key.sha256())
+    fun revokeKey(key: String) = repo.deleteKey(key.sha256())
 
-    fun refreshKey(key: Key): KeyInfo {
+    fun refreshKey(key: String): KeyInfo {
         // TODO needs transaction
         // TODO principal needs to have ADMIN scope, or refreshing itself
 
-        val oldHash = key.key.sha256()
+        val oldHash = key.sha256()
         val oldInfo = repo.readKey(oldHash)
 
         val uuid = UUID.randomUUID().toString()
@@ -57,9 +56,9 @@ class KeyService(
         return KeyInfo(created.contact, created.quota, uuid, created.used, created.scope)
     }
 
-    fun consumeKey(key: Key, consume: KeyConsume) {
+    fun consumeKey(key: String, consume: KeyConsume) {
         // TODO raw key and KeyInfo comes from principal
-        val hash = key.key.sha256()
+        val hash = key.sha256()
 
         // TODO check if has valid scope
 

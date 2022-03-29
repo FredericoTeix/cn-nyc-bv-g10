@@ -2,9 +2,18 @@ package pt.fcul.keys.repository
 
 import org.springframework.stereotype.Repository
 import pt.fcul.keys.model.KeyInfo
+import pt.fcul.keys.model.KeyScope
 import pt.fcul.keys.utils.DuplicateKeyException
 import pt.fcul.keys.utils.KeyDoesntExistException
 import pt.fcul.keys.utils.KeyQuotaExceededException
+
+val ADMIN_KEY = KeyInfo(
+    "user@mail.com",
+    1000,
+    "5d962bcc577343eff09091f902ca52d125ecaab8f3fe3cd2e92227dd916be1d3",
+    0,
+    KeyScope.ADMIN
+)
 
 @Repository
 class MemoryKeyRepository : KeyRepository {

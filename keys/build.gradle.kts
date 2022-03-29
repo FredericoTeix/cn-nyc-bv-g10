@@ -28,6 +28,7 @@ dependencies {
 	implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
 
 	implementation("commons-codec:commons-codec")
+	implementation("org.hibernate:hibernate-validator:7.0.1.Final")
 
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("io.projectreactor:reactor-test")

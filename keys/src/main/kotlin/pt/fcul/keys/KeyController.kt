@@ -1,6 +1,5 @@
 package pt.fcul.keys
 
-import java.awt.SystemColor.info
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -9,7 +8,6 @@ import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RestController
-import pt.fcul.keys.model.Key
 import pt.fcul.keys.model.KeyConsume
 import pt.fcul.keys.model.KeyInfo
 import pt.fcul.keys.model.KeyInput
@@ -35,7 +33,7 @@ class KeyController(
         // TODO should be obtained from principal or argument resolver, after authenticated
         @RequestHeader(API_KEY_HEADER) key: String
     ): ResponseEntity<Unit> {
-        service.revokeKey(Key(key))
+        service.revokeKey(key)
         return ResponseEntity.ok().build()
     }
 
@@ -44,7 +42,7 @@ class KeyController(
         // TODO should be obtained from principal or argument resolver, after authenticated
         @RequestHeader(API_KEY_HEADER) key: String
     ): ResponseEntity<KeyInfo> {
-        val info = service.inspectKey(Key(key))
+        val info = service.inspectKey(key)
         return ResponseEntity.ok(info)
     }
 
@@ -61,7 +59,7 @@ class KeyController(
         // TODO should be obtained from principal or argument resolver, after authenticated
         @RequestHeader(API_KEY_HEADER) key: String
     ): ResponseEntity<KeyInfo> {
-        val info = service.refreshKey(Key(key))
+        val info = service.refreshKey(key)
         return ResponseEntity.ok(info)
     }
 
@@ -71,7 +69,7 @@ class KeyController(
         @RequestHeader(API_KEY_HEADER) key: String,
         @RequestBody consume: KeyConsume
     ): ResponseEntity<Unit> {
-        service.consumeKey(Key(key), consume)
+        service.consumeKey(key, consume)
         return ResponseEntity.ok().build()
     }
 

@@ -10,19 +10,13 @@ plugins {
     id("idea")
 }
 
-
-
-repositories {
-    mavenCentral()
-}
-
 tasks.test {
     useJUnit()
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
 }
 
 tasks.withType<KotlinCompile>() {
@@ -34,18 +28,9 @@ dependencies {
     implementation("com.google.protobuf:protobuf-kotlin:${rootProject.ext["protobufVersion"]}")
     implementation("io.grpc:grpc-kotlin-stub:${rootProject.ext["grpcKotlinVersion"]}")
     implementation("io.grpc:grpc-stub:${rootProject.ext["grpcVersion"]}")
-    implementation("io.grpc:grpc-protobuf:1.44.1")
-
-    implementation("com.google.protobuf:protobuf-java-util:3.19.4")
-    implementation("com.google.protobuf:protobuf-kotlin:3.19.4")
-    implementation("io.grpc:grpc-kotlin-stub:1.2.1")
-
-    testImplementation("org.jetbrains.kotlin:kotlin-test:1.6.0")
-}
-
-repositories {
-    google()
-    mavenCentral()
+    implementation("io.grpc:grpc-protobuf:${rootProject.ext["grpcVersion"]}")
+    implementation("com.google.protobuf:protobuf-java-util:${rootProject.ext["protobufVersion"]}")
+    implementation("com.google.protobuf:protobuf-kotlin:${rootProject.ext["protobufVersion"]}")
 }
 
 tasks.withType<KotlinCompile>() {
@@ -87,14 +72,14 @@ protobuf {
     generatedFilesBaseDir = "$projectDir/gen"
 
     protoc {
-        artifact = "com.google.protobuf:protoc:${project.ext["protobufVersion"]}"
+        artifact = "com.google.protobuf:protoc:${rootProject.ext["protobufVersion"]}"
     }
     plugins {
         id("grpc") {
-            artifact = "io.grpc:protoc-gen-grpc-java:${project.ext["grpcVersion"]}"
+            artifact = "io.grpc:protoc-gen-grpc-java:${rootProject.ext["grpcVersion"]}"
         }
         id("grpckt") {
-            artifact = "io.grpc:protoc-gen-grpc-kotlin:${project.ext["grpcKotlinVersion"]}:jdk7@jar"
+            artifact = "io.grpc:protoc-gen-grpc-kotlin:${rootProject.ext["grpcKotlinVersion"]}:jdk7@jar"
         }
     }
     generateProtoTasks {

@@ -55,8 +55,20 @@ def update_trip(trip_id):
     print(f"{updated_trip}")
 
 
+def get_counter(trip_id):
+    start_time = datetime(2020, 4, 2, 21, 43, 53)
+    end_time = datetime(2020, 5, 24, 22, 43, 53)
+    start_timeT = Timestamp()
+    start_timeT.FromDatetime(start_time)
+    end_timeT = Timestamp()
+    end_timeT.FromDatetime(end_time)
+    gctilr = trips_pb2.GetCountTripsInLocationRequest(location_id=trip_id, start_date=start_timeT, end_date=end_timeT)
+    counter = stub.GetCountTripsInLocation(gctilr)
+    print(f"{counter.count}")
+
+
 host = 'localhost'
 server_port = 50051
 channel = grpc.insecure_channel(f"{host}:{server_port}")
 stub = trips_pb2_grpc.TripsStub(channel)
-update_trip("62416cc380d708f012b68730")
+get_counter("2")

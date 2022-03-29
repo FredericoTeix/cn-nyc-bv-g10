@@ -1,8 +1,10 @@
 from __future__ import print_function
 
-from datetime import datetime
+import itertools
+from datetime import datetime, timedelta
 
 import connexion
+from dateutil.rrule import rrule, MONTHLY, YEARLY, DAILY
 from pymongo import ReturnDocument
 
 from swagger_server.models.location import Location  # noqa: E501
@@ -20,10 +22,11 @@ client = pymongo.MongoClient(os.getenv('MONGO_URL'))
 db = client["trips-db"]
 
 
-def increment_trip_counter(unit, counter, n):
+def increment_trip_counter(location_id, unit, counter, n):
     db["trips_" + unit].update_one(
         {
-            unit: counter
+            unit: counter,
+            "location_id": location_id
         },
         {
             "$inc": {"counter": n}
@@ -32,14 +35,25 @@ def increment_trip_counter(unit, counter, n):
     )
 
 
-def modify_trip_counters(date, n):
-    year = date.year - 2000
-    month = year * 12 + date.month
-    day = month * 31 + date.day
+def modify_trip_counters(trip, n):
+    locations = [trip.pickup_location_id, trip.dropoff_location_id]
+    dates = [trip.pickup_datetime, trip.dropoff_datetime]
 
-    increment_trip_counter("year", year, n)
-    increment_trip_counter("month", month, n)
-    increment_trip_counter("day", day, n)
+    for location, date in zip(locations, dates):
+        year = date.year - 2000
+        month = year * 12 + date.month
+        day = month * 31 + date.day
+        increment_trip_counter(location, "year", year, n)
+        increment_trip_counter(location, "month", month, n)
+        increment_trip_counter(location, "day", day, n)
+
+
+def last_day_of_month(any_day):
+    # this will never fail
+    # get close to the end of the month for any day, and add 4 days 'over'
+    next_month = any_day.replace(day=28) + timedelta(days=4)
+    # subtract the number of remaining 'overage' days to get last day of current month, or said programattically said, the previous day of the first of next month
+    return next_month - timedelta(days=next_month.day)
 
 
 def add_trip(trip, trip_id=None):
@@ -52,8 +66,7 @@ def add_trip(trip, trip_id=None):
 
     :rtype: str
     """
-    modify_trip_counters(trip.pickup_datetime, trip.passenger_count)
-    modify_trip_counters(trip.dropoff_datetime, trip.passenger_count)
+    modify_trip_counters(trip, trip.passenger_count)
     dict_trip = trip.to_dict()
     dict_trip['pickup_datetime'] = datetime.strptime(dict_trip['pickup_datetime'][:-7], "%Y-%m-%d:%H:%M:%S")
     dict_trip['dropoff_datetime'] = datetime.strptime(dict_trip['dropoff_datetime'][:-7], "%Y-%m-%d:%H:%M:%S")
@@ -80,22 +93,72 @@ def get_location_by_id(location_id):  # noqa: E501
     return zone
 
 
-def get_trips_count(start_date=None, end_date=None, limit=10):  # noqa: E501
+def get_trips_count(location_id, start_date=None, end_date=None):  # noqa: E501
     """Find trips between pickup_datetime and dropoff_datetime.
 
     Returns an array of Trip objects.
 
+    :param location_id: The ID of the Location to get the count
+    :type location_id: str
     :param start_date: Every value data up to this date will be filtered out. If not specified no filtering is applied
     :type start_date: datetime
     :param end_date: Every value data after this date will be filtered out. If not specified no filtering is applied
     :type end_date: datetime
-    :param limit: Number of elements to be returned. Default is 10
-    :type limit: int
 
-    :rtype: Trips
+    :rtype: int
     """
+    count = 0
+    start_date = start_date.replace(microsecond=0)
+    end_date = end_date.replace(microsecond=0)
+    dates_year = [dt for dt in rrule(YEARLY, dtstart=start_date, until=end_date)]
+    for date in dates_year[1:-1]:
+        trip = db.trips_year.find_one({
+            "location_id": int(location_id),
+            "year": (date.year - 2000)
+        })
+        count += trip["counter"] if trip else 0
 
-    return 'do some magic!'
+    if len(dates_year) == 1:
+        dates_month_total = [dt for dt in rrule(MONTHLY, dtstart=start_date,
+                                                until=last_day_of_month(end_date).replace(hour=23, minute=58,
+                                                                                          second=59))]
+    else:
+        dates_month_1 = [dt for dt in rrule(MONTHLY, dtstart=start_date, until=dates_year[0].replace(month=11))]
+        dates_month_2 = [dt for dt in rrule(MONTHLY, dtstart=dates_year[-1].replace(month=1),
+                                            until=last_day_of_month(end_date).replace(hour=23, minute=58,
+                                                                                      second=59))]
+        dates_month_total = dates_month_1 + dates_month_2
+    for date in dates_month_total[1:-1]:
+        trip = db.trips_month.find_one({
+            "location_id": int(location_id),
+            "month": ((date.year - 2000) * 12 + date.month)
+        })
+        count += trip["counter"] if trip else 0
+
+    dates_day_1 = [dt for dt in rrule(DAILY, dtstart=start_date,
+                                      until=last_day_of_month(dates_month_total[0]).replace(hour=23, minute=58,
+                                                                                            second=59))]
+    dates_day_2 = [dt for dt in rrule(DAILY, dtstart=dates_month_total[-1].replace(day=1), until=end_date)]
+    dates_day_total = [dates_day_1, dates_day_2]
+    for date_list in dates_day_total:
+        for date in date_list[1:-1]:
+            trip = db.trips_day.find_one({
+                "location_id": int(location_id),
+                "day": ((date.year - 2000) * 12 + date.month) * 31 + date.day
+            })
+            count += trip["counter"] if trip else 0
+
+    for date in db.trips.find({'pickup_location_id': location_id, 'pickup_datetime': {'$gte': start_date,
+                                                                                      '$lte': dates_day_1[0].replace(
+                                                                                          hour=23, minute=59,
+                                                                                          second=59)}}):
+        count += date["passenger_count"]
+    for date in db.trips.find({'dropoff_location_id': location_id,
+                               'dropoff_datetime': {'$gte': dates_day_2[-1].replace(hour=0, minute=0, second=0),
+                                                    '$lte': end_date}}):
+        count += date["passenger_count"]
+
+    return count
 
 
 def remove_trip(trip_id):  # noqa: E501

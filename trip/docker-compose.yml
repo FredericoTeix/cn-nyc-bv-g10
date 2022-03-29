@@ -23,6 +23,7 @@ services:
       build:
         context: .
         dockerfile: Dockerfile
+      stop_signal: SIGINT
     mongo_seed:
       image: mongo
       depends_on:

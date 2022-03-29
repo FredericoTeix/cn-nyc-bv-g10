@@ -9,7 +9,7 @@ from swagger_server.proto import trips_pb2_grpc
 
 from swagger_server.controllers import operations as bo
 from swagger_server.models.trip import Trip
-from swagger_server.proto.trips_pb2 import TripID, Location, Trip
+from swagger_server.proto.trips_pb2 import TripID, Location, Trip, GetCountTripsInLocationRequest, GetCountTripsInLocationResponse
 
 
 class TripsServicer(trips_pb2_grpc.TripsServicer):
@@ -63,3 +63,9 @@ class TripsServicer(trips_pb2_grpc.TripsServicer):
             dropoff_location_id=updated_trip['dropoff_location_id'],
             pickup_location_id=updated_trip['pickup_location_id']
         )
+
+    def GetCountTripsInLocation(self, request, context):
+        start_date = datetime.fromtimestamp(request.start_date.seconds + request.start_date.nanos / 1e9)
+        end_date = datetime.fromtimestamp(request.start_date.seconds + request.start_date.nanos / 1e9)
+        count = bo.get_trips_count(request.location_id, start_date=start_date, end_date=end_date)
+        return GetCountTripsInLocationResponse(count=count)

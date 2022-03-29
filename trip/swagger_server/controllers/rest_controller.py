@@ -33,23 +33,23 @@ def get_location_by_id(location_id):  # noqa: E501
     return bo.get_location_by_id(location_id)
 
 
-def get_trips_count(start_date=None, end_date=None, limit=None):  # noqa: E501
+def get_trips_count(location_id, start_date=None, end_date=None):  # noqa: E501
     """Find trips between pickup_datetime and dropoff_datetime.
 
     Returns an array of Trip objects. # noqa: E501
 
+    :param location_id: The ID of the Location to get the count
+    :type location_id: str
     :param start_date: Every value data up to this date will be filtered out. If not specified no filtering is applied
     :type start_date: str
     :param end_date: Every value data after this date will be filtered out. If not specified no filtering is applied
     :type end_date: str
-    :param limit: Number of elements to be returned
-    :type limit: int
 
     :rtype: Trips
     """
     start_date = util.deserialize_datetime(start_date)
     end_date = util.deserialize_datetime(end_date)
-    return bo.get_trips_count(start_date, end_date, limit)
+    return bo.get_trips_count(location_id, start_date, end_date)
 
 
 def remove_trip(trip_id):  # noqa: E501

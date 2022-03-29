@@ -97,7 +97,7 @@ paths:
         '404':
           description: A location with the specified ID was not found.
       x-openapi-router-controller: swagger_server.controllers.rest_controller
-  /tripCount/location{location_id}:
+  /tripCount/location/{location_id}:
     get:
       tags:
         - Trip
@@ -107,21 +107,21 @@ paths:
       description: Returns an array of Trip objects.
       operationId: get_trips_count
       parameters:
-        - $ref: '#/components/parameters/start_date'
-        - $ref: '#/components/parameters/end_date'
         - name: location_id
           in: path
           description: The ID of the Location
           required: true
           schema:
             type: integer
+        - $ref: '#/components/parameters/start_date'
+        - $ref: '#/components/parameters/end_date'
       responses:
         '200':
           description: OK
           content:
-            application/json:
+            text/plain:
               schema:
-                $ref: '#/components/schemas/Trips'
+                type: integer
         '404':
           description: A location with the specified ID was not found.
       x-openapi-router-controller: swagger_server.controllers.rest_controller

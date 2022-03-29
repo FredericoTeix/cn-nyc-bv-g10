@@ -1,0 +1,713 @@
+openapi: 3.0.1
+info:
+  title: NYC Value
+  description: >-
+    This service is built to serve data about the value of businesses and
+    locations in New York City
+  version: 1.0.0
+paths:
+  /value/business/{id}:
+    get:
+      tags:
+        - Value
+      summary: Get the value associated to a business in a given time range
+      operationId: valueByBusiness
+      parameters:
+        - name: id
+          in: path
+          description: ID of the business to get value
+          required: true
+          schema:
+            type: string
+        - $ref: '#/components/parameters/start_date'
+        - $ref: '#/components/parameters/end_date'
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ValueResponseBusiness'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+  /value/location/radius:
+    get:
+      tags:
+        - Value
+      summary: >-
+        Get the value associated to a location in a given time range defining
+        the search location by a coordinate and a radius
+      operationId: valueByLocationRadius
+      parameters:
+        - $ref: '#/components/parameters/latitude'
+        - $ref: '#/components/parameters/longitude'
+        - name: rad
+          in: query
+          description: Radius of the area used in the search
+          required: true
+          schema:
+            type: number
+        - $ref: '#/components/parameters/start_date'
+        - $ref: '#/components/parameters/end_date'
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ValueResponseLocation'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+  /value/location/square:
+    get:
+      tags:
+        - Value
+      summary: >-
+        Get the value associated to a location in a given time range defining
+        the search location by two coordinates
+      operationId: valueByLocationSquare
+      parameters:
+        - name: lat1
+          in: query
+          description: Latitude of the first point that will define the square
+          required: true
+          schema:
+            type: number
+        - name: lng1
+          in: query
+          description: Longitude of the first point that will define the square
+          required: true
+          schema:
+            type: number
+        - name: lat2
+          in: query
+          description: Latitude of the second point that will define the square
+          required: true
+          schema:
+            type: number
+        - name: lng2
+          in: query
+          description: Longitude of the second point that will define the square
+          required: true
+          schema:
+            type: number
+        - $ref: '#/components/parameters/start_date'
+        - $ref: '#/components/parameters/end_date'
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ValueResponseLocation'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+  /value/location/walkTime:
+    get:
+      tags:
+        - Value
+      summary: >-
+        Get the value associated to a location in a given time range defining
+        the search location by a coordinate and time needed to get there by foot
+      operationId: valueByWalkTime
+      parameters:
+        - $ref: '#/components/parameters/latitude'
+        - $ref: '#/components/parameters/longitude'
+        - name: minutes
+          in: query
+          description: Time in minutes
+          required: true
+          schema:
+            maximum: 59
+            minimum: 0
+            type: number
+        - $ref: '#/components/parameters/start_date'
+        - $ref: '#/components/parameters/end_date'
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ValueResponseLocation'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+  /value/top/businesses:
+    get:
+      tags:
+        - Value
+      summary: Get the top valued businesses in a given time range
+      operationId: topValueBusinesses
+      parameters:
+        - name: num_results
+          in: query
+          description: number of top businesses to be returned
+          required: true
+          schema:
+            type: number
+        - $ref: '#/components/parameters/start_date'
+        - $ref: '#/components/parameters/end_date'
+        - name: categories
+          in: query
+          description: >-
+            A comma-separated list of categories (check businesses categories
+            documentation for more info)
+          style: form
+          explode: false
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Businesses'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+  /trip:
+    post:
+      tags:
+        - Admin
+      summary: Add a trip to the data used to calculate the value
+      operationId: addTrip
+      requestBody:
+        description: A JSON object containing trip information
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Trip'
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain:
+              schema:
+                type: string
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+    get:
+      tags:
+        - Trip
+      summary: Find trips between pickup_datetime and dropoff_datetime.
+      description: Returns an array of Trip objects.
+      operationId: getTripBetweenDateTime
+      parameters:
+        - $ref: '#/components/parameters/start_date'
+        - $ref: '#/components/parameters/end_date'
+        - $ref: '#/components/parameters/limit'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Trips'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+  /trip/{id}:
+    put:
+      tags:
+        - Admin
+      summary: Change a trip in the data used to calculate the value
+      operationId: updateTrip
+      parameters:
+        - name: id
+          in: path
+          description: ID of the trip to delete
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: A JSON object containing trip information
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Trip'
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain:
+              schema:
+                type: string
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+    delete:
+      tags:
+        - Admin
+      summary: Remove a trip in the data used to calculate the value
+      operationId: removeTrip
+      parameters:
+        - name: id
+          in: path
+          description: ID of the trip to delete
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+  /business:
+    post:
+      tags:
+        - Admin
+      summary: Add a business to the data used to calculate the value
+      operationId: addBusiness
+      requestBody:
+        description: A JSON object containing business information
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Business'
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain:
+              schema:
+                type: string
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+  /business/{id}:
+    put:
+      tags:
+        - Admin
+      summary: Change a business in the data used to calculate the value
+      operationId: updateBusiness
+      parameters:
+        - name: id
+          in: path
+          description: ID of the trip to delete
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: A JSON object containing business information
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Business'
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain:
+              schema:
+                type: string
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+    delete:
+      tags:
+        - Admin
+      summary: Remove a business in the data used to calculate the value
+      operationId: removeBusiness
+      parameters:
+        - name: id
+          in: path
+          description: ID of the trip to delete
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+    get:
+      tags:
+        - Business
+      summary: Get the details of a business
+      description: Retrieves information regarding a specific business
+      parameters:
+        - name: id
+          in: path
+          description: ID of the business to retrieve
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Business'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          description: Not Found
+  /business/:
+    get:
+      tags:
+        - Business
+      summary: Get a list of businesses within the radius of the coordinate given
+      description: Retrieves a list of businesses
+      parameters:
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/skip'
+        - $ref: '#/components/parameters/latitude'
+        - $ref: '#/components/parameters/longitude'
+        - $ref: '#/components/parameters/radius'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Businesses'
+        '400':
+          description: Bad Request
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+  /trip/location/{id}:
+    get:
+      tags:
+        - Trip
+      summary: Find location description by ID
+      description: Returns LocationID object.
+      operationId: getLocationById
+      parameters:
+        - name: id
+          in: path
+          description: The ID of the Location to return.
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Location'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+  /key:
+    post:
+      tags:
+        - API Key
+        - Admin
+      summary: Generate an API Key
+      operationId: generateKey
+      parameters:
+        - name: quota
+          in: query
+          description: maximum number of requests allowed
+          required: false
+          schema:
+            type: number
+        - name: contact
+          in: query
+          description: contact of key consumer
+          required: true
+          schema:
+            type: string
+      responses:
+        '201':
+          description: OK
+          headers:
+            location:
+              description: Location of the generated API Key
+              schema:
+                type: string
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+    delete:
+      tags:
+        - API Key
+      summary: Revoke an API Key
+      operationId: revokeKey
+      parameters:
+        - name: id
+          in: query
+          description: The API Key.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+    get:
+      tags:
+        - API Key
+      summary: Get contact and quota of an API Key
+      operationId: inspectKey
+      parameters:
+        - name: id
+          in: query
+          description: The API Key.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Key'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+    put:
+      tags:
+        - API Key
+        - Admin
+      summary: Update API Key quota or contact
+      operationId: editKeyInfo
+      parameters:
+        - name: id
+          in: query
+          description: The API Key.
+          required: true
+          schema:
+            type: string
+        - name: quota
+          in: query
+          description: The API Key maximum requests.
+          required: true
+          schema:
+            type: string
+        - name: contact
+          in: query
+          description: The API Key consumer contact.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+  /key/refresh:
+    put:
+      tags:
+        - API Key
+      summary: Change the API Key
+      operationId: refreshKey
+      parameters:
+        - name: id
+          in: query
+          description: The API Key.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Key'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+components:
+  schemas:
+    ValueResponseBusiness:
+      required:
+        - certainty
+        - first_record
+        - last_record
+        - value
+      type: object
+      properties:
+        value:
+          type: integer
+          description: Value of the business
+        certainty:
+          type: integer
+          description: Scales with the number of total data used to calculate the value
+        first_record:
+          type: string
+          description: The date of the first date used for calculating the value
+          format: date-time
+        last_record:
+          type: string
+          description: The date of the last date used for calculating the value
+          format: date-time
+    ValueResponseLocation:
+      required:
+        - certainty
+        - first_record
+        - last_record
+        - value
+      type: object
+      properties:
+        value:
+          type: integer
+          description: Value of the business
+        certainty:
+          type: integer
+          description: Scales with the number of total data used to calculate the value
+        first_record:
+          type: string
+          description: The date of the first date used for calculating the value
+          format: date-time
+        last_record:
+          type: string
+          description: The date of the last date used for calculating the value
+          format: date-time
+        number_businesses:
+          type: number
+          description: Number of businesses in the location given to calculate the value
+    Business:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        address:
+          type: string
+        latitude:
+          type: number
+        longitude:
+          type: number
+    Businesses:
+      type: array
+      items:
+        $ref: '#/components/schemas/Business'
+    Trip:
+      type: object
+      properties:
+        pickup_datetime:
+          type: string
+          format: date-time
+        dropoff_datetime:
+          type: string
+          format: date-time
+        pickup_location_id:
+          type: number
+        dropoff_location_id:
+          type: number
+        passenger_count:
+          type: number
+          default: 1
+      required:
+        - pickup_datetime
+        - dropoff_datetime
+        - pickup_location_id
+        - dropoff_location_id
+        - passenger_count
+    Trips:
+      type: array
+      items:
+        $ref: '#/components/schemas/Trip'
+    Location:
+      type: object
+      properties:
+        location_id:
+          type: integer
+        borough:
+          type: string
+        zone:
+          type: string
+        service_zone:
+          type: string
+      required:
+        - location_id
+        - borough
+        - zone
+        - service_zone
+    Key:
+      type: object
+      properties:
+        id:
+          type: string
+        contact:
+          type: string
+        quota:
+          type: integer
+        used:
+          type: integer
+  parameters:
+    latitude:
+      name: lat
+      in: query
+      description: Search coordinates that match or are like 'latitude'
+      required: true
+      schema:
+        type: string
+    longitude:
+      name: lng
+      in: query
+      description: Search coordinates that match or are like 'longitude'
+      required: true
+      schema:
+        type: string
+    start_date:
+      name: start_date
+      in: query
+      description: >-
+        Every value data up to this date will be filtered out. If not specified
+        no filtering is applied
+      schema:
+        type: string
+        format: date-time
+    end_date:
+      name: end_date
+      in: query
+      description: >-
+        Every value data after this date will be filtered out. If not specified
+        no filtering is applied
+      schema:
+        type: string
+        format: date-time
+    minutes:
+      name: minutes
+      in: query
+      description: Time in minutes
+      required: true
+      schema:
+        maximum: 59
+        minimum: 0
+        type: number
+    radius:
+      name: radius
+      in: query
+      description: Radius Area considered to search
+      required: true
+      schema:
+        type: number
+    skip:
+      name: skip
+      in: query
+      description: Number of elements to be skipped
+      schema:
+        type: integer
+        minimum: 0
+    limit:
+      name: limit
+      in: query
+      description: Number of elements to be returned
+      schema:
+        type: integer
+        minimum: 0
+  responses:
+    UnauthorizedError:
+      description: API key is missing or invalid
+      headers:
+        WWW_Authenticate:
+          schema:
+            type: string
+  securitySchemes:
+    api_key:
+      type: apiKey
+      in: header
+      name: X-API-KEY
+security:
+  - api_key: []
+tags:
+  - name: Admin
+    description: Limited to admin users
+  - name: Trip
+    description: Everything about trip records
+externalDocs:
+  description: Businesses categories documentation
+  url: https://apidocs.geoapify.com/docs/places/#categories

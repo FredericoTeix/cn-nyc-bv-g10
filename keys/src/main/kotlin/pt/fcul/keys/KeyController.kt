@@ -19,7 +19,7 @@ class KeyController(
 ) {
 
     @PostMapping(Links.Key)
-    suspend fun generateKey(
+    fun generateKey(
         @Valid @RequestBody input: KeyInput
     ): ResponseEntity<KeyInfo> {
         val info = service.generateKey(input)
@@ -27,19 +27,19 @@ class KeyController(
     }
 
     @DeleteMapping(Links.Key)
-    suspend fun revokeKey(): ResponseEntity<Unit> {
+    fun revokeKey(): ResponseEntity<Unit> {
         service.revokeKey()
         return ResponseEntity.ok().build()
     }
 
     @GetMapping(Links.Key)
-    suspend fun inspectKey(): ResponseEntity<KeyInfo> {
+    fun inspectKey(): ResponseEntity<KeyInfo> {
         val info = service.inspectKey()
         return ResponseEntity.ok(info)
     }
 
     @PutMapping(Links.Key)
-    suspend fun editKeyInfo(
+    fun editKeyInfo(
         @Valid @RequestBody info: KeyInfo
     ): ResponseEntity<Unit> {
         service.editKeyInfo(info)
@@ -47,13 +47,13 @@ class KeyController(
     }
 
     @PutMapping(Links.RefreshKey)
-    suspend fun refreshKey(): ResponseEntity<KeyInfo> {
+    fun refreshKey(): ResponseEntity<KeyInfo> {
         val info = service.refreshKey()
         return ResponseEntity.ok(info)
     }
 
     @PutMapping(Links.ConsumeKey)
-    suspend fun consumeKey(
+    fun consumeKey(
         @RequestBody consume: KeyConsume
     ): ResponseEntity<Unit> {
         service.consumeKey(consume)

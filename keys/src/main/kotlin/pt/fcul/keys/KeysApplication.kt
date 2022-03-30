@@ -23,6 +23,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
 import org.springframework.security.config.http.SessionCreationPolicy
+import org.springframework.security.core.context.ReactiveSecurityContextHolder
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 import pt.fcul.keys.common.ProblemJsonConverter
@@ -75,7 +76,6 @@ class WebConfiguration : WebMvcConfigurer {
         val mongoDbName = System.getenv(MONGO_DB_VAR) ?: throw EnvVarNotFoundException(MONGO_DB_VAR)
         log.info("Found environment variable $MONGO_DB_VAR = $mongoDbName")
 
-        // TODO adapt for coroutines
         return client.getDatabase(mongoDbName)
             .withReadConcern(ReadConcern.MAJORITY)
             .withWriteConcern(WriteConcern.MAJORITY)

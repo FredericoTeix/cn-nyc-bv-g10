@@ -136,6 +136,30 @@ paths:
         '401':
           $ref: '#/components/responses/UnauthorizedError'
       x-openapi-router-controller: swagger_server.controllers.trip_controller
+  /trip/location/{location_id}:
+    get:
+      tags:
+        - Trip
+      summary: Find location description by ID
+      description: Returns LocationID object.
+      operationId: get_location_by_id
+      parameters:
+        - name: location_id
+          in: path
+          description: The ID of the Location to return.
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Location'
+        '404':
+          description: A location with the specified ID was not found.
+      x-openapi-router-controller: swagger_server.controllers.trip_controller
   /business:
     post:
       tags:

@@ -5,6 +5,7 @@ from connexion.exceptions import OAuthProblem
 
 from swagger_server.controllers import api_key_controller
 
+
 def check_api_key(api_key, required_scopes):
     if not api_key:
         raise OAuthProblem('Invalid token')

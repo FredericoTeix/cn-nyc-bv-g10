@@ -6,27 +6,27 @@ import ul.fc.mei.cn.business.model.BusinessInputModel
 import ul.fc.mei.cn.business.model.isInRadius
 import ul.fc.mei.cn.business.utils.NotFoundException
 import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.atomic.AtomicInteger
+import java.util.concurrent.atomic.AtomicLong
 
 @Repository
 class BusinessMemoryRepository : BusinessRepository {
 
-    private val businessMap =  ConcurrentHashMap<Int, Business>()
-    private val atomicInteger = AtomicInteger(1)
+    private val businessMap = ConcurrentHashMap<Long, Business>()
+    private val atomicLong = AtomicLong(1)
 
-    override fun getBusiness(bid: Int): Business {
+    override suspend fun getBusiness(bid: Long): Business {
         return if (businessMap.containsKey(bid)) {
             businessMap[bid]!!
         } else throw NotFoundException("There isn't a Business with Id: $bid")
     }
 
-    override fun deleteBusiness(bid: Int) {
+    override suspend fun deleteBusiness(bid: Long) {
         if (businessMap.containsKey(bid)) {
             businessMap.remove(bid)
         } else throw NotFoundException("There isn't a Business with Id: $bid")
     }
 
-    override fun searchBusinesses(
+    override suspend fun searchBusinesses(
         latitude: Double,
         longitude: Double,
         radius: Double,
@@ -38,16 +38,17 @@ class BusinessMemoryRepository : BusinessRepository {
         }.drop(skip).take(limit)
     }
 
-    override fun updateBusiness(business: Business): Business {
+    override suspend fun updateBusiness(business: Business): Business {
         if (businessMap.containsKey(business.id)) {
             businessMap[business.id] = business
             return business
         } else throw  NotFoundException("There isn't a Business with Id: ${business.id}")
     }
 
-    override fun createBusiness(business: BusinessInputModel): Int {
-        val id = atomicInteger.incrementAndGet()
-        businessMap[id] = Business(id, business.name, business.address, business.latitude, business.longitude)
+    override suspend fun createBusiness(business: BusinessInputModel): Long {
+        val id = atomicLong.incrementAndGet()
+        businessMap[id] =
+            Business(id, business.name, business.address, business.city, business.latitude, business.longitude)
         return id
     }
 

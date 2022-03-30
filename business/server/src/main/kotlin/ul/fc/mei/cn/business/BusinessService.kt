@@ -8,27 +8,36 @@ import ul.fc.mei.cn.business.utils.BadRequestException
 
 @Service
 class BusinessService(val businessRepository: BusinessRepository) {
-    fun addBusiness(business: BusinessInputModel): Int {
+    suspend fun addBusiness(business: BusinessInputModel): Long {
         validateBusinessInput(business)
         val businessId = businessRepository.createBusiness(business)
         return businessId
     }
 
-    fun updateBusiness(businessId: Int, businessInput: BusinessInputModel): Business {
+    suspend fun updateBusiness(businessId: Long, businessInput: BusinessInputModel): Business {
         validateBusinessInput(businessInput)
         val updatedBusiness = businessRepository.updateBusiness(businessInput.toBusiness(businessId))
         return updatedBusiness
     }
 
-    fun deleteBusiness(businessId: Int) {
+    suspend fun deleteBusiness(businessId: Long) {
         businessRepository.deleteBusiness(businessId)
     }
 
-    fun getBusiness(businessId: Int) = businessRepository.getBusiness(businessId)
+    suspend fun getBusiness(businessId: Long) = businessRepository.getBusiness(businessId)
 
-    fun searchBusinesses(latitude: Double, longitude: Double, radius: Double, limit: Int, skip: Int): List<Business> {
-        if (radius >= 0.0 || latitude !in -90.0..90.0 || longitude !in -180.0..180.0) {
-            throw BadRequestException()
+    suspend fun searchBusinesses(latitude: Double, longitude: Double, radius: Double, limit: Int, skip: Int): List<Business> {
+        if (radius >= 0.0) {
+            throw BadRequestException("Invalid radius")
+        }
+
+        if(latitude !in -90.0..90.0) {
+            throw BadRequestException("Invalid latitude")
+        }
+
+        if(longitude !in -180.0..180.0) {
+            throw BadRequestException("Invalid longitude")
+
         }
         val matchingBusinesses = businessRepository.searchBusinesses(latitude, longitude, radius, limit, skip)
         return matchingBusinesses
@@ -36,8 +45,8 @@ class BusinessService(val businessRepository: BusinessRepository) {
 
     private fun validateBusinessInput(business: BusinessInputModel) {
         //TODO: make some validation if the coordinates are in New York
-        if (business.address.isBlank() || business.address.isBlank()) {
-            throw BadRequestException()
+        if (business.address.isBlank() || business.name.isBlank()) {
+            throw BadRequestException("Name or Address were cannot be blank")
         }
     }
 }

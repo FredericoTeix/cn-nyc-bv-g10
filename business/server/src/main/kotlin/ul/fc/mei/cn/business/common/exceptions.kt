@@ -72,6 +72,7 @@ class BusinessExceptionHandler {
         req: HttpServletRequest,
         ex: HttpException
     ): ResponseEntity<ProblemJson> {
+        println("In Exception Handler")
         return handleException(
             ProblemJson(
                 title = ex.status.reasonPhrase,

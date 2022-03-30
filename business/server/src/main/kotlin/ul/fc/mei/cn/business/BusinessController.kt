@@ -19,13 +19,13 @@ import java.net.URI
 class BusinessController(val service: BusinessService) {
 
     @GetMapping("{bid}")
-    fun getBusiness(@PathVariable bid: Int): ResponseEntity<Business> {
+    suspend fun getBusiness(@PathVariable bid: Long): ResponseEntity<Business> {
         val business = service.getBusiness(bid)
         return ResponseEntity.ok(business)
     }
 
     @GetMapping("/")
-    fun getBusinesses(
+    suspend fun getBusinesses(
         @RequestParam longitude: Double,
         @RequestParam latitude: Double,
         @RequestParam radius: Double,
@@ -37,19 +37,22 @@ class BusinessController(val service: BusinessService) {
     }
 
     @PostMapping("/")
-    fun createBusiness(@RequestBody business: BusinessInputModel): ResponseEntity<Nothing> {
+    suspend fun createBusiness(@RequestBody business: BusinessInputModel): ResponseEntity<Nothing> {
         val id = service.addBusiness(business)
         return ResponseEntity.created(URI("/business/$id")).build()
     }
 
     @DeleteMapping("/{bid}")
-    fun deleteBusiness(@PathVariable bid: Int): ResponseEntity<Nothing> {
+    suspend fun deleteBusiness(@PathVariable bid: Long): ResponseEntity<Nothing> {
         service.deleteBusiness(bid)
         return ResponseEntity.ok().build()
     }
 
     @PutMapping("/{bid}")
-    fun updateBusiness(@PathVariable bid: Int, @RequestBody newBusiness: BusinessInputModel): ResponseEntity<Business> {
+    suspend fun updateBusiness(
+        @PathVariable bid: Long,
+        @RequestBody newBusiness: BusinessInputModel
+    ): ResponseEntity<Business> {
         val business = service.updateBusiness(bid, newBusiness)
         return ResponseEntity.ok(business)
     }

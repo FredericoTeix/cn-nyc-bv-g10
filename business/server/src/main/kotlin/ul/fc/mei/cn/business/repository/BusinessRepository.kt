@@ -5,11 +5,11 @@ import ul.fc.mei.cn.business.model.BusinessInputModel
 
 interface BusinessRepository {
 
-    fun getBusiness(bid: Int): Business
+    suspend fun getBusiness(bid: Long): Business
 
-    fun deleteBusiness(bid: Int)
+    suspend fun deleteBusiness(bid: Long)
 
-    fun searchBusinesses(
+    suspend fun searchBusinesses(
         latitude: Double,
         longitude: Double,
         radius: Double,
@@ -17,7 +17,7 @@ interface BusinessRepository {
         skip: Int
     ): List<Business>
 
-    fun updateBusiness(business: Business): Business
+    suspend fun updateBusiness(business: Business): Business
 
-    fun createBusiness(business: BusinessInputModel): Int
+    suspend fun createBusiness(business: BusinessInputModel): Long
 }

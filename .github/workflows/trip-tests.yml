@@ -6,7 +6,10 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Start containers
+      - name: Start gatway containers
+        run: docker-compose -f "gateway/docker-compose.yml" up -d --build
+
+      - name: Start trip containers
         run: docker-compose -f "trip/docker-compose.yml" up -d --build
 
       - name: Wait for container

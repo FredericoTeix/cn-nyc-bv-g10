@@ -12,6 +12,8 @@ interface KeyRepository {
 
     fun deleteKey(key: String)
 
+    fun refreshKey(key: String, newKey: String): KeyInfo
+
     fun consumeKey(key: String)
 
 }

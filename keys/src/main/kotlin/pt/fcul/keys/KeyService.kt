@@ -15,7 +15,7 @@ import pt.fcul.keys.security.ApiAuthentication
 
 @Service
 class KeyService(
-    val repo: KeyRepository
+    val repo: KeyRepository,
 ) {
 
     fun generateKey(input: KeyInput): KeyInfo {
@@ -60,17 +60,11 @@ class KeyService(
     fun refreshKey(): KeyInfo {
         val auth = SecurityContextHolder.getContext().authentication as ApiAuthentication
         val oldHash = auth.principal.password
-        val oldInfo = auth.keyInfo
 
         val uuid = UUID.randomUUID().toString()
         val newHash = uuid.sha256()
 
-        val newInfo = KeyInfo(oldInfo.contact, oldInfo.quota, newHash, oldInfo.used, oldInfo.scope)
-        val created = repo.createKey(newInfo)
-        // TODO needs transaction
-        repo.deleteKey(oldHash)
-
-        return KeyInfo(created.contact, created.quota, uuid, created.used, created.scope)
+        return repo.refreshKey(oldHash, newHash)
     }
 
     fun consumeKey(consume: KeyConsume) {

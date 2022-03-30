@@ -39,6 +39,10 @@ class MemoryKeyRepository : KeyRepository {
         data.remove(key) ?: throw KeyDoesntExistException(key)
     }
 
+    override fun refreshKey(key: String, newKey: String): KeyInfo {
+        TODO("Not yet implemented")
+    }
+
     override fun consumeKey(key: String) {
         data.computeIfPresent(key) { _, info ->
             if (info.used >= info.quota) {

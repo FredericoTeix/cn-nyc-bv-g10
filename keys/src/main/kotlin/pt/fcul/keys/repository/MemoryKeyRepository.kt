@@ -31,25 +31,13 @@ class MemoryKeyRepository : KeyRepository {
 
     override fun readKey(key: String) = data[key] ?: throw KeyDoesntExistException(key)
 
-    override fun updateKey(info: KeyInfo) = data.computeIfPresent(info.key) { _, _ ->
-        info
-    } ?: throw KeyDoesntExistException(info.key)
+    override fun updateKey(key: String, info: KeyInfo) {
+        data.computeIfPresent(info.key) { _, _ ->
+            info
+        } ?: throw KeyDoesntExistException(info.key)
+    }
 
     override fun deleteKey(key: String) {
         data.remove(key) ?: throw KeyDoesntExistException(key)
-    }
-
-    override fun refreshKey(key: String, newKey: String): KeyInfo {
-        TODO("Not yet implemented")
-    }
-
-    override fun consumeKey(key: String) {
-        data.computeIfPresent(key) { _, info ->
-            if (info.used >= info.quota) {
-                throw KeyQuotaExceededException(key, info.quota)
-            }
-
-            KeyInfo(info.contact, info.quota, info.key, info.used + 1, info.scope)
-        } ?: throw KeyDoesntExistException(key)
     }
 }

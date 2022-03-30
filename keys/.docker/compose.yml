@@ -8,35 +8,29 @@ services:
 #      context: .
 #      dockerfile: ./src/test/resources/Dockerfile-api-keys
 #    environment:
-#      MONGO_DATABASE_URL: mongodb://mongodb1:27017
+#      MONGO_DATABASE_URL: mongodb://keys_mongodb:27017
 #      MONGO_DATABASE_NAME: api_keys
 #    depends_on:
 #      - mongo-setup
 #    ports:
 #      - "8080:8080"
 
-  mongo-setup:
-    container_name: keys_mongo_setup
-    build:
-      context: ./src/test/resources
-      dockerfile: Dockerfile-mongodb-setup
-    networks:
-      default:
-    environment:
-      MONGO_DB1_URL: keys-mongodb1:27017
-    restart: on-failure
-    depends_on:
-      - keys_mongodb1
-
-  keys-mongodb1:
+  keys-mongodb:
     restart: always
-    container_name: keys_mongodb1
+    container_name: keys_mongodb
     image: mongo
+    environment:
+      - MONGO_INITDB_DATABASE=keys
     volumes:
-      - mongo1_data:/data/db
+      - mongo_data:/data/db
     ports:
       - "27017:27017"
-    command: mongod --quiet --logpath /dev/null --bind_ip_all --replSet rs0 --dbpath /data/db
+#    networks:
+#      - gateway_main-net
 
 volumes:
-  mongo1_data:
+  mongo_data:
+
+#networks:
+#  gateway_main-net:
+#    external: true

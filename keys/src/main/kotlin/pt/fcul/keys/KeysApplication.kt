@@ -4,7 +4,10 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.module.kotlin.KotlinFeature
 import com.fasterxml.jackson.module.kotlin.KotlinModule
+import com.mongodb.ReadConcern
+import com.mongodb.WriteConcern
 import com.mongodb.client.MongoClient
+import com.mongodb.client.MongoDatabase
 import org.litote.kmongo.KMongo
 import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.SpringBootApplication
@@ -27,6 +30,7 @@ import pt.fcul.keys.exceptions.EnvVarNotFoundException
 import pt.fcul.keys.security.AuthFilter
 
 private const val MONGO_ENV_VAR = "MONGO_DATABASE_URL"
+private const val MONGO_DB_VAR = "MONGO_DATABASE_NAME"
 
 @SpringBootApplication
 class KeysApplication
@@ -64,6 +68,17 @@ class WebConfiguration : WebMvcConfigurer {
         log.info("Found environment variable $MONGO_ENV_VAR = $mongoUrl")
 
         return KMongo.createClient(mongoUrl)
+    }
+
+    @Bean
+    fun getDb(client: MongoClient): MongoDatabase {
+        val mongoDbName = System.getenv(MONGO_DB_VAR) ?: throw EnvVarNotFoundException(MONGO_DB_VAR)
+        log.info("Found environment variable $MONGO_DB_VAR = $mongoDbName")
+
+        // TODO adapt for coroutines
+        return client.getDatabase(mongoDbName)
+            .withReadConcern(ReadConcern.MAJORITY)
+            .withWriteConcern(WriteConcern.MAJORITY)
     }
 }
 

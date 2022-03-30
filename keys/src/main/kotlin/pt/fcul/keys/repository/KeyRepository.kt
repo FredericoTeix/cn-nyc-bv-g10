@@ -8,12 +8,8 @@ interface KeyRepository {
 
     fun readKey(key: String): KeyInfo
 
-    fun updateKey(info: KeyInfo): KeyInfo
+    fun updateKey(key: String, info: KeyInfo)
 
     fun deleteKey(key: String)
-
-    fun refreshKey(key: String, newKey: String): KeyInfo
-
-    fun consumeKey(key: String)
 
 }

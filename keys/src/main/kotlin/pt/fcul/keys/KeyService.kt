@@ -4,6 +4,7 @@ import java.util.*
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import pt.fcul.keys.exceptions.ForbiddenAuthorization
+import pt.fcul.keys.exceptions.KeyQuotaExceededException
 import pt.fcul.keys.model.KeyConsume
 import pt.fcul.keys.model.KeyInfo
 import pt.fcul.keys.model.KeyInput
@@ -40,14 +41,15 @@ class KeyService(
         return repo.readKey(hashedKey)
     }
 
-    fun editKeyInfo(info: KeyInfo): KeyInfo {
+    fun editKeyInfo(info: KeyInfo) {
         val auth = SecurityContextHolder.getContext().authentication as ApiAuthentication
         if (auth.keyInfo.scope != KeyScope.ADMIN) {
             throw ForbiddenAuthorization()
         }
 
-        val hashed = KeyInfo(info.contact, info.quota, info.key.sha256(), info.used, info.scope)
-        return repo.updateKey(hashed)
+        val hashedKey = info.key.sha256()
+        val newInfo = KeyInfo(info.contact, info.quota, hashedKey, info.used, info.scope)
+        repo.updateKey(hashedKey, newInfo)
     }
 
     fun revokeKey() {
@@ -60,20 +62,29 @@ class KeyService(
     fun refreshKey(): KeyInfo {
         val auth = SecurityContextHolder.getContext().authentication as ApiAuthentication
         val oldHash = auth.principal.password
+        val oldInfo = auth.keyInfo
 
         val uuid = UUID.randomUUID().toString()
         val newHash = uuid.sha256()
+        val newInfo = KeyInfo(oldInfo.contact, oldInfo.quota, newHash, oldInfo.used, oldInfo.scope)
 
-        return repo.refreshKey(oldHash, newHash)
+        repo.updateKey(oldHash, newInfo)
+        return newInfo
     }
 
     fun consumeKey(consume: KeyConsume) {
         val auth = SecurityContextHolder.getContext().authentication as ApiAuthentication
         val hashedKey = auth.principal.password
+        val currInfo = auth.keyInfo
 
         // TODO check if has valid scope for the endpoint to consume
 
-        repo.consumeKey(hashedKey)
+        if (currInfo.used >= currInfo.quota) {
+            throw KeyQuotaExceededException(hashedKey, currInfo.quota)
+        }
+
+        val newInfo = KeyInfo(currInfo.contact, currInfo.quota, hashedKey, currInfo.used + 1, currInfo.scope)
+        repo.updateKey(hashedKey, newInfo)
     }
 
 }

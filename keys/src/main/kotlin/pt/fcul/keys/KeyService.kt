@@ -1,12 +1,16 @@
 package pt.fcul.keys
 
 import java.util.*
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
+import pt.fcul.keys.exceptions.ForbiddenAuthorization
 import pt.fcul.keys.model.KeyConsume
 import pt.fcul.keys.model.KeyInfo
 import pt.fcul.keys.model.KeyInput
+import pt.fcul.keys.model.KeyScope
 import pt.fcul.keys.model.sha256
 import pt.fcul.keys.repository.KeyRepository
+import pt.fcul.keys.security.ApiAuthentication
 
 
 @Service
@@ -15,7 +19,10 @@ class KeyService(
 ) {
 
     fun generateKey(input: KeyInput): KeyInfo {
-        // TODO principal needs to have ADMIN scope
+        val auth = SecurityContextHolder.getContext().authentication as ApiAuthentication
+        if (auth.keyInfo.scope != KeyScope.ADMIN) {
+            throw ForbiddenAuthorization()
+        }
 
         val uuid = UUID.randomUUID().toString()
         val hash = uuid.sha256()
@@ -26,43 +33,53 @@ class KeyService(
         return KeyInfo(created.contact, created.quota, uuid, created.used, created.scope)
     }
 
-    // TODO principal needs to have ADMIN scope, or inspecting itself
-    fun inspectKey(key: String): KeyInfo = repo.readKey(key.sha256())
+    fun inspectKey(): KeyInfo {
+        val auth = SecurityContextHolder.getContext().authentication as ApiAuthentication
+        val hashedKey = auth.principal.password
+
+        return repo.readKey(hashedKey)
+    }
 
     fun editKeyInfo(info: KeyInfo): KeyInfo {
-        // TODO principal needs to have ADMIN scope
+        val auth = SecurityContextHolder.getContext().authentication as ApiAuthentication
+        if (auth.keyInfo.scope != KeyScope.ADMIN) {
+            throw ForbiddenAuthorization()
+        }
+
         val hashed = KeyInfo(info.contact, info.quota, info.key.sha256(), info.used, info.scope)
         return repo.updateKey(hashed)
     }
 
-    // TODO principal needs to have ADMIN scope, or revoking itself
-    fun revokeKey(key: String) = repo.deleteKey(key.sha256())
+    fun revokeKey() {
+        val auth = SecurityContextHolder.getContext().authentication as ApiAuthentication
+        val hashedKey = auth.principal.password
 
-    fun refreshKey(key: String): KeyInfo {
-        // TODO needs transaction
-        // TODO principal needs to have ADMIN scope, or refreshing itself
+        repo.deleteKey(hashedKey)
+    }
 
-        val oldHash = key.sha256()
-        val oldInfo = repo.readKey(oldHash)
+    fun refreshKey(): KeyInfo {
+        val auth = SecurityContextHolder.getContext().authentication as ApiAuthentication
+        val oldHash = auth.principal.password
+        val oldInfo = auth.keyInfo
 
         val uuid = UUID.randomUUID().toString()
         val newHash = uuid.sha256()
 
         val newInfo = KeyInfo(oldInfo.contact, oldInfo.quota, newHash, oldInfo.used, oldInfo.scope)
         val created = repo.createKey(newInfo)
-
+        // TODO needs transaction
         repo.deleteKey(oldHash)
 
         return KeyInfo(created.contact, created.quota, uuid, created.used, created.scope)
     }
 
-    fun consumeKey(key: String, consume: KeyConsume) {
-        // TODO raw key and KeyInfo comes from principal
-        val hash = key.sha256()
+    fun consumeKey(consume: KeyConsume) {
+        val auth = SecurityContextHolder.getContext().authentication as ApiAuthentication
+        val hashedKey = auth.principal.password
 
-        // TODO check if has valid scope
+        // TODO check if has valid scope for the endpoint to consume
 
-        repo.consumeKey(hash)
+        repo.consumeKey(hashedKey)
     }
 
 }

@@ -2,19 +2,16 @@ package pt.fcul.keys
 
 import javax.validation.Valid
 import org.springframework.http.ResponseEntity
-import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RestController
+import pt.fcul.keys.common.Links
 import pt.fcul.keys.model.KeyConsume
 import pt.fcul.keys.model.KeyInfo
 import pt.fcul.keys.model.KeyInput
-import pt.fcul.keys.common.Links
-import pt.fcul.keys.security.API_KEY_HEADER
 
 @RestController
 class KeyController(
@@ -30,20 +27,14 @@ class KeyController(
     }
 
     @DeleteMapping(Links.Key)
-    suspend fun revokeKey(
-        // TODO should be obtained from principal or argument resolver, after authenticated
-        @RequestHeader(API_KEY_HEADER) key: String
-    ): ResponseEntity<Unit> {
-        service.revokeKey(key)
+    suspend fun revokeKey(): ResponseEntity<Unit> {
+        service.revokeKey()
         return ResponseEntity.ok().build()
     }
 
     @GetMapping(Links.Key)
-    suspend fun inspectKey(
-        // TODO should be obtained from principal or argument resolver, after authenticated
-        @RequestHeader(API_KEY_HEADER) key: String
-    ): ResponseEntity<KeyInfo> {
-        val info = service.inspectKey(key)
+    suspend fun inspectKey(): ResponseEntity<KeyInfo> {
+        val info = service.inspectKey()
         return ResponseEntity.ok(info)
     }
 
@@ -56,21 +47,16 @@ class KeyController(
     }
 
     @PutMapping(Links.RefreshKey)
-    suspend fun refreshKey(
-        // TODO should be obtained from principal or argument resolver, after authenticated
-        @RequestHeader(API_KEY_HEADER) key: String
-    ): ResponseEntity<KeyInfo> {
-        val info = service.refreshKey(key)
+    suspend fun refreshKey(): ResponseEntity<KeyInfo> {
+        val info = service.refreshKey()
         return ResponseEntity.ok(info)
     }
 
     @PutMapping(Links.ConsumeKey)
     suspend fun consumeKey(
-        // TODO should be obtained from principal or argument resolver, after authenticated
-        @RequestHeader(API_KEY_HEADER) key: String,
         @RequestBody consume: KeyConsume
     ): ResponseEntity<Unit> {
-        service.consumeKey(key, consume)
+        service.consumeKey(consume)
         return ResponseEntity.ok().build()
     }
 

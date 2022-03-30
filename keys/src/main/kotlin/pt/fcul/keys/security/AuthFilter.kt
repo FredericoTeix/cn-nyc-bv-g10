@@ -11,27 +11,26 @@ import org.springframework.http.MediaType
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
-import pt.fcul.keys.KeyService
 import pt.fcul.keys.exceptions.HttpException
 import pt.fcul.keys.exceptions.ProblemJson
 import pt.fcul.keys.exceptions.UnauthorizedException
 import pt.fcul.keys.model.sha256
+import pt.fcul.keys.repository.KeyRepository
 
 const val API_KEY_HEADER = "x-api-key"
 
 @Component
 class AuthFilter(
-    val keyService: KeyService,
+    val keyRepository: KeyRepository,
     val mapper: ObjectMapper
 ) : OncePerRequestFilter() {
 
     override fun doFilterInternal(request: HttpServletRequest, response: HttpServletResponse, chain: FilterChain) {
         try {
             val apiKey = request.getHeader(API_KEY_HEADER) ?: throw UnauthorizedException()
-            val keyInfo = keyService
+            val keyInfo = keyRepository
                 .runCatching {
-                    val inf = inspectKey(apiKey)
-                    inf
+                    return@runCatching readKey(apiKey.sha256())
                 }
                 .getOrDefault(null) ?: throw UnauthorizedException()
 

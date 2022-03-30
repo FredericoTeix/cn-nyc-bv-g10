@@ -1,73 +1,15 @@
 openapi: 3.0.1
 info:
   title: NYC Trips
-  description: This service is built to serve data about trips made in New York City
+  description: >-
+    This service is built to serve data about the value of businesses and
+    locations in New York City
   version: 1.0.0
-externalDocs:
-  description: Businesses categories documentation
-  url: https://apidocs.geoapify.com/docs/places/#categories
-servers:
-- url: /
-tags:
-- name: Trip
-  description: Everything about trip records
 paths:
   /trip:
-    get:
-      tags:
-      - Trip
-      summary: Find trips between pickup_datetime and dropoff_datetime.
-      description: Returns an array of Trip objects.
-      operationId: get_trip_between_date_time
-      parameters:
-      - name: start_date
-        in: query
-        description: Every value data up to this date will be filtered out. If not
-          specified no filtering is applied
-        required: false
-        style: form
-        explode: true
-        schema:
-          type: string
-          format: date-time
-      - name: end_date
-        in: query
-        description: Every value data after this date will be filtered out. If not
-          specified no filtering is applied
-        required: false
-        style: form
-        explode: true
-        schema:
-          type: string
-          format: date-time
-      - name: limit
-        in: query
-        description: Number of elements to be returned
-        required: false
-        style: form
-        explode: true
-        schema:
-          minimum: 0
-          type: integer
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Trips'
-        "401":
-          description: API key is missing or invalid
-          headers:
-            WWW_Authenticate:
-              style: simple
-              explode: false
-              schema:
-                type: string
-      x-openapi-router-controller: swagger_server.controllers.trip_controller
     post:
       tags:
-      - Trip
+        - Trip
       summary: Add a trip to the data used to calculate the value
       operationId: add_trip
       requestBody:
@@ -77,37 +19,26 @@ paths:
             schema:
               $ref: '#/components/schemas/Trip'
       responses:
-        "200":
+        '200':
           description: OK
           content:
             text/plain:
               schema:
                 type: string
-                x-content-type: text/plain
-        "401":
-          description: API key is missing or invalid
-          headers:
-            WWW_Authenticate:
-              style: simple
-              explode: false
-              schema:
-                type: string
-      x-openapi-router-controller: swagger_server.controllers.trip_controller
-  /trip/{id}:
+      x-openapi-router-controller: swagger_server.controllers.rest_controller
+  /trip/{trip_id}:
     put:
       tags:
-      - Trip
+        - Trip
       summary: Change a trip in the data used to calculate the value
       operationId: update_trip
       parameters:
-      - name: id
-        in: path
-        description: ID of the trip to delete
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
+        - name: trip_id
+          in: path
+          description: ID of the trip to delete
+          required: true
+          schema:
+            type: string
       requestBody:
         description: A JSON object containing trip information
         content:
@@ -115,89 +46,88 @@ paths:
             schema:
               $ref: '#/components/schemas/TripUpdate'
       responses:
-        "200":
+        '200':
           description: OK
           content:
             text/plain:
               schema:
                 type: string
-                x-content-type: text/plain
-        "401":
-          description: API key is missing or invalid
-          headers:
-            WWW_Authenticate:
-              style: simple
-              explode: false
-              schema:
-                type: string
-      x-openapi-router-controller: swagger_server.controllers.trip_controller
+        '404':
+          description: A trip with the specified ID was not found.
+      x-openapi-router-controller: swagger_server.controllers.rest_controller
     delete:
       tags:
-      - Trip
+        - Trip
       summary: Remove a trip in the data used to calculate the value
       operationId: remove_trip
       parameters:
-      - name: id
-        in: path
-        description: ID of the trip to delete
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
+        - name: trip_id
+          in: path
+          description: ID of the trip to delete
+          required: true
+          schema:
+            type: string
       responses:
-        "200":
+        '200':
           description: OK
-        "401":
-          description: API key is missing or invalid
-          headers:
-            WWW_Authenticate:
-              style: simple
-              explode: false
-              schema:
-                type: string
-      x-openapi-router-controller: swagger_server.controllers.trip_controller
+        '404':
+          description: A trip with the specified ID was not found.
+      x-openapi-router-controller: swagger_server.controllers.rest_controller
   /trip/location/{location_id}:
     get:
       tags:
-      - Trip
+        - Trip
       summary: Find location description by ID
       description: Returns LocationID object.
       operationId: get_location_by_id
       parameters:
-      - name: location_id
-        in: path
-        description: The ID of the Location to return.
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: integer
+        - name: location_id
+          in: path
+          description: The ID of the Location to return.
+          required: true
+          schema:
+            type: integer
       responses:
-        "200":
+        '200':
           description: OK
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Location'
-        "401":
-          description: API key is missing or invalid
-          headers:
-            WWW_Authenticate:
-              style: simple
-              explode: false
+        '404':
+          description: A location with the specified ID was not found.
+      x-openapi-router-controller: swagger_server.controllers.rest_controller
+  /tripCount/location/{location_id}:
+    get:
+      tags:
+        - Trip
+      summary: >-
+        Get the number of trips between pickup_datetime and dropoff_datetime in
+        a given location.
+      description: Returns an array of Trip objects.
+      operationId: get_trips_count
+      parameters:
+        - name: location_id
+          in: path
+          description: The ID of the Location
+          required: true
+          schema:
+            type: integer
+        - $ref: '#/components/parameters/start_date'
+        - $ref: '#/components/parameters/end_date'
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain:
               schema:
-                type: string
-      x-openapi-router-controller: swagger_server.controllers.trip_controller
+                type: integer
+        '404':
+          description: A location with the specified ID was not found.
+      x-openapi-router-controller: swagger_server.controllers.rest_controller
 components:
   schemas:
     Trip:
-      required:
-      - dropoff_datetime
-      - dropoff_location_id
-      - passenger_count
-      - pickup_datetime
-      - pickup_location_id
       type: object
       properties:
         pickup_datetime:
@@ -207,18 +137,12 @@ components:
           type: string
           format: date-time
         pickup_location_id:
-          type: integer
+          type: number
         dropoff_location_id:
-          type: integer
+          type: number
         passenger_count:
-          type: integer
+          type: number
           default: 1
-      example:
-        pickup_location_id: 0
-        pickup_datetime: 2000-01-23T04:56:07.000+00:00
-        passenger_count: 1
-        dropoff_location_id: 6
-        dropoff_datetime: 2000-01-23T04:56:07.000+00:00
       required:
         - pickup_datetime
         - dropoff_datetime
@@ -246,11 +170,6 @@ components:
       items:
         $ref: '#/components/schemas/Trip'
     Location:
-      required:
-      - borough
-      - location_id
-      - service_zone
-      - zone
       type: object
       properties:
         location_id:
@@ -261,40 +180,27 @@ components:
           type: string
         service_zone:
           type: string
-      example:
-        zone: zone
-        borough: borough
-        location_id: 0
-        service_zone: service_zone
-  responses:
-    UnauthorizedError:
-      description: API key is missing or invalid
-      headers:
-        WWW_Authenticate:
-          style: simple
-          explode: false
-          schema:
-            type: string
+      required:
+        - location_id
+        - borough
+        - zone
+        - service_zone
   parameters:
     start_date:
       name: start_date
       in: query
-      description: Every value data up to this date will be filtered out. If not specified
+      description: >-
+        Every value data up to this date will be filtered out. If not specified
         no filtering is applied
-      required: false
-      style: form
-      explode: true
       schema:
         type: string
         format: date-time
     end_date:
       name: end_date
       in: query
-      description: Every value data after this date will be filtered out. If not specified
+      description: >-
+        Every value data after this date will be filtered out. If not specified
         no filtering is applied
-      required: false
-      style: form
-      explode: true
       schema:
         type: string
         format: date-time
@@ -302,9 +208,12 @@ components:
       name: limit
       in: query
       description: Number of elements to be returned
-      required: false
-      style: form
-      explode: true
       schema:
-        minimum: 0
         type: integer
+        minimum: 0
+tags:
+  - name: Trip
+    description: Everything about trip records
+externalDocs:
+  description: Businesses categories documentation
+  url: https://apidocs.geoapify.com/docs/places/#categories

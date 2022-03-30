@@ -1,13 +1,17 @@
 package pt.fcul.keys
 
 import com.fasterxml.jackson.annotation.JsonInclude
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.fasterxml.jackson.module.kotlin.KotlinFeature
 import com.fasterxml.jackson.module.kotlin.KotlinModule
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import com.mongodb.ReadConcern
 import com.mongodb.WriteConcern
 import com.mongodb.client.MongoClient
 import com.mongodb.client.MongoDatabase
+import java.io.File
 import org.litote.kmongo.KMongo
 import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.SpringBootApplication
@@ -23,15 +27,18 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
 import org.springframework.security.config.http.SessionCreationPolicy
-import org.springframework.security.core.context.ReactiveSecurityContextHolder
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 import pt.fcul.keys.common.ProblemJsonConverter
 import pt.fcul.keys.exceptions.EnvVarNotFoundException
+import pt.fcul.keys.exceptions.InvalidAclFileException
+import pt.fcul.keys.model.ACLFile
 import pt.fcul.keys.security.AuthFilter
+
 
 private const val MONGO_ENV_VAR = "MONGO_DATABASE_URL"
 private const val MONGO_DB_VAR = "MONGO_DATABASE_NAME"
+private const val ACL_FILE_VAR = "ACL_FILE"
 
 @SpringBootApplication
 class KeysApplication
@@ -79,6 +86,26 @@ class WebConfiguration : WebMvcConfigurer {
         return client.getDatabase(mongoDbName)
             .withReadConcern(ReadConcern.MAJORITY)
             .withWriteConcern(WriteConcern.MAJORITY)
+    }
+
+    @Bean
+    fun getACL(): ACLFile {
+        val filePath = System.getenv(ACL_FILE_VAR) ?: throw EnvVarNotFoundException(ACL_FILE_VAR)
+        log.info("Found environment variable $ACL_FILE_VAR = $filePath")
+
+        val mapper = ObjectMapper(YAMLFactory())
+        mapper.registerKotlinModule()
+        val file = File(filePath)
+
+        if (!file.exists() || !file.canRead()) {
+            throw InvalidAclFileException(filePath)
+        }
+
+        if (!file.extension.equals("yml", true) && !file.extension.equals("yaml", true)) {
+            throw InvalidAclFileException(filePath)
+        }
+
+        return mapper.readValue(file, ACLFile::class.java)
     }
 }
 

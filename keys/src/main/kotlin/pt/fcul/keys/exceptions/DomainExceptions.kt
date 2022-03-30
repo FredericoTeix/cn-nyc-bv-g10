@@ -16,3 +16,7 @@ data class KeyQuotaExceededException(
 class EnvVarNotFoundException(
     envVariable: String
 ) : RuntimeException("Environment variable $envVariable not defined!")
+
+class InvalidAclFileException(
+    path: String
+) : RuntimeException("Invalid ACL File in $path")

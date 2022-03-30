@@ -5,10 +5,12 @@ import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import pt.fcul.keys.exceptions.ForbiddenAuthorization
 import pt.fcul.keys.exceptions.KeyQuotaExceededException
+import pt.fcul.keys.model.ACLFile
 import pt.fcul.keys.model.KeyConsume
 import pt.fcul.keys.model.KeyInfo
 import pt.fcul.keys.model.KeyInput
 import pt.fcul.keys.model.KeyScope
+import pt.fcul.keys.model.hasPermission
 import pt.fcul.keys.model.sha256
 import pt.fcul.keys.repository.KeyRepository
 import pt.fcul.keys.security.ApiAuthentication
@@ -17,6 +19,7 @@ import pt.fcul.keys.security.ApiAuthentication
 @Service
 class KeyService(
     val repo: KeyRepository,
+    val acl: ACLFile
 ) {
 
     fun generateKey(input: KeyInput): KeyInfo {
@@ -77,7 +80,9 @@ class KeyService(
         val hashedKey = auth.principal.password
         val currInfo = auth.keyInfo
 
-        // TODO check if has valid scope for the endpoint to consume
+        if (!acl.hasPermission(consume.path, consume.method, currInfo.scope)) {
+            throw ForbiddenAuthorization()
+        }
 
         if (currInfo.used >= currInfo.quota) {
             throw KeyQuotaExceededException(hashedKey, currInfo.quota)

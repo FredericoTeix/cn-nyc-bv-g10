@@ -64,7 +64,7 @@ class Trip(Model):
         
     def to_dict(self):
         result = {'pickup_datetime': self.pickup_datetime.strftime("%Y-%m-%d:%H:%M:%S.%f"),
-                  'dropoff_datetime': self.dropoff_datetime.strftime("%Y-%m-%d:%H:%M:%S.%f"),
+                  'dropoff_datetime': self.pickup_datetime.strftime("%Y-%m-%d:%H:%M:%S.%f"),
                   'pickup_location_id': self.pickup_location_id, 'dropoff_location_id': self.dropoff_location_id,
                   'passenger_count': self.passenger_count}
         return result

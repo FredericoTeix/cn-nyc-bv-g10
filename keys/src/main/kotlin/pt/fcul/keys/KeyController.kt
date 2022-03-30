@@ -2,6 +2,7 @@ package pt.fcul.keys
 
 import javax.validation.Valid
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
@@ -13,8 +14,7 @@ import pt.fcul.keys.model.KeyConsume
 import pt.fcul.keys.model.KeyInfo
 import pt.fcul.keys.model.KeyInput
 import pt.fcul.keys.common.Links
-
-const val API_KEY_HEADER = "x-api-key"
+import pt.fcul.keys.security.API_KEY_HEADER
 
 @RestController
 class KeyController(

@@ -10,7 +10,7 @@ import pt.fcul.keys.exceptions.KeyQuotaExceededException
 val ADMIN_KEY = KeyInfo(
     "user@mail.com",
     1000,
-    "5d962bcc577343eff09091f902ca52d125ecaab8f3fe3cd2e92227dd916be1d3",
+    "de54bbaae23bb7c83801437e757ae980dbe7b3b61fc250d26923bf1511115dc7",
     0,
     KeyScope.ADMIN
 )
@@ -18,7 +18,7 @@ val ADMIN_KEY = KeyInfo(
 @Repository
 class MemoryKeyRepository : KeyRepository {
 
-    val data: MutableMap<String, KeyInfo> = mutableMapOf()
+    val data: MutableMap<String, KeyInfo> = mutableMapOf(ADMIN_KEY.key to ADMIN_KEY)
 
     override fun createKey(info: KeyInfo): KeyInfo {
         if (data.containsKey(info.key)) {

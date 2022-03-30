@@ -94,6 +94,20 @@ def get_location_by_id(location_id):  # noqa: E501
     return zone
 
 
+def get_location_by_city(city_name):
+    """Find location description by city_name
+
+    Returns LocationID object.
+
+    :param city_name: The city name of the Location to return.
+    :type city_name: str
+
+    :rtype: dict
+    """
+    zone = db.zones.find_one({"zone": city_name})
+    return zone
+
+
 def get_trips_count(location_id, start_date=None, end_date=None):  # noqa: E501
     """Find trips between pickup_datetime and dropoff_datetime.
 
@@ -204,3 +218,4 @@ def update_trip(trip_id, trip):  # noqa: E501
 
     del updated_trip["_id"]
     return updated_trip
+

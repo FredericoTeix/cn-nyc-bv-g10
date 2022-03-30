@@ -71,4 +71,4 @@ host = 'localhost'
 server_port = 50051
 channel = grpc.insecure_channel(f"{host}:{server_port}")
 stub = trips_pb2_grpc.TripsStub(channel)
-get_counter("2")
+get_location_by_id("2")

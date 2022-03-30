@@ -42,6 +42,8 @@ services:
         - /scripts/populate.sh
       logging:
         driver: none
+      networks:
+        - gateway_main-net
 networks:
   gateway_main-net:
     external: true

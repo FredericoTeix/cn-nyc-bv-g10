@@ -2,6 +2,7 @@ import connexion
 
 from swagger_server.models.location import Location  # noqa: E501
 from swagger_server.models.trip import Trip  # noqa: E501
+from swagger_server.models.trip_update import TripUpdate  # noqa: E501
 from swagger_server.models.trips import Trips  # noqa: E501
 from swagger_server.controllers import operations as bo
 from swagger_server import util
@@ -78,5 +79,5 @@ def update_trip(trip_id, body=None):  # noqa: E501
     :rtype: str
     """
     if connexion.request.is_json:
-        body = Trip.from_dict(connexion.request.get_json())  # noqa: E501
+        body = TripUpdate.from_dict(connexion.request.get_json())  # noqa: E501
     return bo.update_trip(trip_id, body)

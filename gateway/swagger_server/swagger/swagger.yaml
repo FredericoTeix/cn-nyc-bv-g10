@@ -107,7 +107,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Trip'
+              $ref: '#/components/schemas/TripUpdate'
       responses:
         '200':
           description: OK
@@ -520,6 +520,22 @@ components:
         - pickup_location_id
         - dropoff_location_id
         - passenger_count
+    TripUpdate:
+      type: object
+      properties:
+        pickup_datetime:
+          type: string
+          format: date-time
+        dropoff_datetime:
+          type: string
+          format: date-time
+        pickup_location_id:
+          type: number
+        dropoff_location_id:
+          type: number
+        passenger_count:
+          type: number
+          default: 1
     Trips:
       type: array
       items:

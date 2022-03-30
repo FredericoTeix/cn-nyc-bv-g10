@@ -12,19 +12,23 @@ services:
         - ./mongodb/mongo-volume:/data/db
       expose:
         - '27017'
+      networks:
+        - gateway_main-net
     trips:
       container_name: 'trips-service'
       depends_on:
         - 'database'
-      ports:
-        - '8080:8080'
-        - '50051:50051'
+      expose:
+        - '8080'
+        - '50051'
       environment:
         - MONGO_URL=mongodb://rhythmfishing:Jw8HsxQtQHFPzDQj7W8b@mongo-trips:27017/trips-db
       build:
         context: .
         dockerfile: Dockerfile
       stop_signal: SIGINT
+      networks:
+        - gateway_main-net
     mongo_seed:
       image: mongo
       depends_on:
@@ -38,3 +42,6 @@ services:
         - /scripts/populate.sh
       logging:
         driver: none
+networks:
+  gateway_main-net:
+    external: true

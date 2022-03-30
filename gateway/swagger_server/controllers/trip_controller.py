@@ -1,42 +1,41 @@
+import os
+
 import connexion
-import six
+import requests
 
-from swagger_server.models.trip import Trip  # noqa: E501
+from swagger_server.models.trip import Trip
 from swagger_server import util
+from swagger_server.controllers.authorization_controller import check_api_key
+
+trips_url = os.getenv('TRIPS_URL')
 
 
-def add_trip(body=None):  # noqa: E501
+def add_trip(body=None):
     """Add a trip to the data used to calculate the value
-
-     # noqa: E501
 
     :param body: A JSON object containing trip information
     :type body: dict | bytes
 
     :rtype: str
     """
-    if connexion.request.is_json:
-        body = Trip.from_dict(connexion.request.get_json())  # noqa: E501
-    return 'do some magic!'
+    response = requests.post(f"{trips_url}/trip", data=connexion.request.get_json())
+    return response
 
 
-def remove_trip(trip_id):  # noqa: E501
+def remove_trip(trip_id):
     """Remove a trip in the data used to calculate the value
-
-     # noqa: E501
 
     :param trip_id: ID of the trip to delete
     :type trip_id: str
 
     :rtype: None
     """
-    return 'do some magic!'
+    response = requests.delete(f"{trips_url}/trip/{trip_id}")
+    return response
 
 
-def update_trip(trip_id, body=None):  # noqa: E501
+def update_trip(trip_id, body=None):
     """Change a trip in the data used to calculate the value
-
-     # noqa: E501
 
     :param trip_id: ID of the trip to delete
     :type trip_id: str
@@ -45,6 +44,5 @@ def update_trip(trip_id, body=None):  # noqa: E501
 
     :rtype: str
     """
-    if connexion.request.is_json:
-        body = Trip.from_dict(connexion.request.get_json())  # noqa: E501
-    return 'do some magic!'
+    response = requests.put(f"{trips_url}/trip/{trip_id}", data=connexion.request.get_json())
+    return response

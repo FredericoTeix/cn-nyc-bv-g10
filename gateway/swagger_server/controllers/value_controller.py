@@ -1,16 +1,19 @@
+import os
+
 import connexion
-import six
+import requests
 
 from swagger_server.models.businesses import Businesses  # noqa: E501
 from swagger_server.models.trips import Trips  # noqa: E501
 from swagger_server.models.value_response_business import ValueResponseBusiness  # noqa: E501
-from swagger_server import util
+
+value_url = os.getenv('VALUE_URL')
 
 
-def get_trips_count(location_id, start_date=None, end_date=None):  # noqa: E501
+def get_location_value(location_id, start_date=None, end_date=None):
     """Get the number of trips between pickup_datetime and dropoff_datetime in a given location.
 
-    Returns an array of Trip objects. # noqa: E501
+    Returns an array of Trip objects.
 
     :param location_id: The ID of the Location
     :type location_id: int
@@ -21,15 +24,16 @@ def get_trips_count(location_id, start_date=None, end_date=None):  # noqa: E501
 
     :rtype: Trips
     """
-    start_date = util.deserialize_datetime(start_date)
-    end_date = util.deserialize_datetime(end_date)
-    return 'do some magic!'
+    request_url = f"{value_url}/value/location/{location_id}"
+    if start_date or end_date:
+        request_url += f"?{connexion.request.query_string}"
+
+    response = requests.get(request_url, data=connexion.request.get_json())
+    return response
 
 
-def top_value_businesses(num_results, start_date=None, end_date=None, categories=None):  # noqa: E501
+def top_value_businesses(num_results, start_date=None, end_date=None, categories=None):
     """Get the top valued businesses in a given time range
-
-     # noqa: E501
 
     :param num_results: number of top businesses to be returned
     :type num_results: float
@@ -42,15 +46,15 @@ def top_value_businesses(num_results, start_date=None, end_date=None, categories
 
     :rtype: Businesses
     """
-    start_date = util.deserialize_datetime(start_date)
-    end_date = util.deserialize_datetime(end_date)
-    return 'do some magic!'
+    request_url = f"{value_url}/value/top/businesses"
+    if start_date or end_date:
+        request_url += f"?{connexion.request.query_string}"
+    response = requests.get(request_url, data=connexion.request.get_json())
+    return response
 
 
-def value_by_business(business_id, start_date=None, end_date=None):  # noqa: E501
+def value_by_business(business_id, start_date=None, end_date=None):
     """Get the value associated to a business in a given time range
-
-     # noqa: E501
 
     :param business_id: ID of the business to get value
     :type business_id: str
@@ -61,6 +65,9 @@ def value_by_business(business_id, start_date=None, end_date=None):  # noqa: E50
 
     :rtype: ValueResponseBusiness
     """
-    start_date = util.deserialize_datetime(start_date)
-    end_date = util.deserialize_datetime(end_date)
-    return 'do some magic!'
+    request_url = f"{value_url}/value/business/{business_id}"
+    if start_date or end_date:
+        request_url += f"?{connexion.request.query_string}"
+
+    response = requests.get(request_url, data=connexion.request.get_json())
+    return response

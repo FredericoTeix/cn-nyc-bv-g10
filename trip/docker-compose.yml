@@ -13,6 +13,7 @@ services:
       expose:
         - '27017'
     trips:
+      container_name: 'trips-service'
       depends_on:
         - 'database'
       ports:

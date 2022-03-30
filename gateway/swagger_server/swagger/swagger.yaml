@@ -263,7 +263,7 @@ paths:
         Get the number of trips between pickup_datetime and dropoff_datetime in
         a given location.
       description: Returns an array of Trip objects.
-      operationId: get_trips_count
+      operationId: get_location_value
       parameters:
         - $ref: '#/components/parameters/start_date'
         - $ref: '#/components/parameters/end_date'

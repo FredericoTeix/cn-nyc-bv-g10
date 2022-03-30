@@ -1,43 +1,43 @@
+import os
 import connexion
-import six
+import requests
 
 from swagger_server.models.business import Business  # noqa: E501
 from swagger_server.models.businesses import Businesses  # noqa: E501
-from swagger_server import util
+
+business_url = os.getenv('BUSINESS_URL')
 
 
-def add_business(body=None):  # noqa: E501
+def add_business(body=None):
     """Add a business to the data used to calculate the value
-
-     # noqa: E501
 
     :param body: A JSON object containing business information
     :type body: dict | bytes
 
     :rtype: str
     """
-    if connexion.request.is_json:
-        body = Business.from_dict(connexion.request.get_json())  # noqa: E501
-    return 'do some magic!'
+    response = requests.post(f"{business_url}/business", data=connexion.request.get_json())
+    return response
 
 
-def get_business(business_id):  # noqa: E501
+def get_business(business_id):
     """Get the details of a business
 
-    Retrieves information regarding a specific business # noqa: E501
+    Retrieves information regarding a specific business
 
     :param business_id: ID of the business to retrieve
     :type business_id: float
 
     :rtype: Business
     """
-    return 'do some magic!'
+    response = requests.get(f"{business_url}/business/{business_id}", data=connexion.request.get_json())
+    return response
 
 
-def get_businesses(lat, lng, radius, limit=None, skip=None):  # noqa: E501
+def get_businesses(lat, lng, radius, limit=None, skip=None):
     """Get a list of businesses within the radius of the coordinate given
 
-    Retrieves a list of businesses # noqa: E501
+    Retrieves a list of businesses
 
     :param lat: Search coordinates that match or are like &#x27;latitude&#x27;
     :type lat: str
@@ -52,26 +52,24 @@ def get_businesses(lat, lng, radius, limit=None, skip=None):  # noqa: E501
 
     :rtype: Businesses
     """
-    return 'do some magic!'
+    response = requests.get(f"{business_url}/business", data=connexion.request.get_json())
+    return response
 
 
-def remove_business(business_id):  # noqa: E501
+def remove_business(business_id):
     """Remove a business in the data used to calculate the value
-
-     # noqa: E501
 
     :param business_id: ID of the trip to delete
     :type business_id: str
 
     :rtype: None
     """
-    return 'do some magic!'
+    response = requests.delete(f"{business_url}/business/{business_id}", data=connexion.request.get_json())
+    return response
 
 
-def update_business(business_id, body=None):  # noqa: E501
+def update_business(business_id, body=None):
     """Change a business in the data used to calculate the value
-
-     # noqa: E501
 
     :param business_id: ID of the trip to delete
     :type business_id: str
@@ -80,6 +78,5 @@ def update_business(business_id, body=None):  # noqa: E501
 
     :rtype: str
     """
-    if connexion.request.is_json:
-        body = Business.from_dict(connexion.request.get_json())  # noqa: E501
-    return 'do some magic!'
+    response = requests.put(f"{business_url}/business/{business_id}", data=connexion.request.get_json())
+    return response

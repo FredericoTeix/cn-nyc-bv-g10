@@ -3,6 +3,10 @@ services:
     trips:
       ports:
         - '8080:8080'
+      environment:
+        - TRIPS_URL=http://trips-service:8080
+        - BUSINESS_URL=http://business-service:8080
+        - VALUE_URL=http://value-service:8080
       build:
         context: .
         dockerfile: Dockerfile

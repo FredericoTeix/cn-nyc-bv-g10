@@ -9,6 +9,7 @@ from pymongo import ReturnDocument
 
 from swagger_server.models.location import Location  # noqa: E501
 from swagger_server.models.trip import Trip  # noqa: E501
+from swagger_server.models.trip_update import TripUpdate  # noqa: E501
 from swagger_server.models.trips import Trips  # noqa: E501
 from swagger_server import util
 
@@ -36,8 +37,8 @@ def increment_trip_counter(location_id, unit, counter, n):
 
 
 def modify_trip_counters(trip, n):
-    locations = [trip.pickup_location_id, trip.dropoff_location_id]
-    dates = [trip.pickup_datetime, trip.dropoff_datetime]
+    locations = [trip['pickup_location_id'], trip['dropoff_location_id']]
+    dates = [trip['pickup_datetime'], trip['dropoff_datetime']]
 
     for location, date in zip(locations, dates):
         year = date.year - 2000
@@ -66,16 +67,16 @@ def add_trip(trip, trip_id=None):
 
     :rtype: str
     """
-    modify_trip_counters(trip, trip.passenger_count)
     dict_trip = trip.to_dict()
     dict_trip['pickup_datetime'] = datetime.strptime(dict_trip['pickup_datetime'][:-7], "%Y-%m-%d:%H:%M:%S")
     dict_trip['dropoff_datetime'] = datetime.strptime(dict_trip['dropoff_datetime'][:-7], "%Y-%m-%d:%H:%M:%S")
+    modify_trip_counters(dict_trip, trip.passenger_count)
     if trip_id:
         dict_trip["_id"] = bson.ObjectId(trip_id)
     created_trip = db["trips"].insert_one(dict_trip)
     # print(created_trip.inserted_id, file=sys.stderr)
 
-    return str(created_trip.inserted_id)
+    return {"_id": str(created_trip.inserted_id)}
 
 
 def get_location_by_id(location_id):  # noqa: E501
@@ -90,6 +91,20 @@ def get_location_by_id(location_id):  # noqa: E501
     """
     zone = db.zones.find_one({"_id": int(location_id)})
     zone.pop('_id')
+    return zone
+
+
+def get_location_by_city(city_name):
+    """Find location description by city_name
+
+    Returns LocationID object.
+
+    :param city_name: The city name of the Location to return.
+    :type city_name: str
+
+    :rtype: dict
+    """
+    zone = db.zones.find_one({"zone": city_name})
     return zone
 
 
@@ -171,8 +186,7 @@ def remove_trip(trip_id):  # noqa: E501
     """
     deleted_trip = db.trips.find_one_and_delete({"_id": bson.ObjectId(trip_id)})
 
-    modify_trip_counters(deleted_trip['pickup_datetime'], -deleted_trip['passenger_count'])
-    modify_trip_counters(deleted_trip['dropoff_datetime'], -deleted_trip['passenger_count'])
+    modify_trip_counters(deleted_trip, -deleted_trip['passenger_count'])
 
 
 def update_trip(trip_id, trip):  # noqa: E501
@@ -198,11 +212,10 @@ def update_trip(trip_id, trip):  # noqa: E501
         return_document=ReturnDocument.AFTER
     )
 
-    modify_trip_counters(updated_trip['pickup_datetime'], updated_trip['passenger_count'])
-    modify_trip_counters(updated_trip['dropoff_datetime'], updated_trip['passenger_count'])
+    modify_trip_counters(updated_trip, updated_trip['passenger_count'])
 
-    modify_trip_counters(original_trip['pickup_datetime'], -original_trip['passenger_count'])
-    modify_trip_counters(original_trip['dropoff_datetime'], -original_trip['passenger_count'])
+    modify_trip_counters(original_trip, -original_trip['passenger_count'])
 
     del updated_trip["_id"]
     return updated_trip
+

@@ -29,7 +29,7 @@ def get_location_value(location_id, start_date=None, end_date=None):
         request_url += f"?{connexion.request.query_string}"
 
     response = requests.get(request_url, data=connexion.request.get_json())
-    return response
+    return response.json(), response.status_code
 
 
 def top_value_businesses(num_results, start_date=None, end_date=None, categories=None):
@@ -50,7 +50,7 @@ def top_value_businesses(num_results, start_date=None, end_date=None, categories
     if start_date or end_date:
         request_url += f"?{connexion.request.query_string}"
     response = requests.get(request_url, data=connexion.request.get_json())
-    return response
+    return response.json(), response.status_code
 
 
 def value_by_business(business_id, start_date=None, end_date=None):
@@ -70,4 +70,4 @@ def value_by_business(business_id, start_date=None, end_date=None):
         request_url += f"?{connexion.request.query_string}"
 
     response = requests.get(request_url, data=connexion.request.get_json())
-    return response
+    return response.json(), response.status_code

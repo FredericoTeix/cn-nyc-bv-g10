@@ -9,7 +9,8 @@ from swagger_server.proto import trips_pb2_grpc
 
 from swagger_server.controllers import operations as bo
 from swagger_server.models.trip import Trip
-from swagger_server.proto.trips_pb2 import TripID, Location, Trip, GetCountTripsInLocationRequest, GetCountTripsInLocationResponse
+from swagger_server.proto.trips_pb2 import TripID, Location, Trip, GetCountTripsInLocationRequest, \
+    GetCountTripsInLocationResponse, LocationID
 
 
 class TripsServicer(trips_pb2_grpc.TripsServicer):
@@ -35,6 +36,10 @@ class TripsServicer(trips_pb2_grpc.TripsServicer):
             location_id=int(request.location_id),
             service_zone=location['service_zone']
         )
+
+    def GetLocationByCity(self, request, context):
+        location = bo.get_location_by_city(request.city_name)
+        return LocationID(location_id=location['_id'])
 
     def RemoveTrip(self, request, context):
         bo.remove_trip(request.trip_id)

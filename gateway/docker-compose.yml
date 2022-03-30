@@ -1,6 +1,6 @@
 version: '3'
 services:
-    trips:
+    gateway:
       ports:
         - '8080:8080'
       environment:
@@ -11,3 +11,8 @@ services:
         context: .
         dockerfile: Dockerfile
       stop_signal: SIGINT
+      networks:
+        - main-net
+networks:
+  main-net:
+    driver: bridge

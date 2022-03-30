@@ -18,8 +18,9 @@ def add_trip(body=None):
 
     :rtype: str
     """
-    response = requests.post(f"{trips_url}/trip", data=connexion.request.get_json())
-    return response
+    response = requests.post(f"{trips_url}/trip", json=connexion.request.get_json())
+    print(response.json(), flush=True)
+    return response.json(), response.status_code
 
 
 def remove_trip(trip_id):
@@ -31,7 +32,7 @@ def remove_trip(trip_id):
     :rtype: None
     """
     response = requests.delete(f"{trips_url}/trip/{trip_id}")
-    return response
+    return response.status_code
 
 
 def update_trip(trip_id, body=None):
@@ -44,5 +45,10 @@ def update_trip(trip_id, body=None):
 
     :rtype: str
     """
-    response = requests.put(f"{trips_url}/trip/{trip_id}", data=connexion.request.get_json())
-    return response
+    response = requests.put(f"{trips_url}/trip/{trip_id}", json=connexion.request.get_json())
+    return response.json(), response.status_code
+
+
+def get_location_by_id(location_id):
+    response = requests.get(f"{trips_url}/trip/location/{location_id}", json=connexion.request.get_json())
+    return response.json(), response.status_code

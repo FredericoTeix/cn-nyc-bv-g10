@@ -107,7 +107,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Trip'
+              $ref: '#/components/schemas/TripUpdate'
       responses:
         '200':
           description: OK
@@ -135,6 +135,30 @@ paths:
           description: OK
         '401':
           $ref: '#/components/responses/UnauthorizedError'
+      x-openapi-router-controller: swagger_server.controllers.trip_controller
+  /trip/location/{location_id}:
+    get:
+      tags:
+        - Trip
+      summary: Find location description by ID
+      description: Returns LocationID object.
+      operationId: get_location_by_id
+      parameters:
+        - name: location_id
+          in: path
+          description: The ID of the Location to return.
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Location'
+        '404':
+          description: A location with the specified ID was not found.
       x-openapi-router-controller: swagger_server.controllers.trip_controller
   /business:
     post:
@@ -496,6 +520,22 @@ components:
         - pickup_location_id
         - dropoff_location_id
         - passenger_count
+    TripUpdate:
+      type: object
+      properties:
+        pickup_datetime:
+          type: string
+          format: date-time
+        dropoff_datetime:
+          type: string
+          format: date-time
+        pickup_location_id:
+          type: number
+        dropoff_location_id:
+          type: number
+        passenger_count:
+          type: number
+          default: 1
     Trips:
       type: array
       items:

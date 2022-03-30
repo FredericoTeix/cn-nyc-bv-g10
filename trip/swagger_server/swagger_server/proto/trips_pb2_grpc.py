@@ -25,14 +25,19 @@ class TripsStub(object):
                 request_serializer=swagger__server_dot_proto_dot_trips__pb2.LocationID.SerializeToString,
                 response_deserializer=swagger__server_dot_proto_dot_trips__pb2.Location.FromString,
                 )
+        self.GetLocationByCity = channel.unary_unary(
+                '/trips.Trips/GetLocationByCity',
+                request_serializer=swagger__server_dot_proto_dot_trips__pb2.City.SerializeToString,
+                response_deserializer=swagger__server_dot_proto_dot_trips__pb2.LocationID.FromString,
+                )
         self.RemoveTrip = channel.unary_unary(
                 '/trips.Trips/RemoveTrip',
-                request_serializer=swagger__server_dot_proto_dot_trips__pb2.RemoveTripRequest.SerializeToString,
+                request_serializer=swagger__server_dot_proto_dot_trips__pb2.TripID.SerializeToString,
                 response_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
                 )
         self.UpdateTrip = channel.unary_unary(
                 '/trips.Trips/UpdateTrip',
-                request_serializer=swagger__server_dot_proto_dot_trips__pb2.TripID.SerializeToString,
+                request_serializer=swagger__server_dot_proto_dot_trips__pb2.UpdateTripRequest.SerializeToString,
                 response_deserializer=swagger__server_dot_proto_dot_trips__pb2.Trip.FromString,
                 )
         self.GetCountTripsInLocation = channel.unary_unary(
@@ -57,6 +62,12 @@ class TripsServicer(object):
 
         Returns LocationID object.
         """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def GetLocationByCity(self, request, context):
+        """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
@@ -94,14 +105,19 @@ def add_TripsServicer_to_server(servicer, server):
                     request_deserializer=swagger__server_dot_proto_dot_trips__pb2.LocationID.FromString,
                     response_serializer=swagger__server_dot_proto_dot_trips__pb2.Location.SerializeToString,
             ),
+            'GetLocationByCity': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetLocationByCity,
+                    request_deserializer=swagger__server_dot_proto_dot_trips__pb2.City.FromString,
+                    response_serializer=swagger__server_dot_proto_dot_trips__pb2.LocationID.SerializeToString,
+            ),
             'RemoveTrip': grpc.unary_unary_rpc_method_handler(
                     servicer.RemoveTrip,
-                    request_deserializer=swagger__server_dot_proto_dot_trips__pb2.RemoveTripRequest.FromString,
+                    request_deserializer=swagger__server_dot_proto_dot_trips__pb2.TripID.FromString,
                     response_serializer=google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
             ),
             'UpdateTrip': grpc.unary_unary_rpc_method_handler(
                     servicer.UpdateTrip,
-                    request_deserializer=swagger__server_dot_proto_dot_trips__pb2.TripID.FromString,
+                    request_deserializer=swagger__server_dot_proto_dot_trips__pb2.UpdateTripRequest.FromString,
                     response_serializer=swagger__server_dot_proto_dot_trips__pb2.Trip.SerializeToString,
             ),
             'GetCountTripsInLocation': grpc.unary_unary_rpc_method_handler(
@@ -154,6 +170,23 @@ class Trips(object):
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
+    def GetLocationByCity(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/trips.Trips/GetLocationByCity',
+            swagger__server_dot_proto_dot_trips__pb2.City.SerializeToString,
+            swagger__server_dot_proto_dot_trips__pb2.LocationID.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
     def RemoveTrip(request,
             target,
             options=(),
@@ -165,7 +198,7 @@ class Trips(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/trips.Trips/RemoveTrip',
-            swagger__server_dot_proto_dot_trips__pb2.RemoveTripRequest.SerializeToString,
+            swagger__server_dot_proto_dot_trips__pb2.TripID.SerializeToString,
             google_dot_protobuf_dot_empty__pb2.Empty.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
@@ -182,7 +215,7 @@ class Trips(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/trips.Trips/UpdateTrip',
-            swagger__server_dot_proto_dot_trips__pb2.TripID.SerializeToString,
+            swagger__server_dot_proto_dot_trips__pb2.UpdateTripRequest.SerializeToString,
             swagger__server_dot_proto_dot_trips__pb2.Trip.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

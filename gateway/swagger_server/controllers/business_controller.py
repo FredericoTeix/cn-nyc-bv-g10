@@ -17,7 +17,7 @@ def add_business(body=None):
     :rtype: str
     """
     response = requests.post(f"{business_url}/business", data=connexion.request.get_json())
-    return response
+    return response.json(), response.status_code
 
 
 def get_business(business_id):
@@ -31,7 +31,7 @@ def get_business(business_id):
     :rtype: Business
     """
     response = requests.get(f"{business_url}/business/{business_id}", data=connexion.request.get_json())
-    return response
+    return response.json(), response.status_code
 
 
 def get_businesses(lat, lng, radius, limit=None, skip=None):
@@ -53,7 +53,7 @@ def get_businesses(lat, lng, radius, limit=None, skip=None):
     :rtype: Businesses
     """
     response = requests.get(f"{business_url}/business", data=connexion.request.get_json())
-    return response
+    return response.json(), response.status_code
 
 
 def remove_business(business_id):
@@ -65,7 +65,7 @@ def remove_business(business_id):
     :rtype: None
     """
     response = requests.delete(f"{business_url}/business/{business_id}", data=connexion.request.get_json())
-    return response
+    return response.json(), response.status_code
 
 
 def update_business(business_id, body=None):
@@ -79,4 +79,4 @@ def update_business(business_id, body=None):
     :rtype: str
     """
     response = requests.put(f"{business_url}/business/{business_id}", data=connexion.request.get_json())
-    return response
+    return response.json(), response.status_code

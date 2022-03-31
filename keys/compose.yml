@@ -29,12 +29,6 @@ services:
     ports:
       - "27017:27017"
     command: --quiet --logpath /dev/null
-#    networks:
-#      - gateway_main-net
 
 volumes:
   mongo_data:
-
-#networks:
-#  gateway_main-net:
-#    external: true

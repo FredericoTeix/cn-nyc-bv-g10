@@ -4,17 +4,6 @@ import java.net.URI
 import org.springframework.http.HttpMethod
 import org.springframework.web.util.UriTemplate
 
-/*
----
-endpoints:
-  /trips:
-    ADMIN:
-     - "GET"
-     - "PUT"
-    CONSUMER:
-     - "GET"
-* */
-
 data class ACLFile(
     val endpoints: Map<String, Map<KeyScope, Array<HttpMethod>>>
 )

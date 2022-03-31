@@ -6,21 +6,21 @@ import org.springframework.http.HttpMethod
 ---
 endpoints:
   /trips:
-    GET:
-     - "ADMIN"
-     - "CONSUMER"
-    PUT:
-     - "ADMIN"
+    ADMIN:
+     - "GET"
+     - "PUT"
+    CONSUMER:
+     - "GET"
 * */
 
 data class ACLFile(
-    val endpoints: Map<String, Map<HttpMethod, Array<KeyScope>>>
+    val endpoints: Map<String, Map<KeyScope, Array<HttpMethod>>>
 )
 
 fun ACLFile.hasPermission(path: String, method: HttpMethod, scope: KeyScope) = endpoints
     .filterKeys { it.equals(path, true) } // TODO match path parameters with template
     .filterValues {
-        it.any { (aclMethod, aclScopes) ->
-            aclMethod == method && aclScopes.contains(scope)
+        it.any { (aclScope, aclMethods) ->
+            aclScope == scope && aclMethods.contains(method)
         }
     }.any()

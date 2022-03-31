@@ -1,7 +1,0 @@
-endpoints:
-  /trips:
-    GET:
-      - "ADMIN"
-      - "CONSUMER"
-    PUT:
-     - "ADMIN"

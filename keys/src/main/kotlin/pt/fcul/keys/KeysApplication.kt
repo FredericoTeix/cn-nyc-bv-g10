@@ -93,9 +93,10 @@ class WebConfiguration : WebMvcConfigurer {
         val filePath = System.getenv(ACL_FILE_VAR) ?: throw EnvVarNotFoundException(ACL_FILE_VAR)
         log.info("Found environment variable $ACL_FILE_VAR = $filePath")
 
-        val mapper = ObjectMapper(YAMLFactory())
-        mapper.registerKotlinModule()
         val file = File(filePath)
+        val mapper = ObjectMapper(YAMLFactory()).apply {
+            registerKotlinModule()
+        }
 
         if (!file.exists() || !file.canRead()) {
             throw InvalidAclFileException(filePath)

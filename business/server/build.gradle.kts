@@ -26,7 +26,15 @@ dependencies {
     //GRPC Spring integration
     implementation("io.github.lognet:grpc-spring-boot-starter:4.6.0")
 
+    // MongoDB dependencies 
+    val mongoVersion = "4.5.0"
+    implementation("org.mongodb:mongodb-driver-async:$mongoVersion")
+    implementation("org.mongodb:mongodb-driver-core:$mongoVersion")
+    implementation("org.litote.kmongo:kmongo-coroutine:$mongoVersion")
+    implementation("org.mongodb:bson:$mongoVersion")
+    implementation("org.litote.kmongo:kmongo-id:$mongoVersion")
 
+    // Spring Dependencies
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-webflux")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")

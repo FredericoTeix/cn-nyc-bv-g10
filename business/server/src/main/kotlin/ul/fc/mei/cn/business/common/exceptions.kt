@@ -23,6 +23,7 @@ open class HttpException(
 }
 
 
+class EnvVarNotFoundException(envVariable: String) : RuntimeException("Environment variable $envVariable not defined!")
 
 open class BadRequestException(message: String) : HttpException(message, HttpStatus.BAD_REQUEST)
 open class NotFoundException(message: String) : HttpException(message, HttpStatus.NOT_FOUND)

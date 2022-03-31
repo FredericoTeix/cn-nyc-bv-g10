@@ -1,14 +1,12 @@
 package ul.fc.mei.cn.business.repository
 
-import org.springframework.stereotype.Repository
 import ul.fc.mei.cn.business.model.Business
-import ul.fc.mei.cn.business.model.BusinessInputModel
 import ul.fc.mei.cn.business.model.isInRadius
 import ul.fc.mei.cn.business.utils.NotFoundException
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicLong
 
-@Repository
+
 class BusinessMemoryRepository : BusinessRepository {
 
     private val businessMap = ConcurrentHashMap<Long, Business>()
@@ -45,11 +43,10 @@ class BusinessMemoryRepository : BusinessRepository {
         } else throw  NotFoundException("There isn't a Business with Id: ${business.id}")
     }
 
-    override suspend fun createBusiness(business: BusinessInputModel): Long {
+    override suspend fun addBusiness(business: Business): Boolean {
         val id = atomicLong.incrementAndGet()
-        businessMap[id] =
-            Business(id, business.name, business.address, business.city, business.latitude, business.longitude)
-        return id
+        businessMap[id] = business
+        return true
     }
 
 }

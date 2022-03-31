@@ -19,5 +19,5 @@ interface BusinessRepository {
 
     suspend fun updateBusiness(business: Business): Business
 
-    suspend fun createBusiness(business: BusinessInputModel): Long
+    suspend fun addBusiness(business: Business): Boolean
 }

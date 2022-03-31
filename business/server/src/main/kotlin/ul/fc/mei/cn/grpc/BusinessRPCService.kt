@@ -12,13 +12,10 @@ import ul.fc.mei.cn.business.model.BusinessInputModel
 import ul.fc.mei.cn.business.model.toProtobuf
 import ul.fc.mei.cn.business.utils.NotFoundException
 
+typealias ModelBusiness = ul.fc.mei.cn.business.model.Business
+
 @GRpcService
 class BusinessRPCService(val service: BusinessService) : BusinessServiceGrpcKt.BusinessServiceCoroutineImplBase() {
-    override suspend fun addBusiness(request: Business): BusinessId {
-        val input = BusinessInputModel(request.name, request.address, request.city, request.latitude, request.longitude)
-        val businessId = service.addBusiness(input)
-        return businessId { id = businessId }
-    }
 
     override suspend fun getBusiness(request: BusinessId): Business {
         val businessId = request.id
@@ -35,7 +32,7 @@ class BusinessRPCService(val service: BusinessService) : BusinessServiceGrpcKt.B
     override suspend fun updateBusiness(request: UpdateBusinessRequest): Business {
         val businessInput = request.business
         val businessId = request.id.id
-        val newBusiness = BusinessInputModel(
+        val newBusiness = ModelBusiness(businessId,
             businessInput.name,
             businessInput.address,
             businessInput.city,
@@ -45,7 +42,9 @@ class BusinessRPCService(val service: BusinessService) : BusinessServiceGrpcKt.B
         val updatedBusiness = service.updateBusiness(businessId, newBusiness)
 
         return business {
-            id = request.id
+            id = businessId {
+                updatedBusiness.id
+            }
             name = updatedBusiness.name
             address = updatedBusiness.address
             city = updatedBusiness.city

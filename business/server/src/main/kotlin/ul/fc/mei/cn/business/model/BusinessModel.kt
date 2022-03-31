@@ -14,18 +14,6 @@ data class Business(
     val longitude: Double
 )
 
-data class BusinessInputModel(
-    val name: String,
-    val address: String,
-    val city: String,
-    val latitude: Double,
-    val longitude: Double
-) {
-    fun toBusiness(id: Long): Business {
-        return Business(id, name, address, city, latitude, longitude)
-    }
-}
-
 fun Business.isInRadius(longitude: Double, latitude: Double, radius: Double): Boolean {
     return ((this.longitude - longitude).pow(2.0) + (this.latitude - latitude).pow(2.0)) <= radius.pow(
         2.0

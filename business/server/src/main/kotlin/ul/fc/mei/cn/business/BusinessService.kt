@@ -8,15 +8,10 @@ import ul.fc.mei.cn.business.utils.BadRequestException
 
 @Service
 class BusinessService(val businessRepository: BusinessRepository) {
-    suspend fun addBusiness(business: BusinessInputModel): Long {
-        validateBusinessInput(business)
-        val businessId = businessRepository.createBusiness(business)
-        return businessId
-    }
 
-    suspend fun updateBusiness(businessId: Long, businessInput: BusinessInputModel): Business {
-        validateBusinessInput(businessInput)
-        val updatedBusiness = businessRepository.updateBusiness(businessInput.toBusiness(businessId))
+    suspend fun updateBusiness(businessId: Long, business: Business): Business {
+        validateBusinessInput(business)
+        val updatedBusiness = businessRepository.updateBusiness(business)
         return updatedBusiness
     }
 
@@ -43,7 +38,7 @@ class BusinessService(val businessRepository: BusinessRepository) {
         return matchingBusinesses
     }
 
-    private fun validateBusinessInput(business: BusinessInputModel) {
+    private fun validateBusinessInput(business: Business) {
         //TODO: make some validation if the coordinates are in New York
         if (business.address.isBlank() || business.name.isBlank()) {
             throw BadRequestException("Name or Address were cannot be blank")

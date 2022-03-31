@@ -32,7 +32,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 import pt.fcul.keys.common.ProblemJsonConverter
 import pt.fcul.keys.exceptions.EnvVarNotFoundException
 import pt.fcul.keys.exceptions.InvalidAclFileException
+import pt.fcul.keys.model.ACL
 import pt.fcul.keys.model.ACLFile
+import pt.fcul.keys.model.toACL
 import pt.fcul.keys.security.AuthFilter
 
 
@@ -89,7 +91,7 @@ class WebConfiguration : WebMvcConfigurer {
     }
 
     @Bean
-    fun getACL(): ACLFile {
+    fun getACL(): ACL {
         val filePath = System.getenv(ACL_FILE_VAR) ?: throw EnvVarNotFoundException(ACL_FILE_VAR)
         log.info("Found environment variable $ACL_FILE_VAR = $filePath")
 
@@ -106,7 +108,7 @@ class WebConfiguration : WebMvcConfigurer {
             throw InvalidAclFileException(filePath)
         }
 
-        return mapper.readValue(file, ACLFile::class.java)
+        return mapper.readValue(file, ACLFile::class.java).toACL()
     }
 }
 

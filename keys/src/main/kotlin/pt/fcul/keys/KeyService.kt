@@ -5,6 +5,7 @@ import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import pt.fcul.keys.exceptions.ForbiddenAuthorization
 import pt.fcul.keys.exceptions.KeyQuotaExceededException
+import pt.fcul.keys.model.ACL
 import pt.fcul.keys.model.ACLFile
 import pt.fcul.keys.model.KeyConsume
 import pt.fcul.keys.model.KeyInfo
@@ -19,7 +20,7 @@ import pt.fcul.keys.security.ApiAuthentication
 @Service
 class KeyService(
     val repo: KeyRepository,
-    val acl: ACLFile
+    val acl: ACL
 ) {
 
     fun generateKey(input: KeyInput): KeyInfo {

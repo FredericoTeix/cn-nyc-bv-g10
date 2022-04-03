@@ -1,4 +1,4 @@
-version: '3'
+version: '3.5'
 services:
     gateway:
       ports:
@@ -15,4 +15,5 @@ services:
         - main-net
 networks:
   main-net:
+    name: gateway_main-net
     driver: bridge

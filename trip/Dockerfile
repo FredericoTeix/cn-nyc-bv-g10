@@ -7,7 +7,7 @@ RUN mkdir -p /usr/src/app
 
 WORKDIR /usr/src/app
 
-COPY trip/requirements.txt /usr/src/app/
+COPY ./trip/requirements.txt /usr/src/app/
 RUN pip3 install --no-cache-dir -r requirements.txt
 
 COPY ./trip/swagger_server /usr/src/app/swagger_server

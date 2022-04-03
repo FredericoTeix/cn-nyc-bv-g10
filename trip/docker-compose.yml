@@ -22,7 +22,7 @@ services:
         - '8080'
         - '50051'
       environment:
-        - MONGO_URL=mongodb://rhythmfishing:Jw8HsxQtQHFPzDQj7W8b@mongo-trips:27017/trips-db
+        - MONGO_URL=mongodb://JBHPkGJMC8rCSJHjAftc:4MuVexAnFGePkzbuyH7E@mongo-trips:27017/trips-db
       build:
         context: .
         dockerfile: ./trip/Dockerfile

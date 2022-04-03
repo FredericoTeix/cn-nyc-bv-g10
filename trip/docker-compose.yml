@@ -8,8 +8,8 @@ services:
         - MONGO_INITDB_ROOT_USERNAME=sm7Sv3uect6qSTVYwvdG
         - MONGO_INITDB_ROOT_PASSWORD=cUzs9UV4jUn8bjHqwpZw
       volumes:
-        - ./mongodb/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
-        - ./mongodb/mongo-volume:/data/db
+        - ./trip/mongodb/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+        - ./trip/mongodb/mongo-volume:/data/db
       expose:
         - '27017'
       networks:
@@ -25,7 +25,7 @@ services:
         - MONGO_URL=mongodb://rhythmfishing:Jw8HsxQtQHFPzDQj7W8b@mongo-trips:27017/trips-db
       build:
         context: .
-        dockerfile: Dockerfile
+        dockerfile: ./trip/Dockerfile
       stop_signal: SIGINT
       networks:
         - gateway_main-net

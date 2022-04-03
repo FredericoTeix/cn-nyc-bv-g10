@@ -9,7 +9,7 @@ services:
         - VALUE_URL=http://value-service:8080
       build:
         context: .
-        dockerfile: Dockerfile
+        dockerfile: ./gateway/Dockerfile
       stop_signal: SIGINT
       networks:
         - main-net

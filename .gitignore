@@ -69,4 +69,7 @@ target/
 .idea
 
 # Docker mount
+/mongodb/mongo-volume
 /trip/mongodb/mongo-volume
+
+

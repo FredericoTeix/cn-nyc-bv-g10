@@ -15,11 +15,17 @@ spec:
   rules:
   - http:
       paths:
-      - path: /
+      - path: /trip
         pathType: Prefix
         backend:
           service:
             name: trips-service
             port:
               number: 8080
-
+      - path: /tripCount
+        pathType: Prefix
+        backend:
+          service:
+            name: trips-service
+            port:
+              number: 8080

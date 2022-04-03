@@ -68,7 +68,7 @@ def get_counter(trip_id):
 
 
 host = 'localhost'
-server_port = 50051
+server_port = 30001
 channel = grpc.insecure_channel(f"{host}:{server_port}")
 stub = trips_pb2_grpc.TripsStub(channel)
 get_location_by_id("2")

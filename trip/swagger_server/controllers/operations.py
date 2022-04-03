@@ -19,7 +19,10 @@ import os
 import pymongo
 import bson
 
-client = pymongo.MongoClient(os.getenv('MONGO_URL'))
+client = pymongo.MongoClient(os.getenv('MONGO_URL'),
+                             27017,
+                             username=os.getenv('MONGO_USERNAME'),
+                             password=os.getenv('MONGO_PASSWORD'))
 db = client["trips-db"]
 
 

@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: trips-deployment
+  labels:
+    app: trips
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: trips
+  template:
+    metadata:
+      labels:
+        app: trips
+    spec:
+        containers:
+        - name: trips
+          image: ralexandre00/trips:latest
+          imagePullPolicy: Always
+          ports:
+          - containerPort: 8080
+          env:
+          - name: MONGO_URL
+            valueFrom:
+              configMapKeyRef:
+                name: mongo-trips-configmap
+                key: database_url
+          - name: MONGO_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: mongo-trips-secret
+                key: mongo-root-username
+          - name: MONGO_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: mongo-trips-secret
+                key: mongo-root-password
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: trips-service
+spec:
+  selector:
+    app: trips
+  type: LoadBalancer
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+      nodePort: 30000
+

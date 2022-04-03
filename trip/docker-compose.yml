@@ -29,21 +29,6 @@ services:
       stop_signal: SIGINT
       networks:
         - gateway_main-net
-    mongo_seed:
-      image: mongo
-      depends_on:
-        - 'database'
-      links:
-      - database
-      volumes:
-        - ./mongodb/populate.sh:/scripts/populate.sh
-        - ./mongodb/zone_lookup.csv:/scripts/zone_lookup.csv
-      command:
-        - /scripts/populate.sh
-      logging:
-        driver: none
-      networks:
-        - gateway_main-net
 networks:
   gateway_main-net:
     external: true

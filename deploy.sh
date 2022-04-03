@@ -8,3 +8,4 @@ kubectl apply -f config/mongo-trips-secret.yaml
 kubectl apply -f config/mongo-trips-configmap.yaml
 kubectl apply -f config/mongo-trips.yaml
 kubectl apply -f config/trips.yaml
+kubectl apply -f config/ingress.yaml

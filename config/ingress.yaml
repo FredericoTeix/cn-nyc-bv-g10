@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: nginx-ingress
+  annotations:
+    # Uncomment for authentication
+    # nginx.ingress.kubernetes.io/auth-url: http://api_keys/keys/consume
+spec:
+  ingressClassName: nginx
+  defaultBackend:
+    service:
+      name: trips-service
+      port:
+        number: 80
+  rules:
+  - http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: trips-service
+            port:
+              number: 8080
+

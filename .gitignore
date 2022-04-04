@@ -72,4 +72,7 @@ target/
 /mongodb/mongo-volume
 /trip/mongodb/mongo-volume
 
-
+# Certs and keys
+*.key
+*.crt
+*.csr

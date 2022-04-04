@@ -1,2 +1,8 @@
-sudo docker-compose -f gateway/docker-compose.yml up  
-sudo docker-compose -f trip/docker-compose.yml up
+# NYC Value
+
+## Deploy
+```sh
+./scripts/create_certs.sh
+./scripts/create_gcp_clust.sh
+./scripts/deploy.sh
+```

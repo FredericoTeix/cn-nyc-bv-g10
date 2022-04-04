@@ -1,5 +1,4 @@
 #!/bin/bash
-cd ..
 
 REGION="europe-west1-b"
 CLUSTER_NAME="cntrips-cluster-1"

@@ -7,11 +7,8 @@ metadata:
     # nginx.ingress.kubernetes.io/auth-url: http://api_keys/keys/consume
 spec:
   ingressClassName: nginx
-  defaultBackend:
-    service:
-      name: trips-service
-      port:
-        number: 80
+  tls:
+  - secretName: ingress-secret
   rules:
   - http:
       paths:

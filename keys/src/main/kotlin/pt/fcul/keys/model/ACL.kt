@@ -5,14 +5,14 @@ import org.springframework.http.HttpMethod
 import org.springframework.web.util.UriTemplate
 
 data class ACLFile(
-    val endpoints: Map<String, Map<KeyScope, Array<HttpMethod>>>
+    val endpoints: Map<String, Map<KeyScope, Map<HttpMethod, Int>>>
 )
 
 fun ACLFile.toACL(): ACL {
     val resources = endpoints.map { (path, subjects) ->
         val template = UriTemplate(path)
         val aclSubjects = subjects.map { (scope, methods) ->
-            ACLSubject(scope, methods.toList())
+            ACLSubject(scope, methods)
         }
 
         ACLPathResource(template, aclSubjects)
@@ -40,13 +40,11 @@ data class ACLPathResource(
 
 data class ACLSubject(
     val scope: KeyScope,
-    val methods: List<HttpMethod>
+    val methods: Map<HttpMethod, Int>
 )
 
-fun ACL.hasPermission(path: String, method: HttpMethod, scope: KeyScope) = endpoints
+fun ACL.consume(path: String, method: HttpMethod, scope: KeyScope): Int? = endpoints
     .filter { resource -> resource.template.matches(path.parsePath()) }
-    .filter { resource ->
-        resource.subjects.any { subject ->
-            subject.scope == scope && subject.methods.contains(method)
-        }
-    }.any()
+    .flatMap { it.subjects }
+    .firstOrNull { it.scope == scope }
+    ?.methods?.get(method)

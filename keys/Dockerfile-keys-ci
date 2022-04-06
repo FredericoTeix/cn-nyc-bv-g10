@@ -1,0 +1,14 @@
+FROM adoptopenjdk/openjdk11:alpine
+
+WORKDIR /home
+RUN mkdir -p ./app
+COPY . ./app
+
+RUN tar -zxvf ./app/src/test/resources/scripts/mongosh-0.13.2-linux-x64.tgz
+RUN mv bin/mongosh /usr/local/bin/
+RUN mv bin/mongocryptd-mongosh /usr/local/bin/
+
+WORKDIR ./app
+USER root
+
+ENTRYPOINT ["./src/test/resources/scripts/wait_db.sh","./gradlew","clean","build","--no-daemon"]

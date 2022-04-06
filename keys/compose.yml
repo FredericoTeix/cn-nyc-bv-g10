@@ -1,12 +1,12 @@
 version: "3.3"
 
 services:
-  api-keys:
+  keys-service:
     restart: always
-    container_name: api_keys
+    container_name: keys_service
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile-keys
     environment:
       MONGO_DATABASE_URL: mongodb://keys_mongodb:27017
       MONGO_DATABASE_NAME: api_keys
@@ -23,12 +23,12 @@ services:
     container_name: keys_mongodb
     image: mongo
     environment:
-      - MONGO_INITDB_DATABASE=keys
+      - MONGO_INITDB_DATABASE=api_keys
     volumes:
+      - ./src/test/resources/scripts/init-db.js:/docker-entrypoint-initdb.d/init-db.js:ro
       - mongo_data:/data/db
     ports:
       - "27017:27017"
-    command: --quiet --logpath /dev/null
 
 volumes:
   mongo_data:

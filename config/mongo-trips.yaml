@@ -9,8 +9,20 @@ spec:
     requests:
       storage: 10Gi
 ---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo-trips-service
+spec:
+  selector:
+    app: mongo-trips
+  ports:
+    - protocol: TCP
+      port: 27017
+      targetPort: 27017
+---
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: mongo-trips-deployment
   labels:
@@ -20,6 +32,7 @@ spec:
   selector:
     matchLabels:
       app: mongo-trips
+  serviceName: "mongo-trips-service"
   template:
     metadata:
       labels:
@@ -45,20 +58,30 @@ spec:
           volumeMounts:
             - mountPath: /data/db
               name: mongo-trips-claim0
+          resources:
+            requests:
+              cpu: "200m"
         volumes:
           - name: mongo-trips-claim0
             persistentVolumeClaim:
               claimName: mongo-trips-claim0
 ---
-apiVersion: v1
-kind: Service
+apiVersion: autoscaling/v2beta2
+kind: HorizontalPodAutoscaler
 metadata:
-  name: mongo-trips-service
+  name: mongo-trips-scaler
 spec:
-  selector:
-    app: mongo-trips
-  ports:
-    - protocol: TCP
-      port: 27017
-      targetPort: 27017
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: StatefulSet
+    name: mongo-trips-deployment
+  minReplicas: 1
+  maxReplicas: 5
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 50
 

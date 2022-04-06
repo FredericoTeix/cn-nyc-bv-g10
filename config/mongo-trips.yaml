@@ -61,6 +61,26 @@ spec:
           resources:
             requests:
               cpu: "200m"
+          readinessProbe:
+            initialDelaySeconds: 15
+            timeoutSeconds: 3
+            periodSeconds: 10
+            failureThreshold: 3
+            exec:
+              command:
+              - mongo
+              - --eval
+              - db.adminCommand('ping')
+          livenessProbe:
+            initialDelaySeconds: 15
+            timeoutSeconds: 3
+            periodSeconds: 10
+            failureThreshold: 3
+            exec:
+              command:
+              - mongo
+              - --eval
+              - db.adminCommand('ping')
         volumes:
           - name: mongo-trips-claim0
             persistentVolumeClaim:

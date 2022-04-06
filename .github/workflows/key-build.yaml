@@ -10,5 +10,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: Change wrapper permissions
+        run: chmod +x keys/gradlew
+
       - name: Build and test
         run: docker compose -f keys/compose-ci.yml run --rm keys-test

@@ -1,4 +1,4 @@
-FROM adoptopenjdk/openjdk11:alpine
+FROM openjdk:11-jdk
 
 WORKDIR /home
 RUN mkdir -p ./app
@@ -11,4 +11,4 @@ RUN mv bin/mongocryptd-mongosh /usr/local/bin/
 WORKDIR ./app
 USER root
 
-ENTRYPOINT ["./src/test/resources/scripts/wait_db.sh","./gradlew","clean","build","--no-daemon"]
+ENTRYPOINT ["sh", "./src/test/resources/scripts/wait_db.sh","./gradlew","clean","build","--no-daemon"]

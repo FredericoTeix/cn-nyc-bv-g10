@@ -9,11 +9,9 @@ services:
     environment:
       MONGO_DATABASE_URL: mongodb://keys_mongodb_test:27017
       MONGO_DATABASE_NAME: api_keys_test
-      ACL_FILE: /home/app/acl.yaml
-    volumes:
-      - ./acl.yaml:/home/app/acl.yaml:ro
+      ACL_FILE: acl.yaml
     depends_on:
-      - keys-mongodb
+      - keys-mongodb-test
     ports:
       - "8080:8080"
 

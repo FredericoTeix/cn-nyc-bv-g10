@@ -21,11 +21,12 @@ services:
   keys-mongodb:
     restart: always
     container_name: keys_mongodb
-    image: mongo
+    build:
+      context: .
+      dockerfile: Dockerfile-mongo
     environment:
       - MONGO_INITDB_DATABASE=api_keys
     volumes:
-      - ./src/test/resources/scripts/init-db.js:/docker-entrypoint-initdb.d/init-db.js:ro
       - mongo_data:/data/db
     ports:
       - "27017:27017"

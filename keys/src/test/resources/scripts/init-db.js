@@ -9,8 +9,8 @@ adminKey = {
     scope: 'ADMIN'
 }
 
-keysDb.keys.createIndex({"key": 1})
+keysDb.keys.createIndex({"key": 1}, {unique: true})
 keysDb.keys.insertOne(adminKey)
 
-testDb.keys.createIndex({"key": 1})
+testDb.keys.createIndex({"key": 1}, {unique: true})
 testDb.keys.insertOne(adminKey)

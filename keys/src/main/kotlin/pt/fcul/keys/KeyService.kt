@@ -6,12 +6,11 @@ import org.springframework.stereotype.Service
 import pt.fcul.keys.exceptions.ForbiddenAuthorization
 import pt.fcul.keys.exceptions.KeyQuotaExceededException
 import pt.fcul.keys.model.ACL
-import pt.fcul.keys.model.ACLFile
 import pt.fcul.keys.model.KeyConsume
 import pt.fcul.keys.model.KeyInfo
 import pt.fcul.keys.model.KeyInput
 import pt.fcul.keys.model.KeyScope
-import pt.fcul.keys.model.hasPermission
+import pt.fcul.keys.model.consume
 import pt.fcul.keys.model.sha256
 import pt.fcul.keys.repository.KeyRepository
 import pt.fcul.keys.security.ApiAuthentication
@@ -81,15 +80,13 @@ class KeyService(
         val hashedKey = auth.principal.password
         val currInfo = auth.keyInfo
 
-        if (!acl.hasPermission(consume.path, consume.method, currInfo.scope)) {
-            throw ForbiddenAuthorization()
-        }
+        val consumes = acl.consume(consume.path, consume.method, currInfo.scope) ?: throw ForbiddenAuthorization()
 
-        if (currInfo.used >= currInfo.quota) {
+        if (currInfo.used + consumes >= currInfo.quota) {
             throw KeyQuotaExceededException(hashedKey, currInfo.quota)
         }
 
-        val newInfo = KeyInfo(currInfo.contact, currInfo.quota, hashedKey, currInfo.used + 1, currInfo.scope)
+        val newInfo = KeyInfo(currInfo.contact, currInfo.quota, hashedKey, currInfo.used + consumes, currInfo.scope)
         repo.updateKey(hashedKey, newInfo)
     }
 

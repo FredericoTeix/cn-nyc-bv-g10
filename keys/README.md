@@ -13,22 +13,23 @@ which resources can be accessed by the key.
 ### Authorization
 
 API Keys can only have one of two possible scopes: ``ADMIN`` or ``CONSUMER``.  
-A file ``acl.yaml`` can be edited to configure which resources and actions can be performed by the key scopes.  
+A file ``acl.yaml`` can be edited to configure which resources and actions can be performed by the key scopes. Each
+action can consume a different amount of usages.
 An example of this file is as follows:
 ```yaml
 endpoints:
   /trips:             # allowed resources are specified by its path only, without query parameters or any other URI property
     ADMIN:            # every resource defines which scopes can access it and what operations can be made
-      - "GET"         # operations must correspond to a valid HTTP method
-      - "PUT"
+      GET": 0         # operations must correspond to a valid HTTP method
+      PUT: 0
     CONSUMER:
-      - "GET"
+      GET: 3
   /trips/{tid}:       # a path can also contain path parameters, following the template standard (surrounded by { })
     ADMIN:
-      - "GET"
-      - "DELETE"
+      GET: 0
+      DELETE: 0
     CONSUMER:
-      - "GET"
+      GET: 1
 ```
 
 

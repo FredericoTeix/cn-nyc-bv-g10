@@ -1,0 +1,26 @@
+version: "3.3"
+
+services:
+  keys-test:
+    container_name: keys_service_test
+    build:
+      context: .
+      dockerfile: Dockerfile-keys-ci
+    environment:
+      MONGO_DATABASE_URL: mongodb://keys_mongodb_test:27017
+      MONGO_DATABASE_NAME: api_keys_test
+      ACL_FILE: acl.yaml
+    depends_on:
+      - keys-mongodb-test
+    ports:
+      - "8080:8080"
+
+  keys-mongodb-test:
+    container_name: keys_mongodb_test
+    build:
+      context: .
+      dockerfile: Dockerfile-mongo
+    environment:
+      - MONGO_INITDB_DATABASE=api_keys_test
+    ports:
+      - "27017:27017"

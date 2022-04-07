@@ -14,4 +14,4 @@ jobs:
         run: chmod +x keys/gradlew
 
       - name: Build and test
-        run: docker compose -f keys/compose-ci.yml run --rm keys-test
+        run: docker compose -f keys/compose-ci.yml run --no-TTY --rm keys-test

@@ -1,5 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.springframework.boot.gradle.tasks.bundling.BootJar as BootJar
+import org.gradle.api.tasks.testing.logging.TestLogEvent
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 
 plugins {
     id("org.springframework.boot") version "2.6.5"

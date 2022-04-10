@@ -54,6 +54,30 @@ spec:
             mountPath: /home/app/acl.yaml
             subPath: acl.yaml
             readOnly: true
+          readinessProbe:
+            initialDelaySeconds: 15
+            timeoutSeconds: 3
+            periodSeconds: 10
+            failureThreshold: 3
+            httpGet:
+              path: /actuator/health
+              port: 8080
+          livenessProbe:
+            initialDelaySeconds: 15
+            timeoutSeconds: 3
+            periodSeconds: 10
+            failureThreshold: 3
+            httpGet:
+              path: /actuator/health
+              port: 8080
+          startupProbe:
+            initialDelaySeconds: 30
+            timeoutSeconds: 3
+            periodSeconds: 30
+            failureThreshold: 30
+            httpGet:
+              path: /actuator/health
+              port: 8080
         volumes:
           - name: acl-volume
             configMap:

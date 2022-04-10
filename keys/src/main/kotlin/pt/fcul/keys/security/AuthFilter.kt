@@ -27,6 +27,11 @@ class AuthFilter(
 
     override fun doFilterInternal(request: HttpServletRequest, response: HttpServletResponse, chain: FilterChain) {
         try {
+            if (request.requestURI.startsWith("/actuator")) {
+                chain.doFilter(request, response)
+                return
+            }
+
             val apiKey = request.getHeader(API_KEY_HEADER) ?: throw UnauthorizedException()
             val keyInfo = keyRepository
                 .runCatching {

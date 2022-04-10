@@ -31,6 +31,7 @@ dependencies {
     implementation("commons-io:commons-io:2.11.0")
     implementation("commons-codec:commons-codec")
     implementation("org.hibernate:hibernate-validator:7.0.1.Final")
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
 
     implementation("org.mongodb:mongodb-driver-sync:$mongoVersion")
     implementation("org.mongodb:mongodb-driver-core:$mongoVersion")

@@ -72,7 +72,7 @@ class KeyService(
         val newInfo = KeyInfo(oldInfo.contact, oldInfo.quota, newHash, oldInfo.used, oldInfo.scope)
 
         repo.updateKey(oldHash, newInfo)
-        return newInfo
+        return KeyInfo(oldInfo.contact, oldInfo.quota, uuid, oldInfo.used, oldInfo.scope)
     }
 
     fun consumeKey(consume: KeyConsume) {

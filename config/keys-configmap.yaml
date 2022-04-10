@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: keys-configmap
+data:
+  database_host: mongo-keys-service
+  database_port: "27017"
+  database_name: api_keys
+  acl.yaml: |
+    endpoints:
+      /trips:
+        ADMIN:
+          GET: 0
+          PUT: 0
+        CONSUMER:
+          GET: 3
+      /trips/{tid}:
+        ADMIN:
+          GET: 0
+          DELETE: 0
+        CONSUMER:
+          GET: 1

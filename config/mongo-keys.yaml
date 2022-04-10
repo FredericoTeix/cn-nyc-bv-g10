@@ -1,0 +1,77 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mongo-keys-storage
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo-keys-service
+spec:
+  selector:
+    app: mongo-keys
+  ports:
+    - protocol: TCP
+      port: 27017
+      targetPort: 27017
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mongo-keys-deployment
+  labels:
+    app: mongo-keys
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongo-keys
+  serviceName: mongo-keys-service
+  template:
+    metadata:
+      labels:
+        app: mongo-keys
+    spec:
+        terminationGracePeriodSeconds: 10
+        containers:
+        - name: mongo-keys
+          image: zath/keysmongo
+          imagePullPolicy: Always
+          ports:
+          - containerPort: 27017
+          volumeMounts:
+            - mountPath: /data/db
+              name: mongo-keys-storage
+          resources:
+            requests:
+              cpu: "200m"
+          readinessProbe:
+            initialDelaySeconds: 15
+            timeoutSeconds: 3
+            periodSeconds: 10
+            failureThreshold: 3
+            exec:
+              command:
+              - mongo
+              - --eval
+              - db.adminCommand('ping')
+          livenessProbe:
+            initialDelaySeconds: 15
+            timeoutSeconds: 3
+            periodSeconds: 10
+            failureThreshold: 3
+            exec:
+              command:
+              - mongo
+              - --eval
+              - db.adminCommand('ping')
+        volumes:
+          - name: mongo-keys-storage
+            persistentVolumeClaim:
+              claimName: mongo-keys-storage

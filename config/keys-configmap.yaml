@@ -20,3 +20,8 @@ data:
           DELETE: 0
         CONSUMER:
           GET: 1
+      /key:
+        ADMIN:
+          GET: 0
+        CONSUMER:
+          GET: 1

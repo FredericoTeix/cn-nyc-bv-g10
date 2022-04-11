@@ -3,8 +3,8 @@ kind: Ingress
 metadata:
   name: nginx-ingress
   annotations:
-    # Uncomment for authentication
-    # nginx.ingress.kubernetes.io/auth-url: http://api_keys/keys/consume
+    nginx.ingress.kubernetes.io/auth-url: http://keys-service.default.svc.cluster.local:8080/key/consume
+    nginx.ingress.kubernetes.io/auth-method: PUT
 spec:
   ingressClassName: nginx
   tls:
@@ -24,5 +24,12 @@ spec:
         backend:
           service:
             name: trips-service
+            port:
+              number: 8080
+      - path: /key
+        pathType: Prefix
+        backend:
+          service:
+            name: keys-service
             port:
               number: 8080

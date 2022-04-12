@@ -12,7 +12,7 @@ message Business {
 }
 
 message BusinessId {
-  int64 id = 1;
+  string id = 1;
 }
 
 message UpdateBusinessRequest {
@@ -29,6 +29,19 @@ message SearchBusinessRequest {
 }
 
 message SearchBusinessResponse {
+  oneof either {
+    BusinessList results = 1;
+    SearchBusinessError error = 2;
+  }
+
+  enum SearchBusinessError {
+    INVALID_PARAMS = 0;
+    DB_ACCESS_ERROR = 1;
+    UNKNOWN = 2;
+  }
+}
+
+message BusinessList {
   repeated Business results = 1;
 }
 

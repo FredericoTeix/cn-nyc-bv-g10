@@ -1,0 +1,34 @@
+version: "3.3"
+
+services:
+  api-keys:
+    restart: always
+    container_name: api_keys
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      MONGO_DATABASE_URL: mongodb://keys_mongodb:27017
+      MONGO_DATABASE_NAME: api_keys
+      ACL_FILE: /home/app/acl.yaml
+    volumes:
+      - ./acl.yaml:/home/app/acl.yaml:ro
+    depends_on:
+      - keys-mongodb
+    ports:
+      - "8080:8080"
+
+  keys-mongodb:
+    restart: always
+    container_name: keys_mongodb
+    image: mongo
+    environment:
+      - MONGO_INITDB_DATABASE=keys
+    volumes:
+      - mongo_data:/data/db
+    ports:
+      - "27017:27017"
+    command: --quiet --logpath /dev/null
+
+volumes:
+  mongo_data:

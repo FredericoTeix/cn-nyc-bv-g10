@@ -1,0 +1,251 @@
+openapi: 3.0.1
+info:
+  title: NYC Value
+  description: >-
+    This microservice is responsible to provide and authenticate api keys, while also limiting their usage
+  version: 1.0.0
+paths:
+  /key:
+    post:
+      tags:
+        - API Key
+        - Admin
+      summary: Generate an API Key
+      operationId: generateKey
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                contact:
+                  type: string
+                  description: contact of key consumer
+                quota:
+                  type: integer
+                  description: maximum number of requests allowed
+                scope:
+                  type: string
+                  enum: [CONSUMER, ADMIN]
+                  description: scope of key
+              required:
+                - contact
+                - quota
+            example:
+              contact: user@mail.com
+              quota: 1000
+              scope: CONSUMER
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  contact:
+                    type: string
+                    description: contact of key consumer
+                  quota:
+                    type: integer
+                    description: maximum number of requests allowed
+                  key:
+                    type: string
+                    description: generated raw key
+                  used:
+                    type: integer
+                    description: requests consumed
+                  scope:
+                    type: string
+                    enum: [CONSUMER, ADMIN]
+                    description: scope of key
+              example:
+                contact: user@mail.com
+                quota: 1000
+                key: 123e4567-e89b-42d3-a456-556642440000
+                used: 0
+                scope: CONSUMER
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+    delete:
+      tags:
+        - API Key
+      summary: Revoke an API Key
+      operationId: revokeKey
+      responses:
+        '200':
+          description: OK
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+    get:
+      tags:
+        - API Key
+      summary: Get API Key information
+      operationId: inspectKey
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  contact:
+                    type: string
+                    description: contact of key consumer
+                  quota:
+                    type: integer
+                    description: maximum number of requests allowed
+                  key:
+                    type: string
+                    description: hashed key
+                  used:
+                    type: integer
+                    description: requests consumed
+                  scope:
+                    type: string
+                    enum: [CONSUMER, ADMIN]
+                    description: scope of key
+              example:
+                contact: user@mail.com
+                quota: 1000
+                key: 5d962bcc577343eff09091f902ca52d125ecaab8f3fe3cd2e92227dd916be1d3
+                used: 0
+                scope: CONSUMER
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+    put:
+      tags:
+        - API Key
+        - Admin
+      summary: Update API Key quota or contact
+      operationId: editKeyInfo
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                contact:
+                  type: string
+                  description: contact of key consumer
+                quota:
+                  type: integer
+                  description: maximum number of requests allowed
+                key:
+                  type: string
+                  description: the api key
+                used:
+                  type: integer
+                  description: requests consumed
+                scope:
+                  type: string
+                  enum: [CONSUMER, ADMIN]
+                  description: scope of key
+              required:
+                - contact
+                - quota
+                - key
+                - used
+                - scope
+            example:
+              contact: user@mail.com
+              quota: 1000
+              key: 123e4567-e89b-42d3-a456-556642440000
+              used: 0
+              scope: CONSUMER
+      responses:
+        '200':
+          description: OK
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+  /key/refresh:
+    put:
+      tags:
+        - API Key
+      summary: Change the API Key
+      operationId: refreshKey
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  contact:
+                    type: string
+                    description: contact of key consumer
+                  quota:
+                    type: integer
+                    description: maximum number of requests allowed
+                  key:
+                    type: string
+                    description: generated raw key
+                  used:
+                    type: integer
+                    description: requests consumed
+                  scope:
+                    type: string
+                    enum: [CONSUMER, ADMIN]
+                    description: scope of key
+              example:
+                contact: user@mail.com
+                quota: 1000
+                key: 123e4567-e89b-42d3-a456-556642440000
+                used: 0
+                scope: CONSUMER
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+  /key/consume:
+    put:
+      tags:
+        - API Key
+      summary: Consume a usage of an API Key
+      operationId: consumeKey
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                path:
+                  type: string
+                  description: the path of the endpoint that is trying to be accessed
+                method:
+                  type: integer
+                  description: the HTTP method that is being used
+              required:
+                - path
+                - method
+            example:
+              path: /trips
+              method: GET
+      responses:
+        '200':
+          description: OK
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+components:
+  responses:
+    UnauthorizedError:
+      description: API key is missing or invalid
+      headers:
+        WWW_Authenticate:
+          schema:
+            type: string
+  securitySchemes:
+    api_key:
+      type: apiKey
+      in: header
+      name: X-API-KEY
+security:
+  - api_key: []
+tags:
+  - name: Admin
+    description: Limited to admin users
+  - name: API Key
+    description: Manage api keys

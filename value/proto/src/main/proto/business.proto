@@ -6,8 +6,9 @@ message Business {
   BusinessId id = 1;
   string name = 2;
   string address = 3;
-  double latitude = 4;
-  double longitude = 5;
+  string city = 4;
+  double latitude = 5;
+  double longitude = 6;
 }
 
 message BusinessId {
@@ -46,5 +47,5 @@ service BusinessService {
   rpc getBusiness(BusinessId) returns (Business);
   rpc updateBusiness(UpdateBusinessRequest) returns (Business);
   rpc deleteBusiness(BusinessId) returns (DeleteBusinessResponse);
-  rpc searchBusiness(SearchBusinessRequest) returns (DeleteBusinessResponse);
+  rpc searchBusiness(SearchBusinessRequest) returns (SearchBusinessResponse);
 }

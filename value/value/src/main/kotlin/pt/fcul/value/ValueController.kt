@@ -9,14 +9,21 @@ import java.util.*
 
 @RestController
 class ValueController {
+
+    // TODO: [WARNING] Services ports may change later on
+    private val businessClient = BusinessClient(System.getenv("BUSINESS"),8080)
+    private val tripClient = TripClient(System.getenv("TRIP"),50051)
+
     @GetMapping("/business/{id}")
-    fun valueByBusiness( @PathVariable id:Int,
-                         @RequestParam("start_date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) start: Date,
-                         @RequestParam("end_date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) end: Date
+    suspend fun valueByBusiness(@PathVariable id:Long,
+                                @RequestParam("start_date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) start: Date,
+                                @RequestParam("end_date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) end: Date
     ){
         //TODO: Get the value associated to a business in a given time range
         //  (1) Get business Location (Serviço do daniel)
         //  (2) Count moves at Business Location from start_date until end_date (Serviço Rodrigo) and Return that value
+        val b = businessClient.getBusiness(id)
+
         println("${id}: $start $end")
     }
 

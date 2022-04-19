@@ -8,6 +8,7 @@ import trips.locationID
 import java.io.Closeable
 import java.util.concurrent.TimeUnit
 import com.google.protobuf.Timestamp
+import trips.city
 import trips.getCountTripsInLocationRequest
 
 class TripClient(address: String, port: Int) : Closeable {
@@ -30,7 +31,7 @@ class TripClient(address: String, port: Int) : Closeable {
             this.locationId = locationId
         }
 
-        print("[getLocationById] locationID:{$locationId}")
+        println("[getLocationById] locationID:{$locationId}")
         return stub.getLocationById(request)
     }
 
@@ -43,8 +44,18 @@ class TripClient(address: String, port: Int) : Closeable {
             this.locationId = locationId
         }
 
-        print("[getCountTripsInLocation] locationID:{$locationId} startDate:{$startDate} endDate:{$endDate}")
+        println("[getCountTripsInLocation] locationID:{$locationId} startDate:{$startDate} endDate:{$endDate}")
         return stub.getCountTripsInLocation(request)
+    }
+
+    suspend fun getLocationByCity(cName: String) : LocationID {
+        //rpc GetLocationByCity(City) returns (LocationID) {}
+        val request = city {
+            this.cityName = cName
+        }
+
+        println("[getLocationByCity] city:{$cName}")
+        return stub.getLocationByCity(request)
     }
 
 

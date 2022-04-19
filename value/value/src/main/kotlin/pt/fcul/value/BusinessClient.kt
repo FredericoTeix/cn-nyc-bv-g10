@@ -32,8 +32,8 @@ class BusinessClient(address: String, port: Int) : Closeable {
         return stub.getBusiness(request)
     }
 
-    suspend fun searchBusiness(lat : Double, lon : Double, radius : Double, limit : Int, skip : Int) : DeleteBusinessResponse {
-        // rpc searchBusiness(SearchBusinessRequest) returns (DeleteBusinessResponse);
+    suspend fun searchBusiness(lat : Double, lon : Double, radius : Double, limit : Int, skip : Int) : SearchBusinessResponse {
+        // rpc searchBusiness(SearchBusinessRequest) returns (SearchBusinessResponse);
         val request = searchBusinessRequest {
             this.latitude = lat
             this.longitude = lon

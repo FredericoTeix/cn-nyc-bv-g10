@@ -1,3 +1,14 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: grafana-storage
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -20,13 +31,28 @@ spec:
       containers:
         - name: grafana
           image: grafana/grafana
+          ports:
+          - containerPort: 3000
+            name: http
+
+          volumeMounts:
+            - name: grafana-storage
+              mountPath: /var/lib/grafana
+      volumes:
+        - name: grafana-storage
+          persistentVolumeClaim:
+            claimName: grafana-storage
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534
+        fsGroup: 472
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: grafana-service
 spec:
-  type: NodePort
+  type: LoadBalancer
   selector:
     app: grafana
     purpose: monitoring-service
@@ -34,4 +60,4 @@ spec:
     - name: grafanaui
       protocol: TCP
       port: 3000
-      targetPort: 3000
+      targetPort: http

@@ -5,6 +5,7 @@ plugins {
     id("io.spring.dependency-management") version "1.0.11.RELEASE"
     kotlin("jvm")
     kotlin("plugin.spring") version "1.6.10"
+    kotlin("plugin.serialization") version "1.6.20"
 }
 
 group = "ul.fc.mei.cn"
@@ -16,7 +17,7 @@ dependencies {
     implementation("io.grpc:grpc-protobuf:${rootProject.ext["grpcVersion"]}")
     implementation("io.grpc:grpc-kotlin-stub:${rootProject.ext["grpcKotlinVersion"]}")
 
-
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
 
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-webflux")

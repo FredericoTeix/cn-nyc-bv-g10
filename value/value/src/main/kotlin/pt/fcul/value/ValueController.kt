@@ -1,6 +1,9 @@
 package pt.fcul.value
 
 import com.google.protobuf.Timestamp
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -18,19 +21,21 @@ class ValueController {
     suspend fun valueByBusiness(@PathVariable id:Long,
                                 @RequestParam("start_date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) start: Timestamp,
                                 @RequestParam("end_date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) end: Timestamp
-    ) : Long
+    ) : String
     {
-        //TODO: Get the value associated to a business in a given time range
-        //  (1) Get business Location (Serviço do daniel)
-        //  (2) Count moves at Business Location from start_date until end_date (Serviço Rodrigo) and Return that value
+        /**
+         *  Get the value associated to a business in a given time range
+         */
         val b = businessClient.getBusiness(id)
         val loc = tripClient.getLocationByCity(b.city)
 
         println("${id}: $start $end")
-        return tripClient.getCountTripsInLocation(start,end,loc.locationId.toString()).count
+        val value = tripClient.getCountTripsInLocation(start,end,loc.locationId.toString()).count
+        val data = BusinessValue(id,value)
+        return Json.encodeToString(data)
     }
 
-    @GetMapping("/value/top")
+    @GetMapping("/value/top/businesses")
     suspend fun topValueBusinesses( @RequestParam("latitude") lat: Double,
                             @RequestParam("longitude") lon: Double,
                             @RequestParam("rad") radius: Double,
@@ -39,6 +44,9 @@ class ValueController {
                             @RequestParam("end_date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) end: Timestamp
     ) : String
     {
+        /**
+         *  Get the top valued businesses in a given time range, regarding some location
+         */
         val nResults = 100 // given a (lat,lon), nResults are enough to calculate top businesses
         val b = businessClient.searchBusiness(lat,lon,radius,nResults,0)
 
@@ -62,7 +70,11 @@ class ValueController {
             }
         }
 
-        return map.toList().sortedBy { (_,value) -> value }.toString()
+        val sortedList = map.toList()
+                            .sortedBy { (_,value) -> value }
+                            .map{(idx,value) -> BusinessValue(b.getResults(idx).id.id,value)}
+        val data = TopBusinessesAtLocation(lat,lon,radius,sortedList)
+        return Json.encodeToString(data)
     }
 
     @GetMapping("/value/location/radius")
@@ -71,23 +83,41 @@ class ValueController {
                                @RequestParam("rad") radius: Double,
                                @RequestParam("start_date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) start: Timestamp,
                                @RequestParam("end_date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) end: Timestamp
-    ) : Long
+    ) : String
     {
-        // TODO: Get the value associated to a location in a given time range defining
-        //  the search location by a coordinate and a radius
+        /**
+         * Get the value associated to a location in a given time range defining
+         * the search location by a coordinate and a radius
+         */
+
         val nResults = 100 // given a (lat,lon), nResults are enough to calculate top businesses
         val b = businessClient.searchBusiness(lat,lon,radius,nResults,0)
-        var areaValue:Long = 0
+        var value:Long = 0
         val citiesMutableSet = mutableSetOf<String>() // List of cities analysed
         for(i in 0..b.resultsCount) { // Iterate over response results
             val r = b.getResults(i)
             if (citiesMutableSet.add(r.city)) {
                 val id = tripClient.getLocationByCity(r.city).locationId
-                areaValue += tripClient.getCountTripsInLocation(start, end, id).count
+                value += tripClient.getCountTripsInLocation(start, end, id).count
             }
         }
-        return areaValue
+
+        val data = AreaValue(value,citiesMutableSet.toSet())
+        return Json.encodeToString(data)
     }
 
+
+    /**
+     * Data models
+     */
+    @Serializable
+    data class BusinessValue(val id: Long, val value: Long)
+    @Serializable
+    data class TopBusinessesAtLocation(val lat: Double,
+                                       val lon: Double,
+                                       val radius: Double,
+                                       val businesses: List<BusinessValue>)
+    @Serializable
+    data class AreaValue(val value: Long, val cities: Set<String>)
 
 }

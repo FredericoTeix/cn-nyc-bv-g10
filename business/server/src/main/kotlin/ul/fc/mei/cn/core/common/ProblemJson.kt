@@ -1,4 +1,4 @@
-package ul.fc.mei.cn.business.common
+package ul.fc.mei.cn.core.common
 
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize

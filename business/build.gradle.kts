@@ -7,11 +7,10 @@ plugins {
 
 allprojects {
     repositories {
-        google()
         mavenCentral()
+        google()
     }
 }
-
 
 ext["grpcVersion"] = "1.43.2" // need to wait for grpc kotlin to move past this
 ext["grpcKotlinVersion"] = "1.2.1" // CURRENT_GRPC_KOTLIN_VERSION

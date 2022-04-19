@@ -1,4 +1,4 @@
-package ul.fc.mei.cn.business.utils
+package ul.fc.mei.cn.web.utils
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.module.kotlin.MissingKotlinParameterException
@@ -11,7 +11,7 @@ import org.springframework.web.HttpRequestMethodNotSupportedException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.servlet.NoHandlerFoundException
-import ul.fc.mei.cn.business.common.ProblemJson
+import ul.fc.mei.cn.core.common.ProblemJson
 import javax.servlet.http.HttpServletRequest
 import kotlin.reflect.full.findAnnotation
 

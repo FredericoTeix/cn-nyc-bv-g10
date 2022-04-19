@@ -27,12 +27,16 @@ dependencies {
     implementation("io.github.lognet:grpc-spring-boot-starter:4.6.0")
 
     // MongoDB dependencies 
-    val mongoVersion = "4.5.0"
-    implementation("org.mongodb:mongodb-driver-async:$mongoVersion")
+    val mongoVersion = "4.4.0"
+    //implementation("org.mongodb:mongodb-driver-async:3.12.10")
     implementation("org.mongodb:mongodb-driver-core:$mongoVersion")
-    implementation("org.litote.kmongo:kmongo-coroutine:$mongoVersion")
     implementation("org.mongodb:bson:$mongoVersion")
+    implementation("org.litote.kmongo:kmongo:$mongoVersion")
     implementation("org.litote.kmongo:kmongo-id:$mongoVersion")
+    implementation("org.mongodb:mongodb-driver-async:3.12.10")
+    implementation("org.litote.kmongo:kmongo-coroutine-core:$mongoVersion")
+    implementation("org.litote.kmongo:kmongo-coroutine:$mongoVersion")
+
 
     // Spring Dependencies
     implementation("org.springframework.boot:spring-boot-starter-web")
@@ -56,3 +60,10 @@ tasks.withType<KotlinCompile> {
         jvmTarget = "11"
     }
 }
+
+tasks.jar {
+    manifest {
+        attributes["Main-Class"] = "ul.fc.mei.cn.BusinessApplicationKt"
+    }
+}
+

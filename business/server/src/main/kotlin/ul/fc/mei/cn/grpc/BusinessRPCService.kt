@@ -1,18 +1,21 @@
 package ul.fc.mei.cn.grpc
 
+import com.mongodb.MongoClientException
 import org.lognet.springboot.grpc.GRpcService
 import ul.fc.cn.proto.BusinessOuterClass.*
 import ul.fc.cn.proto.BusinessServiceGrpcKt
 import ul.fc.cn.proto.business
 import ul.fc.cn.proto.businessId
+import ul.fc.cn.proto.businessList
 import ul.fc.cn.proto.deleteBusinessResponse
 import ul.fc.cn.proto.searchBusinessResponse
-import ul.fc.mei.cn.business.BusinessService
-import ul.fc.mei.cn.business.model.BusinessInputModel
-import ul.fc.mei.cn.business.model.toProtobuf
-import ul.fc.mei.cn.business.utils.NotFoundException
+import ul.fc.mei.cn.core.BusinessService
+import ul.fc.mei.cn.core.model.ModelBusiness
+import ul.fc.mei.cn.core.model.toProtobuf
+import ul.fc.mei.cn.web.utils.BadRequestException
+import ul.fc.mei.cn.web.utils.NotFoundException
 
-typealias ModelBusiness = ul.fc.mei.cn.business.model.Business
+
 
 @GRpcService
 class BusinessRPCService(val service: BusinessService) : BusinessServiceGrpcKt.BusinessServiceCoroutineImplBase() {
@@ -64,10 +67,26 @@ class BusinessRPCService(val service: BusinessService) : BusinessServiceGrpcKt.B
     }
 
     override suspend fun searchBusiness(request: SearchBusinessRequest): SearchBusinessResponse {
-        val searchResults =
-            service.searchBusinesses(request.latitude, request.longitude, request.radius, request.limit, request.skip)
-        return searchBusinessResponse {
-            results.addAll(searchResults.map { it.toProtobuf() })
+        try {
+            val searchResults =
+                service.searchBusinesses(request.latitude, request.longitude, request.radius, request.limit, request.skip)
+            return searchBusinessResponse {
+                results = businessList {
+                    results.addAll(searchResults.map { it.toProtobuf() })
+                }
+            }
+        } catch (exc: BadRequestException) {
+            return searchBusinessResponse {
+                error = SearchBusinessResponse.SearchBusinessError.INVALID_PARAMS
+            }
+        } catch (exc: MongoClientException) {
+            return searchBusinessResponse {
+                error = SearchBusinessResponse.SearchBusinessError.DB_ACCESS_ERROR
+            }
+        } catch (exc: Exception) {
+            return searchBusinessResponse {
+                error = SearchBusinessResponse.SearchBusinessError.UNKNOWN
+            }
         }
     }
 }

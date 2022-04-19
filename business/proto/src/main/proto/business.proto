@@ -23,7 +23,7 @@ message UpdateBusinessRequest {
 message SearchBusinessRequest {
   double latitude = 1;
   double longitude = 2;
-  double radius = 3;
+  int32 radius = 3;
   int32 limit = 4;
   int32 skip = 5;
 }

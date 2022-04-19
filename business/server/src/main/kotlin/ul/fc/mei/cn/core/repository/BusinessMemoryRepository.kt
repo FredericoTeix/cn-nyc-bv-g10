@@ -1,24 +1,25 @@
-package ul.fc.mei.cn.business.repository
+package ul.fc.mei.cn.core.repository
 
-import ul.fc.mei.cn.business.model.Business
-import ul.fc.mei.cn.business.model.isInRadius
-import ul.fc.mei.cn.business.utils.NotFoundException
+import ul.fc.mei.cn.core.model.Business
+import ul.fc.mei.cn.core.model.isInRadius
+import ul.fc.mei.cn.web.utils.NotFoundException
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicLong
 
 
 class BusinessMemoryRepository : BusinessRepository {
 
-    private val businessMap = ConcurrentHashMap<Long, Business>()
+    private val businessMap = ConcurrentHashMap<String, Business>()
     private val atomicLong = AtomicLong(1)
 
-    override suspend fun getBusiness(bid: Long): Business {
+
+    override suspend fun getBusiness(bid: String): Business {
         return if (businessMap.containsKey(bid)) {
             businessMap[bid]!!
         } else throw NotFoundException("There isn't a Business with Id: $bid")
     }
 
-    override suspend fun deleteBusiness(bid: Long) {
+    override suspend fun deleteBusiness(bid: String) {
         if (businessMap.containsKey(bid)) {
             businessMap.remove(bid)
         } else throw NotFoundException("There isn't a Business with Id: $bid")
@@ -27,7 +28,7 @@ class BusinessMemoryRepository : BusinessRepository {
     override suspend fun searchBusinesses(
         latitude: Double,
         longitude: Double,
-        radius: Double,
+        radius: Int,
         limit: Int,
         skip: Int
     ): List<Business> {
@@ -44,7 +45,7 @@ class BusinessMemoryRepository : BusinessRepository {
     }
 
     override suspend fun addBusiness(business: Business): Boolean {
-        val id = atomicLong.incrementAndGet()
+        val id = "${atomicLong.incrementAndGet()}"
         businessMap[id] = business
         return true
     }

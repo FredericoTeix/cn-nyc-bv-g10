@@ -1,18 +1,17 @@
-package ul.fc.mei.cn.business.repository
+package ul.fc.mei.cn.core.repository
 
-import ul.fc.mei.cn.business.model.Business
-import ul.fc.mei.cn.business.model.BusinessInputModel
+import ul.fc.mei.cn.core.model.Business
 
 interface BusinessRepository {
 
-    suspend fun getBusiness(bid: Long): Business
+    suspend fun getBusiness(bid: String): Business
 
-    suspend fun deleteBusiness(bid: Long)
+    suspend fun deleteBusiness(bid: String)
 
     suspend fun searchBusinesses(
         latitude: Double,
         longitude: Double,
-        radius: Double,
+        radius: Int,
         limit: Int,
         skip: Int
     ): List<Business>

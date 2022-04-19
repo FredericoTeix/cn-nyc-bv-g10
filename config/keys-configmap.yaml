@@ -8,20 +8,34 @@ data:
   database_name: api_keys
   acl.yaml: |
     endpoints:
-      /trips:
+      /trip:
         ADMIN:
-          GET: 0
+          POST: 0
+      /trip/{trip_id}:
+        ADMIN:
           PUT: 0
-        CONSUMER:
-          GET: 3
-      /trips/{tid}:
+          DELETE: 0
+      /trip/location/{location_id}:
         ADMIN:
           GET: 0
-          DELETE: 0
+        CONSUMER:
+          GET: 1
+      /tripCount/location/{location_id}:
+        ADMIN:
+          GET: 0
         CONSUMER:
           GET: 1
       /key:
         ADMIN:
+          POST: 0
           GET: 0
+          PUT: 0
+          DELETE: 0
         CONSUMER:
           GET: 1
+          DELETE: 0
+      /key/refresh:
+        ADMIN:
+          PUT: 0
+        CONSUMER:
+          PUT: 10

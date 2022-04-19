@@ -4,6 +4,8 @@
 {
 kubectl delete deployment trips-deployment
 kubectl delete deployment mongo-trips-deployment
+kubectl delete deployment keys-deployment
+kubectl delete deployment mongo-keys-deployment
 } &> /dev/null
 
 # Start ingress controller (had to be done first because it is the one that takes the most time)
@@ -14,6 +16,10 @@ kubectl apply -f config/mongo-trips-secret.yaml
 kubectl apply -f config/mongo-trips-configmap.yaml
 kubectl apply -f config/mongo-trips.yaml
 kubectl apply -f config/trips.yaml
+
+kubectl apply -f config/mongo-keys.yaml
+kubectl apply -f config/keys-configmap.yaml
+kubectl apply -f config/keys.yaml
 
 kubectl create secret tls ingress-secret --cert ingress/ingress.crt --key ingress/ingress.key
 

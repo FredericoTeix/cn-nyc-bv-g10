@@ -12,7 +12,7 @@ services:
       MONGO_DATABASE_NAME: business
       MONGO_COLLECTION_NAME: business
       PLACES_ENDPOINT: business
-      PLACES_API_KEY: b618f935f146499f91419ee5cbcfd2e9
+      PLACES_API_KEY: #INSERT API KEY HERE
       ACL_FILE: /home/app/acl.yaml
     depends_on:
       - business_mongodb

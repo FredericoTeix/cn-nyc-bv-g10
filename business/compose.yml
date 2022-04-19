@@ -1,0 +1,36 @@
+version: "3.3"
+
+services:
+  business-api:
+    restart: always
+    container_name: business_api
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      MONGO_DATABASE_URL: mongodb://business_mongo
+      MONGO_DATABASE_NAME: business
+      MONGO_COLLECTION_NAME: business
+      PLACES_ENDPOINT: business
+      PLACES_API_KEY: b618f935f146499f91419ee5cbcfd2e9
+      ACL_FILE: /home/app/acl.yaml
+    depends_on:
+      - business_mongodb
+    ports:
+      - "8080:8080"
+      - "6565:6565"
+  business_mongodb:
+    restart: always
+    container_name: business_mongodb
+    image: mongo
+    environment:
+      - MONGO_INITDB_DATABASE=business
+    volumes:
+      - ./scripts/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+      - business_mongo_data:/data/db
+    ports:
+      - "27017:27017"
+    command: --quiet --logpath /dev/null
+
+volumes:
+  business_mongo_data:

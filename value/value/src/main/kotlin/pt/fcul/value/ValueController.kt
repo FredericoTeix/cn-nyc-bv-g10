@@ -14,13 +14,7 @@ class ValueController {
     private val businessClient = BusinessClient(System.getenv("BUSINESS"),8080)
     private val tripClient = TripClient(System.getenv("TRIP"),50051)
 
-    @GetMapping("/")
-    fun test():String{
-        print("TESTING")
-        return "TEST SUCESSFUL"
-    }
-
-    @GetMapping("/business/{id}")
+    @GetMapping("/value/business/{id}")
     suspend fun valueByBusiness(@PathVariable id:Long,
                                 @RequestParam("start_date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) start: Timestamp,
                                 @RequestParam("end_date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) end: Timestamp
@@ -36,7 +30,7 @@ class ValueController {
         return tripClient.getCountTripsInLocation(start,end,loc.locationId.toString()).count
     }
 
-    @GetMapping("/top")
+    @GetMapping("/value/top")
     suspend fun topValueBusinesses( @RequestParam("latitude") lat: Double,
                             @RequestParam("longitude") lon: Double,
                             @RequestParam("rad") radius: Double,
@@ -71,7 +65,7 @@ class ValueController {
         return map.toList().sortedBy { (_,value) -> value }.toString()
     }
 
-    @GetMapping
+    @GetMapping("/value/location/radius")
     suspend fun valueByLocationRadius( @RequestParam("latitude") lat: Double,
                                @RequestParam("longitude") lon: Double,
                                @RequestParam("rad") radius: Double,

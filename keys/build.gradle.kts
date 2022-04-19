@@ -32,6 +32,7 @@ dependencies {
     implementation("commons-codec:commons-codec")
     implementation("org.hibernate:hibernate-validator:7.0.1.Final")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
+    implementation("io.micrometer:micrometer-registry-prometheus")
 
     implementation("org.mongodb:mongodb-driver-sync:$mongoVersion")
     implementation("org.mongodb:mongodb-driver-core:$mongoVersion")

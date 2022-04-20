@@ -2,13 +2,15 @@ package ul.fc.mei.cn.core.model
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import org.bson.codecs.pojo.annotations.BsonId
-import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.http.ResponseEntity
+import org.springframework.web.client.RestTemplate
 import ul.fc.cn.proto.BusinessOuterClass
 import ul.fc.cn.proto.business
 import ul.fc.cn.proto.businessId
 import kotlin.math.pow
 
 typealias ModelBusiness = Business
+typealias ResourceGetter<T> = (Double, Double, Int, Int, Int) -> ResponseEntity<T>
 
 data class Business(
     val id: String,
@@ -87,5 +89,3 @@ data class BusinessProperties(
     @JsonProperty("formatted")
     val address: String
 )
-
-typealias WebClientGetter = (Double, Double, Int, Int, Int) -> WebClient

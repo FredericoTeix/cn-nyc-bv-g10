@@ -32,14 +32,13 @@ dependencies {
     implementation("org.mongodb:bson:$mongoVersion")
     implementation("org.litote.kmongo:kmongo:$mongoVersion")
     implementation("org.litote.kmongo:kmongo-id:$mongoVersion")
-    implementation("org.mongodb:mongodb-driver-async:3.12.10")
-    implementation("org.litote.kmongo:kmongo-coroutine-core:$mongoVersion")
-    implementation("org.litote.kmongo:kmongo-coroutine:$mongoVersion")
+    implementation("org.mongodb:mongodb-driver-sync:3.12.10")
+    implementation("org.litote.kmongo:kmongo-core:$mongoVersion")
+    implementation("org.litote.kmongo:kmongo:$mongoVersion")
 
 
     // Spring Dependencies
     implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("org.springframework.boot:spring-boot-starter-webflux")
 
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")

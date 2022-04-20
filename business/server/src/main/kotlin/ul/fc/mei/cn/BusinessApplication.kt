@@ -6,26 +6,29 @@ import com.fasterxml.jackson.module.kotlin.KotlinFeature
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.mongodb.ReadConcern
 import com.mongodb.WriteConcern
-import org.litote.kmongo.coroutine.CoroutineClient
-import org.litote.kmongo.coroutine.CoroutineCollection
-import org.litote.kmongo.coroutine.CoroutineDatabase
-import org.litote.kmongo.coroutine.coroutine
-import org.litote.kmongo.reactivestreams.KMongo
+import com.mongodb.client.MongoClient
+import com.mongodb.client.MongoCollection
+import com.mongodb.client.MongoDatabase
+import org.litote.kmongo.KMongo
+import org.litote.kmongo.getCollection
 import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.http.HttpMethod
 import org.springframework.http.MediaType
 import org.springframework.http.converter.HttpMessageConverter
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
-import org.springframework.web.reactive.function.client.WebClient
-import org.springframework.web.servlet.config.annotation.EnableWebMvc
+import org.springframework.web.client.RestTemplate
+import org.springframework.web.client.exchange
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
+import ul.fc.mei.cn.core.common.EnvVarNotFoundException
 import ul.fc.mei.cn.core.common.ProblemJsonConverter
+import ul.fc.mei.cn.core.model.BusinessFeature
 import ul.fc.mei.cn.core.model.DBBusiness
-import ul.fc.mei.cn.core.model.WebClientGetter
-import ul.fc.mei.cn.web.utils.EnvVarNotFoundException
+import ul.fc.mei.cn.core.model.ModelFeatureArray
+import ul.fc.mei.cn.core.model.ResourceGetter
 
 @SpringBootApplication
 class BusinessApplication
@@ -38,7 +41,6 @@ private const val PLACES_API_KEY_VAR = "PLACES_API_KEY"
 
 
 @Configuration
-@EnableWebMvc
 class WebConfiguration : WebMvcConfigurer {
 
     private val log = LoggerFactory.getLogger(WebConfiguration::class.java)
@@ -66,44 +68,49 @@ class WebConfiguration : WebMvcConfigurer {
     }
 
     @Bean
-    fun getMongo(): CoroutineClient {
+    fun getMongo(): MongoClient {
         val mongoUrl = System.getenv(MONGO_ENV_VAR) ?: throw EnvVarNotFoundException(MONGO_ENV_VAR)
         log.info("Found environment variable $MONGO_ENV_VAR = $mongoUrl")
 
-        return KMongo.createClient(mongoUrl).coroutine
+        return KMongo.createClient(mongoUrl)
     }
 
     @Bean
-    fun getDatabase(coroutineClient: CoroutineClient): CoroutineDatabase {
+    fun getDatabase(client: MongoClient): MongoDatabase {
         val mongoDbName = System.getenv(MONGO_DB_VAR) ?: throw EnvVarNotFoundException(MONGO_DB_VAR)
         log.info("Found environment variable $MONGO_DB_VAR = $mongoDbName")
 
-        return coroutineClient.getDatabase(mongoDbName)
+        return client.getDatabase(mongoDbName)
             .withReadConcern(ReadConcern.MAJORITY)
             .withWriteConcern(WriteConcern.MAJORITY)
     }
 
     @Bean
-    fun getCollection(coroutineDatabase: CoroutineDatabase): CoroutineCollection<DBBusiness> {
+    fun getCollection(database: MongoDatabase): MongoCollection<DBBusiness> {
 
         val collectionName = System.getenv(MONGO_DB_COLLECTION_VAR) ?: throw EnvVarNotFoundException(MONGO_DB_VAR)
         log.info("Found environment variable $MONGO_DB_COLLECTION_VAR = $collectionName")
 
-        return coroutineDatabase.getCollection(collectionName)
+        return database.getCollection<DBBusiness>(collectionName)
     }
 
 
     @Bean
-    fun getWebClient(builder: WebClient.Builder): WebClientGetter {
-
+    fun getWebClient(): ResourceGetter<ModelFeatureArray<BusinessFeature>> {
         val placesEndpoint =
             System.getenv(PLACES_API_ENDPOINT_VAR) ?: throw EnvVarNotFoundException(PLACES_API_ENDPOINT_VAR)
         val placesKey = System.getenv(PLACES_API_KEY_VAR) ?: throw EnvVarNotFoundException(PLACES_API_KEY_VAR)
 
-        val function: (Double, Double, Int, Int, Int) -> WebClient = { longitude, latitude, radius, limit, skip ->
+        val function: ResourceGetter<ModelFeatureArray<BusinessFeature>> = { longitude, latitude, radius, limit, skip ->
+            val restTemplate = RestTemplate()
             val url = "$placesEndpoint?categories=commercial&filter=circle:$longitude,$latitude,$radius" +
                     "&bias=proximity:$longitude,$latitude&limit=$limit&skip=$skip&apiKey=$placesKey"
-            WebClient.create(url)
+            val responseEntity = restTemplate.exchange<ModelFeatureArray<BusinessFeature>>(
+                url,
+                HttpMethod.GET,
+                null,
+            )
+            responseEntity
         }
         return function
     }

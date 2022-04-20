@@ -12,8 +12,8 @@ import ul.fc.cn.proto.searchBusinessResponse
 import ul.fc.mei.cn.core.BusinessService
 import ul.fc.mei.cn.core.model.ModelBusiness
 import ul.fc.mei.cn.core.model.toProtobuf
-import ul.fc.mei.cn.web.utils.BadRequestException
-import ul.fc.mei.cn.web.utils.NotFoundException
+import ul.fc.mei.cn.core.common.BadRequestException
+import ul.fc.mei.cn.core.common.NotFoundException
 
 
 

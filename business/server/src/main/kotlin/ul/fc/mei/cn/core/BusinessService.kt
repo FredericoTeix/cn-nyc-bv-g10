@@ -1,39 +1,35 @@
 package ul.fc.mei.cn.core
 
-import org.springframework.boot.web.client.RestTemplateBuilder
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
-import org.springframework.web.client.RestTemplate
-import org.springframework.web.reactive.function.client.WebClient
-import org.springframework.web.reactive.function.client.awaitBody
-import org.springframework.web.reactive.function.client.awaitExchange
+import ul.fc.mei.cn.core.common.BadRequestException
 import ul.fc.mei.cn.core.model.Business
 import ul.fc.mei.cn.core.model.BusinessFeature
-import ul.fc.mei.cn.core.model.DBBusiness
 import ul.fc.mei.cn.core.model.ModelFeatureArray
-import ul.fc.mei.cn.core.model.WebClientGetter
+import ul.fc.mei.cn.core.model.ResourceGetter
 import ul.fc.mei.cn.core.model.toBusiness
 import ul.fc.mei.cn.core.repository.BusinessRepository
-import ul.fc.mei.cn.web.utils.BadRequestException
-import java.lang.RuntimeException
 
 @Service
-class BusinessService(val businessRepository: BusinessRepository, val getter: WebClientGetter) {
+class BusinessService(
+    val businessRepository: BusinessRepository,
+    val getter: ResourceGetter<ModelFeatureArray<BusinessFeature>>
+) {
 
 
-    suspend fun updateBusiness(businessId: String, business: Business): Business {
+    fun updateBusiness(businessId: String, business: Business): Business {
         validateBusinessInput(business)
         val updatedBusiness = businessRepository.updateBusiness(business)
         return updatedBusiness
     }
 
-    suspend fun deleteBusiness(businessId: String) {
+    fun deleteBusiness(businessId: String) {
         businessRepository.deleteBusiness(businessId)
     }
 
-    suspend fun getBusiness(businessId: String) = businessRepository.getBusiness(businessId)
+    fun getBusiness(businessId: String) = businessRepository.getBusiness(businessId)
 
-    suspend fun searchBusinesses(
+    fun searchBusinesses(
         latitude: Double,
         longitude: Double,
         radius: Int,
@@ -68,17 +64,17 @@ class BusinessService(val businessRepository: BusinessRepository, val getter: We
         return true
     }
 
-    suspend fun loadBusinessesIntoDatabase(longitude: Double, latitude: Double, radius: Int, limit: Int, skip: Int) {
-        getter(longitude, latitude, radius, limit, skip).get().awaitExchange { resp ->
-            when (resp.statusCode()) {
-                HttpStatus.BAD_REQUEST -> throw BadRequestException(resp.statusCode().reasonPhrase)
-                HttpStatus.OK -> addBusinessesToDB(resp.awaitBody<ModelFeatureArray<BusinessFeature>>())
-                else -> throw RuntimeException()
-            }
+    fun loadBusinessesIntoDatabase(longitude: Double, latitude: Double, radius: Int, limit: Int, skip: Int) {
+        val resp = getter(longitude, latitude, radius, limit, skip)
+        when (resp.statusCode) {
+            HttpStatus.BAD_REQUEST -> throw BadRequestException(resp.statusCode.reasonPhrase)
+            HttpStatus.OK -> addBusinessesToDB(resp.body!!)
+            else -> throw RuntimeException()
         }
     }
 
-    private suspend fun addBusinessesToDB(featureArray: ModelFeatureArray<BusinessFeature>) {
+
+    private fun addBusinessesToDB(featureArray: ModelFeatureArray<BusinessFeature>) {
         featureArray.features.map {
             it.toBusiness()
         }.filter {

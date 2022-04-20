@@ -70,3 +70,12 @@ target/
 
 # Docker mount
 /trip/mongodb/mongo-volume
+/trip/mongodb/mongo-volume
+
+# Certs and keys
+*.key
+*.crt
+*.csr
+
+# GRPC kotlin gen
+**/proto/gen

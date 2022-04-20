@@ -8,11 +8,14 @@ plugins {
 }
 
 group = "ul.fc.mei.cn"
-version = "0.0.1-SNAPSHOT"
+
 java.sourceCompatibility = JavaVersion.VERSION_11
 
 dependencies {
+<<<<<<< HEAD
 
+=======
+>>>>>>> business-dev
 
     //Specific grpc service dependency
     implementation(project(":proto"))
@@ -28,34 +31,55 @@ dependencies {
     implementation("io.github.lognet:grpc-spring-boot-starter:4.6.0")
 
     // MongoDB dependencies 
-    val mongoVersion = "4.5.0"
-    implementation("org.mongodb:mongodb-driver-async:$mongoVersion")
-    implementation("org.mongodb:mongodb-driver-core:$mongoVersion")
-    implementation("org.litote.kmongo:kmongo-coroutine:$mongoVersion")
+    val mongoVersion = "4.4.0"
+    //implementation("org.mongodb:mongodb-driver-async:3.12.10")
     implementation("org.mongodb:bson:$mongoVersion")
+    implementation("org.litote.kmongo:kmongo:$mongoVersion")
     implementation("org.litote.kmongo:kmongo-id:$mongoVersion")
+    implementation("org.mongodb:mongodb-driver-sync:3.12.10")
+    implementation("org.litote.kmongo:kmongo-core:$mongoVersion")
+    implementation("org.litote.kmongo:kmongo:$mongoVersion")
+
 
     // Spring Dependencies
     implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("org.springframework.boot:spring-boot-starter-webflux")
+
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
-    implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
+    
+    implementation("io.projectreactor.kotlin:reactor-kotlin-extensions:1.1.6")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:${rootProject.ext["coroutinesVersion"]}")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${rootProject.ext["coroutinesVersion"]}")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("io.projectreactor:reactor-test")
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> business-dev
 tasks.withType<Test> {
     useJUnitPlatform()
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> business-dev
 tasks.withType<KotlinCompile> {
     kotlinOptions {
         freeCompilerArgs = listOf("-Xjsr305=strict")
         jvmTarget = "11"
     }
 }
+<<<<<<< HEAD
+=======
+
+tasks.jar {
+    manifest {
+        attributes["Main-Class"] = "ul.fc.mei.cn.BusinessApplicationKt"
+    }
+}
+
+>>>>>>> business-dev

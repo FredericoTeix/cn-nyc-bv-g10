@@ -36,6 +36,13 @@ kubectl wait --namespace ingress-nginx \
   --selector=app.kubernetes.io/component=controller \
   --timeout=120s
 }
+printf "Waiting for grafana to initialize fully..."
+{
+kubectl wait deployment -n default \
+  grafana-deployment \
+  --for condition=Available=True \
+  --timeout=90s
+}
 kubectl apply -f config/ingress.yaml
 
 NGINX_INGRESS_IP=$(kubectl get service ingress-nginx-controller -n ingress-nginx -ojson | jq -r '.status.loadBalancer.ingress[].ip')

@@ -15,3 +15,9 @@ data:
         scrape_interval: 5s
         static_configs:
           - targets: ['keys-service:8080']
+
+      - job_name: 'trips-prom'
+        metrics_path: '/metrics'
+        scrape_interval: 5s
+        static_configs:
+          - targets: ['trips-service:8080']

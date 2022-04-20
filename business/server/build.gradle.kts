@@ -8,26 +8,52 @@ plugins {
 }
 
 group = "ul.fc.mei.cn"
-version = "0.0.1-SNAPSHOT"
+
 java.sourceCompatibility = JavaVersion.VERSION_11
 
 dependencies {
+
+    //Specific grpc service dependency
     implementation(project(":proto"))
-    implementation("io.grpc:grpc-protobuf:${rootProject.ext["grpcVersion"]}")
+
+    // Dependencies to be able to work with GRPC
+    implementation("com.google.protobuf:protobuf-kotlin:${rootProject.ext["protobufVersion"]}")
     implementation("io.grpc:grpc-kotlin-stub:${rootProject.ext["grpcKotlinVersion"]}")
+    implementation("io.grpc:grpc-protobuf:${rootProject.ext["grpcVersion"]}")
+    implementation("com.google.protobuf:protobuf-java-util:${rootProject.ext["protobufVersion"]}")
+    implementation("com.google.protobuf:protobuf-kotlin:${rootProject.ext["protobufVersion"]}")
+
+    //GRPC Spring integration
+    implementation("io.github.lognet:grpc-spring-boot-starter:4.6.0")
+
+    // MongoDB dependencies 
+    val mongoVersion = "4.4.0"
+    //implementation("org.mongodb:mongodb-driver-async:3.12.10")
+    implementation("org.mongodb:bson:$mongoVersion")
+    implementation("org.litote.kmongo:kmongo:$mongoVersion")
+    implementation("org.litote.kmongo:kmongo-id:$mongoVersion")
+    implementation("org.mongodb:mongodb-driver-async:3.12.10")
+    implementation("org.litote.kmongo:kmongo-coroutine-core:$mongoVersion")
+    implementation("org.litote.kmongo:kmongo-coroutine:$mongoVersion")
 
 
-
-
+    // Spring Dependencies
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-webflux")
+
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
-    implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
+    
+    implementation("io.projectreactor.kotlin:reactor-kotlin-extensions:1.1.6")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:${rootProject.ext["coroutinesVersion"]}")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${rootProject.ext["coroutinesVersion"]}")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("io.projectreactor:reactor-test")
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
 }
 
 tasks.withType<KotlinCompile> {
@@ -37,6 +63,9 @@ tasks.withType<KotlinCompile> {
     }
 }
 
-tasks.withType<Test> {
-    useJUnitPlatform()
+tasks.jar {
+    manifest {
+        attributes["Main-Class"] = "ul.fc.mei.cn.BusinessApplicationKt"
+    }
 }
+

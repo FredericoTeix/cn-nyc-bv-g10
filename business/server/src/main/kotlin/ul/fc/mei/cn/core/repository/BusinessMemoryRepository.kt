@@ -1,8 +1,8 @@
 package ul.fc.mei.cn.core.repository
 
+import ul.fc.mei.cn.core.common.NotFoundException
 import ul.fc.mei.cn.core.model.Business
 import ul.fc.mei.cn.core.model.isInRadius
-import ul.fc.mei.cn.web.utils.NotFoundException
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicLong
 
@@ -13,19 +13,19 @@ class BusinessMemoryRepository : BusinessRepository {
     private val atomicLong = AtomicLong(1)
 
 
-    override suspend fun getBusiness(bid: String): Business {
+    override fun getBusiness(bid: String): Business {
         return if (businessMap.containsKey(bid)) {
             businessMap[bid]!!
         } else throw NotFoundException("There isn't a Business with Id: $bid")
     }
 
-    override suspend fun deleteBusiness(bid: String) {
+    override fun deleteBusiness(bid: String) {
         if (businessMap.containsKey(bid)) {
             businessMap.remove(bid)
         } else throw NotFoundException("There isn't a Business with Id: $bid")
     }
 
-    override suspend fun searchBusinesses(
+    override fun searchBusinesses(
         latitude: Double,
         longitude: Double,
         radius: Int,
@@ -37,14 +37,14 @@ class BusinessMemoryRepository : BusinessRepository {
         }.drop(skip).take(limit)
     }
 
-    override suspend fun updateBusiness(business: Business): Business {
+    override fun updateBusiness(business: Business): Business {
         if (businessMap.containsKey(business.id)) {
             businessMap[business.id] = business
             return business
         } else throw  NotFoundException("There isn't a Business with Id: ${business.id}")
     }
 
-    override suspend fun addBusiness(business: Business): Boolean {
+    override fun addBusiness(business: Business): Boolean {
         val id = "${atomicLong.incrementAndGet()}"
         businessMap[id] = business
         return true

@@ -4,11 +4,11 @@ import ul.fc.mei.cn.core.model.Business
 
 interface BusinessRepository {
 
-    suspend fun getBusiness(bid: String): Business
+    fun getBusiness(bid: String): Business
 
-    suspend fun deleteBusiness(bid: String)
+    fun deleteBusiness(bid: String)
 
-    suspend fun searchBusinesses(
+    fun searchBusinesses(
         latitude: Double,
         longitude: Double,
         radius: Int,
@@ -16,7 +16,7 @@ interface BusinessRepository {
         skip: Int
     ): List<Business>
 
-    suspend fun updateBusiness(business: Business): Business
+    fun updateBusiness(business: Business): Business
 
-    suspend fun addBusiness(business: Business): Boolean
+    fun addBusiness(business: Business): Boolean
 }

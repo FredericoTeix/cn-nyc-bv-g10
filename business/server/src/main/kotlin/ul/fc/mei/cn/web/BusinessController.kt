@@ -53,6 +53,12 @@ class BusinessController(val service: BusinessService) {
         return ResponseEntity.ok(business)
     }
 
+    @GetMapping("/test")
+    suspend fun testEndpoint(
+    ): ResponseEntity<Void> {
+        return ResponseEntity.ok().build()
+    }
+
     @GetMapping(Links.LoadBusinesses)
     suspend fun loadBusinesses(
         @RequestParam longitude: Double,

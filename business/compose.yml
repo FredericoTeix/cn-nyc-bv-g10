@@ -8,12 +8,11 @@ services:
       context: .
       dockerfile: Dockerfile
     environment:
-      MONGO_DATABASE_URL: mongodb://business_mongo
+      MONGO_DATABASE_URL: mongodb://business_mongodb
       MONGO_DATABASE_NAME: business
       MONGO_COLLECTION_NAME: business
-      PLACES_ENDPOINT: business
-      PLACES_API_KEY: #INSERT API KEY HERE
-      ACL_FILE: /home/app/acl.yaml
+      PLACES_ENDPOINT: https://api.geoapify.com/v2/places
+      PLACES_API_KEY: 4827142ef25f491abc03833d2e4cf9f5
     depends_on:
       - business_mongodb
     ports:
@@ -30,7 +29,6 @@ services:
       - business_mongo_data:/data/db
     ports:
       - "27017:27017"
-    command: --quiet --logpath /dev/null
 
 volumes:
   business_mongo_data:

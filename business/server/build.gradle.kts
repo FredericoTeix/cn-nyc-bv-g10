@@ -29,7 +29,6 @@ dependencies {
     // MongoDB dependencies 
     val mongoVersion = "4.4.0"
     //implementation("org.mongodb:mongodb-driver-async:3.12.10")
-    implementation("org.mongodb:mongodb-driver-core:$mongoVersion")
     implementation("org.mongodb:bson:$mongoVersion")
     implementation("org.litote.kmongo:kmongo:$mongoVersion")
     implementation("org.litote.kmongo:kmongo-id:$mongoVersion")
@@ -41,11 +40,14 @@ dependencies {
     // Spring Dependencies
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-webflux")
+
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
-    implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
+    
+    implementation("io.projectreactor.kotlin:reactor-kotlin-extensions:1.1.6")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:${rootProject.ext["coroutinesVersion"]}")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${rootProject.ext["coroutinesVersion"]}")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("io.projectreactor:reactor-test")
 }

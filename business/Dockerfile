@@ -27,4 +27,4 @@ RUN mv ./bin/mongocryptd-mongosh /usr/local/bin/
 COPY --from=build workspace/app/server/build/libs/server.jar ./app/
 
 USER root
-ENTRYPOINT ["sh", "./app/wait_db.sh","java","-jar","./app/business.jar"]
+ENTRYPOINT ["sh", "./app/wait_db.sh","java","-jar","./app/server.jar"]

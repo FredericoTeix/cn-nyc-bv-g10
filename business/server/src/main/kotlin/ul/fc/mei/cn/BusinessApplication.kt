@@ -20,6 +20,7 @@ import org.springframework.http.MediaType
 import org.springframework.http.converter.HttpMessageConverter
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
 import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.servlet.config.annotation.EnableWebMvc
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 import ul.fc.mei.cn.core.common.ProblemJsonConverter
 import ul.fc.mei.cn.core.model.DBBusiness
@@ -32,11 +33,12 @@ class BusinessApplication
 private const val MONGO_ENV_VAR = "MONGO_DATABASE_URL"
 private const val MONGO_DB_VAR = "MONGO_DATABASE_NAME"
 private const val MONGO_DB_COLLECTION_VAR = "MONGO_COLLECTION_NAME"
-private const val  PLACES_API_ENDPOINT_VAR = "PLACES_ENDPOINT"
-private const val  PLACES_API_KEY_VAR = "PLACES_API_KEY"
+private const val PLACES_API_ENDPOINT_VAR = "PLACES_ENDPOINT"
+private const val PLACES_API_KEY_VAR = "PLACES_API_KEY"
 
 
 @Configuration
+@EnableWebMvc
 class WebConfiguration : WebMvcConfigurer {
 
     private val log = LoggerFactory.getLogger(WebConfiguration::class.java)
@@ -85,11 +87,10 @@ class WebConfiguration : WebMvcConfigurer {
     fun getCollection(coroutineDatabase: CoroutineDatabase): CoroutineCollection<DBBusiness> {
 
         val collectionName = System.getenv(MONGO_DB_COLLECTION_VAR) ?: throw EnvVarNotFoundException(MONGO_DB_VAR)
-        log.info("Found environment variable $MONGO_DB_VAR = $collectionName")
+        log.info("Found environment variable $MONGO_DB_COLLECTION_VAR = $collectionName")
 
         return coroutineDatabase.getCollection(collectionName)
     }
-
 
 
     @Bean
@@ -99,10 +100,8 @@ class WebConfiguration : WebMvcConfigurer {
             System.getenv(PLACES_API_ENDPOINT_VAR) ?: throw EnvVarNotFoundException(PLACES_API_ENDPOINT_VAR)
         val placesKey = System.getenv(PLACES_API_KEY_VAR) ?: throw EnvVarNotFoundException(PLACES_API_KEY_VAR)
 
-        val function: (Double, Double, Int, Int, Int) -> WebClient = {
-            longitude, latitude, radius, limit, skip->
-
-            val url = "$placesEndpoint?categories=commercial&filter=circle:$longitude,$latitude,${radius.toInt()}" +
+        val function: (Double, Double, Int, Int, Int) -> WebClient = { longitude, latitude, radius, limit, skip ->
+            val url = "$placesEndpoint?categories=commercial&filter=circle:$longitude,$latitude,$radius" +
                     "&bias=proximity:$longitude,$latitude&limit=$limit&skip=$skip&apiKey=$placesKey"
             WebClient.create(url)
         }

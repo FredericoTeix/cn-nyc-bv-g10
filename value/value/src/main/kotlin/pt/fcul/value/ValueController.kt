@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RestController
 class ValueController {
 
     // TODO: [WARNING] Services ports may change later on
-    private val businessClient = BusinessClient(System.getenv("BUSINESS"),8080)
-    private val tripClient = TripClient(System.getenv("TRIP"),50051)
+    private val businessClient = BusinessClient(System.getenv("BUSINESS"), System.getenv("BUSINESS_PORT").toInt())
+    private val tripClient = TripClient(System.getenv("TRIP"), System.getenv("TRIP_PORT").toInt())
 
     @GetMapping("/value/business/{id}")
     suspend fun valueByBusiness(@PathVariable id:Long,
@@ -60,7 +60,7 @@ class ValueController {
                 if (r.city.equals(business.city)) {
                     map[i] = map.getOrDefault(index,-1) // If anything goes wrong business value is < 0
                     founded = true
-                    break;
+                    break
                 }
             }
             if (!founded) { // r[i] business belongs to a new city

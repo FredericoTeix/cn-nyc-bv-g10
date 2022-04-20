@@ -1,9 +1,6 @@
 package ul.fc.mei.cn.grpc
 
-<<<<<<< HEAD
-=======
 import com.mongodb.MongoClientException
->>>>>>> business-dev
 import org.lognet.springboot.grpc.GRpcService
 import ul.fc.cn.proto.BusinessOuterClass.*
 import ul.fc.cn.proto.BusinessServiceGrpcKt

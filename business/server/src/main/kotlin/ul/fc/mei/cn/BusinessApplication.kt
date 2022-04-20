@@ -23,25 +23,16 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.client.exchange
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
-<<<<<<< HEAD
-import ul.fc.mei.cn.business.common.ProblemJsonConverter
-import ul.fc.mei.cn.business.utils.EnvVarNotFoundException
-=======
 import ul.fc.mei.cn.core.common.EnvVarNotFoundException
 import ul.fc.mei.cn.core.common.ProblemJsonConverter
 import ul.fc.mei.cn.core.model.BusinessFeature
 import ul.fc.mei.cn.core.model.DBBusiness
 import ul.fc.mei.cn.core.model.ModelFeatureArray
 import ul.fc.mei.cn.core.model.ResourceGetter
->>>>>>> business-dev
 
 @SpringBootApplication
 class BusinessApplication
 
-<<<<<<< HEAD
-
-=======
->>>>>>> business-dev
 private const val MONGO_ENV_VAR = "MONGO_DATABASE_URL"
 private const val MONGO_DB_VAR = "MONGO_DATABASE_NAME"
 private const val MONGO_DB_COLLECTION_VAR = "MONGO_COLLECTION_NAME"
@@ -94,8 +85,6 @@ class WebConfiguration : WebMvcConfigurer {
             .withWriteConcern(WriteConcern.MAJORITY)
     }
 
-<<<<<<< HEAD
-=======
     @Bean
     fun getCollection(database: MongoDatabase): MongoCollection<DBBusiness> {
 
@@ -125,7 +114,6 @@ class WebConfiguration : WebMvcConfigurer {
         }
         return function
     }
->>>>>>> business-dev
 }
 
 fun main(args: Array<String>) {

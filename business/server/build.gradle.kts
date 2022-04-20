@@ -12,11 +12,6 @@ group = "ul.fc.mei.cn"
 java.sourceCompatibility = JavaVersion.VERSION_11
 
 dependencies {
-<<<<<<< HEAD
-
-=======
->>>>>>> business-dev
-
     //Specific grpc service dependency
     implementation(project(":proto"))
 
@@ -55,31 +50,19 @@ dependencies {
     testImplementation("io.projectreactor:reactor-test")
 }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> business-dev
 tasks.withType<Test> {
     useJUnitPlatform()
 }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> business-dev
 tasks.withType<KotlinCompile> {
     kotlinOptions {
         freeCompilerArgs = listOf("-Xjsr305=strict")
         jvmTarget = "11"
     }
 }
-<<<<<<< HEAD
-=======
 
 tasks.jar {
     manifest {
         attributes["Main-Class"] = "ul.fc.mei.cn.BusinessApplicationKt"
     }
 }
-
->>>>>>> business-dev

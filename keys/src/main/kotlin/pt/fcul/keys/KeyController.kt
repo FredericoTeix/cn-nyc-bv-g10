@@ -1,14 +1,17 @@
 package pt.fcul.keys
 
 import javax.validation.Valid
+import org.springframework.http.HttpMethod
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RestController
 import pt.fcul.keys.common.Links
+import pt.fcul.keys.exceptions.BadConsumeRequestException
 import pt.fcul.keys.model.KeyConsume
 import pt.fcul.keys.model.KeyInfo
 import pt.fcul.keys.model.KeyInput
@@ -54,9 +57,17 @@ class KeyController(
 
     @PutMapping(Links.ConsumeKey)
     fun consumeKey(
-        @RequestBody consume: KeyConsume
+        @RequestBody consume: KeyConsume?,
+        @RequestHeader("X-Auth-Request-Redirect") originalPath: String?,
+        @RequestHeader("X-Original-Method") originalMethod: String?,
     ): ResponseEntity<Unit> {
-        service.consumeKey(consume)
+        val keyConsume = consume ?: runCatching {
+            KeyConsume(originalPath!!, HttpMethod.resolve(originalMethod)!!)
+        }.getOrElse {
+            throw BadConsumeRequestException()
+        }
+
+        service.consumeKey(keyConsume)
         return ResponseEntity.ok().build()
     }
 

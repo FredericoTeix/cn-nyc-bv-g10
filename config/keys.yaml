@@ -1,0 +1,119 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: keys-deployment
+  labels:
+    app: keys
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: keys
+  template:
+    metadata:
+      labels:
+        app: keys
+    spec:
+        terminationGracePeriodSeconds: 5
+        containers:
+        - name: keys
+          image: zath/keys:latest
+          imagePullPolicy: Always
+          ports:
+          - name: http-port
+            containerPort: 8080
+          env:
+          - name: MONGO_HOST
+            valueFrom:
+              configMapKeyRef:
+                name: keys-configmap
+                key: database_host
+          - name: MONGO_PORT
+            valueFrom:
+              configMapKeyRef:
+                name: keys-configmap
+                key: database_port
+          - name: MONGO_DATABASE_NAME
+            valueFrom:
+              configMapKeyRef:
+                name: keys-configmap
+                key: database_name
+          - name: MONGO_DATABASE_URL
+            value: "mongodb://$(MONGO_HOST):$(MONGO_PORT)/$(MONGO_DATABASE_NAME)"
+          - name: ACL_FILE
+            value: /home/app/acl.yaml
+          resources:
+            requests:
+              memory: 128Mi
+              cpu: 100m
+            limits:
+              memory: 256Mi
+              cpu: 200m
+          volumeMounts:
+          - name: acl-volume
+            mountPath: /home/app/acl.yaml
+            subPath: acl.yaml
+            readOnly: true
+          readinessProbe:
+            initialDelaySeconds: 15
+            timeoutSeconds: 3
+            periodSeconds: 10
+            failureThreshold: 3
+            httpGet:
+              path: /actuator/health
+              port: 8080
+          livenessProbe:
+            initialDelaySeconds: 15
+            timeoutSeconds: 3
+            periodSeconds: 10
+            failureThreshold: 3
+            httpGet:
+              path: /actuator/health
+              port: 8080
+          startupProbe:
+            initialDelaySeconds: 30
+            timeoutSeconds: 3
+            periodSeconds: 30
+            failureThreshold: 30
+            httpGet:
+              path: /actuator/health
+              port: 8080
+        volumes:
+          - name: acl-volume
+            configMap:
+              name: keys-configmap
+              items:
+              - key: acl.yaml
+                path: acl.yaml
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: keys-service
+spec:
+  selector:
+    app: keys
+  ports:
+    - name: http
+      protocol: TCP
+      port: 8080
+      targetPort: http-port
+---
+apiVersion: autoscaling/v2beta2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: keys-scaler
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: keys-deployment
+  minReplicas: 1
+  maxReplicas: 3
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 50

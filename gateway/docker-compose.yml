@@ -1,4 +1,4 @@
-version: '3'
+version: '3.5'
 services:
     gateway:
       ports:
@@ -9,10 +9,11 @@ services:
         - VALUE_URL=http://value-service:8080
       build:
         context: .
-        dockerfile: Dockerfile
+        dockerfile: ./gateway/Dockerfile
       stop_signal: SIGINT
       networks:
         - main-net
 networks:
   main-net:
+    name: gateway_main-net
     driver: bridge

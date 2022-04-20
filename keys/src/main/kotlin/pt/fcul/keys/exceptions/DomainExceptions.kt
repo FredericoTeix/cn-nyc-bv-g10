@@ -20,3 +20,10 @@ class EnvVarNotFoundException(
 class InvalidAclFileException(
     path: String
 ) : RuntimeException("Invalid ACL File in $path")
+
+class BadConsumeRequestException : BadRequestException(
+    """
+    Original Path or Method not provided.
+    Use a JSON request or provide them in headers X-Auth-Request-Redirect and X-Original-Method.
+    """.trimIndent()
+)

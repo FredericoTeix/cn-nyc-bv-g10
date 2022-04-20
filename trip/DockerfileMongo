@@ -1,0 +1,5 @@
+FROM mongo
+
+COPY ./trip/mongodb/init-mongo.js /docker-entrypoint-initdb.d/
+
+CMD ["mongod"]

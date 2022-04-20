@@ -1,13 +1,18 @@
 endpoints:
   /trips:
     ADMIN:
-      - "GET"
-      - "PUT"
+      GET: 0
+      PUT: 0
     CONSUMER:
-      - "GET"
+      GET: 3
   /trips/{tid}:
     ADMIN:
-      - "GET"
-      - "DELETE"
+      GET: 0
+      DELETE: 0
     CONSUMER:
-      - "GET"
+      GET: 1
+  /key:
+    ADMIN:
+      GET: 0
+    CONSUMER:
+      GET: 1

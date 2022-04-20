@@ -1,0 +1,35 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: nginx-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/auth-url: http://keys-service.default.svc.cluster.local:8080/key/consume
+    nginx.ingress.kubernetes.io/auth-method: PUT
+spec:
+  ingressClassName: nginx
+  tls:
+  - secretName: ingress-secret
+  rules:
+  - http:
+      paths:
+      - path: /trip
+        pathType: Prefix
+        backend:
+          service:
+            name: trips-service
+            port:
+              number: 8080
+      - path: /tripCount
+        pathType: Prefix
+        backend:
+          service:
+            name: trips-service
+            port:
+              number: 8080
+      - path: /key
+        pathType: Prefix
+        backend:
+          service:
+            name: keys-service
+            port:
+              number: 8080

@@ -1,0 +1,107 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mongo-trips-claim0
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo-trips-service
+spec:
+  selector:
+    app: mongo-trips
+  ports:
+    - protocol: TCP
+      port: 27017
+      targetPort: 27017
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mongo-trips-deployment
+  labels:
+    app: mongo-trips
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongo-trips
+  serviceName: "mongo-trips-service"
+  template:
+    metadata:
+      labels:
+        app: mongo-trips
+    spec:
+        containers:
+        - name: mongo-trips
+          image: ralexandre00/tripsmongo
+          imagePullPolicy: Always
+          ports:
+          - containerPort: 27017
+          env:
+          - name: MONGO_INITDB_ROOT_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: mongo-trips-secret
+                key: mongo-root-username
+          - name: MONGO_INITDB_ROOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: mongo-trips-secret
+                key: mongo-root-password
+          volumeMounts:
+            - mountPath: /data/db
+              name: mongo-trips-claim0
+          resources:
+            requests:
+              cpu: "200m"
+          readinessProbe:
+            initialDelaySeconds: 15
+            timeoutSeconds: 3
+            periodSeconds: 10
+            failureThreshold: 3
+            exec:
+              command:
+              - mongo
+              - --eval
+              - db.adminCommand('ping')
+          livenessProbe:
+            initialDelaySeconds: 15
+            timeoutSeconds: 3
+            periodSeconds: 10
+            failureThreshold: 3
+            exec:
+              command:
+              - mongo
+              - --eval
+              - db.adminCommand('ping')
+        volumes:
+          - name: mongo-trips-claim0
+            persistentVolumeClaim:
+              claimName: mongo-trips-claim0
+---
+apiVersion: autoscaling/v2beta2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: mongo-trips-scaler
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: StatefulSet
+    name: mongo-trips-deployment
+  minReplicas: 1
+  maxReplicas: 5
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 50
+

@@ -1,15 +1,16 @@
-package pt.fcul.value
+package pt.fcul.value.business
 
 import io.grpc.ManagedChannel
 import io.grpc.ManagedChannelBuilder
-import ul.fc.cn.proto.BusinessOuterClass.*
+import java.io.Closeable
+import java.util.concurrent.TimeUnit
+import pt.fcul.value.Business
+import ul.fc.cn.proto.BusinessOuterClass
 import ul.fc.cn.proto.BusinessServiceGrpcKt
 import ul.fc.cn.proto.businessId
 import ul.fc.cn.proto.searchBusinessRequest
-import java.io.Closeable
-import java.util.concurrent.TimeUnit
 
-class BusinessClient(address: String, port: Int) : Closeable {
+class GRPCBusinessClient(address: String, port: Int) : BusinessClient, Closeable {
 
     private val channel: ManagedChannel = ManagedChannelBuilder
         .forAddress(address, port)
@@ -22,17 +23,23 @@ class BusinessClient(address: String, port: Int) : Closeable {
         channel.shutdown().awaitTermination(5, TimeUnit.SECONDS)
     }
 
-    suspend fun getBusiness(businessId: Long) : Business {
+    override suspend fun getBusiness(businessId: Long): Business {
         // rpc getBusiness(BusinessId) returns (Business);
         val request = businessId {
             this.id = businessId
         }
 
         print("[getBusiness] id:{$businessId}")
-        return stub.getBusiness(request)
+        return stub.getBusiness(request).dto()
     }
 
-    suspend fun searchBusiness(lat : Double, lon : Double, radius : Double, limit : Int, skip : Int) : SearchBusinessResponse {
+    override suspend fun searchBusiness(
+        lat: Double,
+        lon: Double,
+        radius: Double,
+        limit: Int,
+        skip: Int
+    ): List<Business> {
         // rpc searchBusiness(SearchBusinessRequest) returns (SearchBusinessResponse);
         val request = searchBusinessRequest {
             this.latitude = lat
@@ -43,7 +50,9 @@ class BusinessClient(address: String, port: Int) : Closeable {
         }
 
         print("[searchBusiness] lat:{$lat} lon:{$lon} rad:{$radius} limit:{$limit} skip:{$skip}")
-        return stub.searchBusiness(request)
+        return stub.searchBusiness(request).resultsList.map { it.dto() }
     }
 
 }
+
+fun BusinessOuterClass.Business.dto() = Business(id.id, name, address, city, latitude, longitude)

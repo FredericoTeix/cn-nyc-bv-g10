@@ -1,17 +1,20 @@
-package pt.fcul.value
+package pt.fcul.value.trip
 
+import com.google.protobuf.Timestamp
 import io.grpc.ManagedChannel
 import io.grpc.ManagedChannelBuilder
-import trips.TripsGrpcKt
-import trips.TripsOuterClass.*
-import trips.locationID
 import java.io.Closeable
+import java.time.LocalDateTime
+import java.time.ZoneOffset
 import java.util.concurrent.TimeUnit
-import com.google.protobuf.Timestamp
+import pt.fcul.value.Location
+import trips.TripsGrpcKt
+import trips.TripsOuterClass
 import trips.city
 import trips.getCountTripsInLocationRequest
+import trips.locationID
 
-class TripClient(address: String, port: Int) : Closeable {
+class GRPCTripClient(address: String, port: Int) : TripClient, Closeable {
 
     private val channel: ManagedChannel = ManagedChannelBuilder
         .forAddress(address, port)
@@ -24,7 +27,7 @@ class TripClient(address: String, port: Int) : Closeable {
         channel.shutdown().awaitTermination(5, TimeUnit.SECONDS)
     }
 
-    suspend fun getLocationById(locationId: String) : Location {
+    override suspend fun getLocationById(locationId: String): Location {
         // Find location description by ID
         // rpc GetLocationById(LocationID) returns (Location) {}
         val request = locationID {
@@ -32,31 +35,44 @@ class TripClient(address: String, port: Int) : Closeable {
         }
 
         println("[getLocationById] locationID:{$locationId}")
-        return stub.getLocationById(request)
+        return stub.getLocationById(request).dto()
     }
 
-    suspend fun getCountTripsInLocation(startDate: Timestamp, endDate: Timestamp,
-                                        locationId: String) : GetCountTripsInLocationResponse {
+    override suspend fun getCountTripsInLocation(
+        startDate: LocalDateTime,
+        endDate: LocalDateTime,
+        locationId: String
+    ): Long {
         // rpc GetCountTripsInLocation(GetCountTripsInLocationRequest) returns (GetCountTripsInLocationResponse) {}
         val request = getCountTripsInLocationRequest {
-            this.startDate = startDate
-            this.endDate = endDate
+            this.startDate = startDate.toProtoTime()
+            this.endDate = endDate.toProtoTime()
             this.locationId = locationId
         }
 
         println("[getCountTripsInLocation] locationID:{$locationId} startDate:{$startDate} endDate:{$endDate}")
-        return stub.getCountTripsInLocation(request)
+        return stub.getCountTripsInLocation(request).count
     }
 
-    suspend fun getLocationByCity(cName: String) : LocationID {
+    override suspend fun getLocationByCity(cName: String): String {
         //rpc GetLocationByCity(City) returns (LocationID) {}
         val request = city {
             this.cityName = cName
         }
 
         println("[getLocationByCity] city:{$cName}")
-        return stub.getLocationByCity(request)
+        return stub.getLocationByCity(request).locationId
     }
 
-
 }
+
+fun LocalDateTime.toProtoTime(): Timestamp {
+    val instant = toInstant(ZoneOffset.UTC)
+
+    return Timestamp.newBuilder()
+        .setSeconds(instant.epochSecond)
+        .setNanos(instant.nano)
+        .build()
+}
+
+fun TripsOuterClass.Location.dto() = Location(zone, borough, locationId, serviceZone)

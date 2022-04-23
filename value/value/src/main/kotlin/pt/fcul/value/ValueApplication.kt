@@ -4,6 +4,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Profile
 import pt.fcul.value.business.BusinessClient
 import pt.fcul.value.business.GRPCBusinessClient
 import pt.fcul.value.trip.GRPCTripClient
@@ -17,6 +18,7 @@ fun main(args: Array<String>) {
 }
 
 @Configuration
+@Profile("default")
 class Configuration {
 
     // TODO: [WARNING] Services ports may change later on

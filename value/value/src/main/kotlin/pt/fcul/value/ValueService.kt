@@ -21,6 +21,10 @@ class ValueService(
     ): BusinessValue {
         val business = businessClient.getBusiness(id)
         val locationId = tripClient.getLocationByCity(business.city)
+        // TODO what if they are null ? response should be a 404
+        //   you can do this by returning null to the ValueController and create there the 404 response
+        //   or you can throw an exception, and let an ExceptionHandler convert it to a 404 response, as done in keys service
+
 
         println("${id}: $start $end")
         val value = tripClient.getCountTripsInLocation(start, end, locationId)

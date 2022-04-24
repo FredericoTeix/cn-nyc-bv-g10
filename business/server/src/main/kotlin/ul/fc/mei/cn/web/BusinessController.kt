@@ -15,7 +15,6 @@ import ul.fc.mei.cn.core.model.Business
 @RestController
 class BusinessController(val service: BusinessService) {
 
-
     @GetMapping(Links.BusinessById)
     fun getBusiness(@PathVariable bid: String): ResponseEntity<Business> {
         val business = service.getBusiness(bid)
@@ -23,7 +22,7 @@ class BusinessController(val service: BusinessService) {
     }
 
     @GetMapping(Links.Businesses)
-    suspend fun getBusinesses(
+    fun getBusinesses(
         @RequestParam longitude: Double,
         @RequestParam latitude: Double,
         @RequestParam radius: Int,
@@ -35,13 +34,13 @@ class BusinessController(val service: BusinessService) {
     }
 
     @DeleteMapping(Links.BusinessById)
-    suspend fun deleteBusiness(@PathVariable bid: String): ResponseEntity<Nothing> {
+    fun deleteBusiness(@PathVariable bid: String): ResponseEntity<Nothing> {
         service.deleteBusiness(bid)
         return ResponseEntity.ok().build()
     }
 
     @PutMapping(Links.BusinessById)
-    suspend fun updateBusiness(
+    fun updateBusiness(
         @PathVariable bid: String,
         @RequestBody newBusiness: Business
     ): ResponseEntity<Business> {
@@ -50,13 +49,13 @@ class BusinessController(val service: BusinessService) {
     }
 
     @GetMapping("/test")
-    suspend fun testEndpoint(
+    fun testEndpoint(
     ): ResponseEntity<Void> {
         return ResponseEntity.ok().build()
     }
 
     @GetMapping(Links.LoadBusinesses)
-    suspend fun loadBusinesses(
+    fun loadBusinesses(
         @RequestParam longitude: Double,
         @RequestParam latitude: Double,
         @RequestParam radius: Int,

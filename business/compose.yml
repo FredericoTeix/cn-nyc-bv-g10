@@ -12,12 +12,14 @@ services:
       MONGO_DATABASE_NAME: business
       MONGO_COLLECTION_NAME: business
       PLACES_ENDPOINT: https://api.geoapify.com/v2/places
-      PLACES_API_KEY: 4827142ef25f491abc03833d2e4cf9f5
+      PLACES_API_KEY: <PLACES API KEY GOES HERE>
     depends_on:
       - business_mongodb
     ports:
       - "8080:8080"
       - "6565:6565"
+    networks:
+      - gateway_main-net
   business_mongodb:
     restart: always
     container_name: business_mongodb
@@ -29,6 +31,10 @@ services:
       - business_mongo_data:/data/db
     ports:
       - "27017:27017"
-
+    networks:
+      - gateway_main-net
 volumes:
   business_mongo_data:
+networks:
+  gateway_main-net:
+    external: true

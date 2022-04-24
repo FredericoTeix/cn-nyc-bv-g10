@@ -16,7 +16,6 @@ class BusinessService(
     val getter: ResourceGetter<ModelFeatureArray<BusinessFeature>>
 ) {
 
-
     fun updateBusiness(businessId: String, business: Business): Business {
         validateBusinessInput(business)
         val updatedBusiness = businessRepository.updateBusiness(business)

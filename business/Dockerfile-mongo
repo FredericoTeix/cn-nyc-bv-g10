@@ -1,0 +1,6 @@
+FROM mongo
+
+COPY ./scripts/mongo-init.js /docker-entrypoint-initdb.d/1_mongo-init.js
+
+EXPOSE 27017
+CMD ["mongod"]

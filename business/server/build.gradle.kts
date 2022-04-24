@@ -43,6 +43,10 @@ dependencies {
     implementation("org.mongodb:mongodb-driver-sync:$mongoVersion")
     implementation("org.mongodb:mongodb-driver-core:$mongoVersion")
 
+    //Metrics dependencies
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
+    implementation("io.micrometer:micrometer-registry-prometheus")
+
 
     // Spring Dependencies
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")

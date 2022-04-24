@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: business-configmap
+data:
+  database_host: mongo-business-service
+  database_port: "27017"
+  database_name: business
+  collection_name: business
+  places_endpoint: https://api.geoapify.com/v2/places
+  places_api_key: <PLACES API KEY GOES HERE>

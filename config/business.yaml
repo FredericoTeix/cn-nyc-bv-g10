@@ -1,0 +1,126 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: business-deployment
+  labels:
+    app: keys
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: business
+  template:
+    metadata:
+      labels:
+        app: business
+    spec:
+        terminationGracePeriodSeconds: 5
+        containers:
+        - name: business
+          image: baitle/business:latest
+          imagePullPolicy: Always
+          ports:
+          - name: http-port
+            containerPort: 8080
+          - name: grpc-port
+            containerPort: 6565
+          env:
+          - name: MONGO_HOST
+            valueFrom:
+              configMapKeyRef:
+                name: business-configmap
+                key: database_host
+          - name: MONGO_PORT
+            valueFrom:
+              configMapKeyRef:
+                name: business-configmap
+                key: database_port
+          - name: MONGO_DATABASE_NAME
+            valueFrom:
+              configMapKeyRef:
+                name: business-configmap
+                key: database_name
+          - name: MONGO_COLLECTION_NAME
+            valueFrom:
+              configMapKeyRef:
+                name: business-configmap
+                key: collection_name
+          - name: PLACES_ENDPOINT
+            valueFrom:
+              configMapKeyRef:
+                name: business-configmap
+                key: places_endpoint
+          - name: PLACES_API_KEY
+            valueFrom:
+              configMapKeyRef:
+                name: business-configmap
+                key: places_api_key
+          - name: MONGO_DATABASE_URL
+            value: "mongodb://$(MONGO_HOST):$(MONGO_PORT)/"
+          resources:
+            requests:
+              memory: 128Mi
+              cpu: 100m
+            limits:
+              memory: 256Mi
+              cpu: 200m
+          readinessProbe:
+            initialDelaySeconds: 15
+            timeoutSeconds: 3
+            periodSeconds: 10
+            failureThreshold: 3
+            httpGet:
+              path: /actuator/health
+              port: 8080
+          livenessProbe:
+            initialDelaySeconds: 15
+            timeoutSeconds: 3
+            periodSeconds: 10
+            failureThreshold: 3
+            httpGet:
+              path: /actuator/health
+              port: 8080
+          startupProbe:
+            initialDelaySeconds: 30
+            timeoutSeconds: 3
+            periodSeconds: 30
+            failureThreshold: 30
+            httpGet:
+              path: /actuator/health
+              port: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: business-service
+spec:
+  selector:
+    app: business
+  ports:
+    - name: http
+      protocol: TCP
+      port: 8080
+      targetPort: http-port
+    - name: grpc
+      protocol: TCP
+      port: 6565
+      targetPort: grpc-port
+---
+apiVersion: autoscaling/v2beta2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: business-scaler
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: business-deployment
+  minReplicas: 1
+  maxReplicas: 3
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 50

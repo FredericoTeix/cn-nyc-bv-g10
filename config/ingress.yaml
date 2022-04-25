@@ -40,3 +40,10 @@ spec:
             name: business-service
             port:
               number: 8080
+      - path: /admin/business/load
+        pathType: Prefix
+        backend:
+          service:
+            name: business-load-service
+            port:
+              number: 8080

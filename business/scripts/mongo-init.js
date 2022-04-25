@@ -1,7 +1,8 @@
-db = new Mongo().getDB("businesses");
-db.createCollection("businesses", {capped: false});
+let colName = "business"
+db = new Mongo().getDB(colName);
+db.createCollection(colName, {capped: false});
 
-let id = db.businesses.insert(
+let id = db[colName].insert(
     {
         "name": "Shopping",
         "city": "New York",
@@ -13,8 +14,8 @@ let id = db.businesses.insert(
     }
 );
 
-db.businesses.createIndex({location: "2dsphere"})
+db[colName].createIndex({location: "2dsphere"})
 
-db.businesses.find().forEach( place =>
+db[colName].find().forEach( place =>
     db.businesses.deleteOne(place)
 )

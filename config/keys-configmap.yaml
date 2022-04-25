@@ -49,7 +49,7 @@ data:
         CONSUMER:
           GET: 1
           PUT: 1
-      /business
+      /business:
         ADMIN:
           GET: 1
           POST: 1

@@ -2,6 +2,7 @@
 import os
 import threading
 from concurrent import futures
+from pathlib import Path
 
 import connexion
 import grpc
@@ -18,6 +19,12 @@ interceptors = [ExceptionToStatusInterceptor()]
 grpc_server = grpc.server(futures.ThreadPoolExecutor(max_workers=10), interceptors=interceptors)
 
 
+def load(path):
+    with open(Path(path).expanduser(), 'rb') as f:
+        data = f.read()
+    return data
+
+
 def start_flask():
     app = connexion.App(__name__, specification_dir='./swagger/')
     app.app.json_encoder = encoder.JSONEncoder
@@ -25,12 +32,16 @@ def start_flask():
     metrics = ConnexionPrometheusMetrics.for_app_factory()
     metrics.info('app_info', 'Trips Service', version='1.0')
     metrics.init_app(app)
-    app.run(port=8080)
+    app.run(port=8080, ssl_context=('trip.crt', 'trip.key'))
 
 
 def start_grpc():
+    credentials = grpc.ssl_server_credentials(
+        [(load('trip.key'), load('trip.crt'))]
+    )
+
     trips_pb2_grpc.add_TripsServicer_to_server(TripsServicer(), grpc_server)
-    grpc_server.add_insecure_port('[::]:50051')
+    grpc_server.add_secure_port('[::]:50051', credentials=credentials)
     grpc_server.start()
 
 

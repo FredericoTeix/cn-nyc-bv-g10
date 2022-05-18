@@ -37,6 +37,16 @@ spec:
               secretKeyRef:
                 name: mongo-trips-secret
                 key: mongo-root-password
+          - name: CERT
+            valueFrom:
+              secretKeyRef:
+                name: trip-secret
+                key: tls.crt
+          - name: KEY
+            valueFrom:
+              secretKeyRef:
+                name: trip-secret
+                key: tls.key
           resources:
             requests:
               memory: 128Mi

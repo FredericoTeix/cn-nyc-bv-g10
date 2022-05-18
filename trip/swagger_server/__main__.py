@@ -32,12 +32,12 @@ def start_flask():
     metrics = ConnexionPrometheusMetrics.for_app_factory()
     metrics.info('app_info', 'Trips Service', version='1.0')
     metrics.init_app(app)
-    app.run(port=8080, ssl_context=('trip.crt', 'trip.key'))
+    app.run(port=8080, ssl_context=(os.getenv('CERT'), os.getenv('KEY')))
 
 
 def start_grpc():
     credentials = grpc.ssl_server_credentials(
-        [(load('trip.key'), load('trip.crt'))]
+        [(os.getenv('KEY'), os.getenv('CERT'))]
     )
 
     trips_pb2_grpc.add_TripsServicer_to_server(TripsServicer(), grpc_server)

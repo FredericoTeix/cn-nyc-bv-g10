@@ -12,6 +12,9 @@ kubectl delete deployment business-deployment
 kubectl delete deployment mongo-business-deployment
 } &> /dev/null
 
+kubectl create secret tls ingress-secret --cert ingress/ingress.crt --key ingress/ingress.key
+kubectl create secret tls trip-secret --cert trip/trip.crt --key trip/trip.key
+
 # Start ingress controller (had to be done first because it is the one that takes the most time)
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.1.3/deploy/static/provider/cloud/deploy.yaml
 
@@ -32,8 +35,6 @@ kubectl apply -f config/grafana.yaml
 kubectl apply -f config/mongo-business.yaml
 kubectl apply -f config/business-configmap.yaml
 kubectl apply -f config/business.yaml
-
-kubectl create secret tls ingress-secret --cert ingress/ingress.crt --key ingress/ingress.key
 
 printf "Waiting for ingress controller to initialize fully..."
 {

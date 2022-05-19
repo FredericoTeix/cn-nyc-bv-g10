@@ -1,7 +1,7 @@
 #!/bin/bash
 
 REGION="europe-west1-b"
-CLUSTER_NAME="cntrips-cluster-3"
+CLUSTER_NAME="cntrips-cluster-2"
 
 # Set project id if not specified yet
 {

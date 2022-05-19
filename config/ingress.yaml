@@ -2,8 +2,9 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: nginx-ingress
+  namespace: service
   annotations:
-    nginx.ingress.kubernetes.io/auth-url: http://keys-service.default.svc.cluster.local:8080/key/consume
+    nginx.ingress.kubernetes.io/auth-url: http://keys-service.service.svc.cluster.local:8080/key/consume
     nginx.ingress.kubernetes.io/auth-method: PUT
 spec:
   ingressClassName: nginx

@@ -1,14 +1,13 @@
-name: Keys Build CI
+name: Value Build CI
 
 on: [push, pull_request]
-
-defaults:
-  run:
-    working-directory: value
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: value
 
     steps:
       - name: Checkout

@@ -24,6 +24,9 @@ jobs:
         with:
           build-root-directory: value
 
+      - name: Change wrapper permissions
+        run: chmod +x gradlew
+
       - name: Run build with Gradle wrapper
         run: ./gradlew build --scan
 

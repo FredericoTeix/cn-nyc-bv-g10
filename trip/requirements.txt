@@ -7,3 +7,5 @@ Flask~=1.1.4
 grpcio >= 1.30.0
 grpcio-tools >= 1.30.0
 grpc-interceptor >= 0.13.0
+
+prometheus-flask-exporter

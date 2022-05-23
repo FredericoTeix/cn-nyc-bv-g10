@@ -1,0 +1,77 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mongo-business-storage
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo-business-service
+spec:
+  selector:
+    app: mongo-business
+  ports:
+    - protocol: TCP
+      port: 27017
+      targetPort: 27017
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mongo-business-deployment
+  labels:
+    app: mongo-business
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongo-business
+  serviceName: mongo-business-service
+  template:
+    metadata:
+      labels:
+        app: mongo-business
+    spec:
+        terminationGracePeriodSeconds: 10
+        containers:
+        - name: mongo-business
+          image: baitle/business-mongo
+          imagePullPolicy: Always
+          ports:
+          - containerPort: 27017
+          volumeMounts:
+            - mountPath: /data/db
+              name: mongo-business-storage
+          resources:
+            requests:
+              cpu: "200m"
+          readinessProbe:
+            initialDelaySeconds: 15
+            timeoutSeconds: 3
+            periodSeconds: 10
+            failureThreshold: 3
+            exec:
+              command:
+              - mongo
+              - --eval
+              - db.adminCommand('ping')
+          livenessProbe:
+            initialDelaySeconds: 15
+            timeoutSeconds: 3
+            periodSeconds: 10
+            failureThreshold: 3
+            exec:
+              command:
+              - mongo
+              - --eval
+              - db.adminCommand('ping')
+        volumes:
+          - name: mongo-business-storage
+            persistentVolumeClaim:
+              claimName: mongo-business-storage

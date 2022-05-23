@@ -33,3 +33,17 @@ spec:
             name: keys-service
             port:
               number: 8080
+      - path: /business
+        pathType: Prefix
+        backend:
+          service:
+            name: business-service
+            port:
+              number: 8080
+      - path: /admin/business/load
+        pathType: Prefix
+        backend:
+          service:
+            name: business-load-service
+            port:
+              number: 8080

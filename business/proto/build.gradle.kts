@@ -55,11 +55,7 @@ tasks.withType<ProcessResources> {
 }
 
 tasks.jar {
-
-    // To add all of the dependencies otherwise a "NoClassDefFoundError" error
     from(sourceSets.main.get().output)
-
-
     dependsOn(configurations.runtimeClasspath)
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     from({

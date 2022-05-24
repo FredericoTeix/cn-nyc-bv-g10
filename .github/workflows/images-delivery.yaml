@@ -1,0 +1,40 @@
+name: Docker Images Delivery
+
+on: [push, release] # triggered on push for testing, should be on release only
+
+env:
+  REGION: europe-west1
+  REGISTRY: cntrips-registry
+
+jobs:
+  delivery:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 'Checkout'
+        uses: 'actions/checkout@v3'
+
+      - id: 'auth'
+        name: 'Authenticate to Google Cloud'
+        uses: 'google-github-actions/auth@v0'
+        with:
+          credentials_json: '${{ secrets.GOOGLE_CREDENTIALS }}'
+
+      - name: 'Authenticate docker'
+        uses: 'docker/login-action@v1'
+        with:
+          registry: '${REGION}-docker.pkg.dev'
+          username: 'oauth2accesstoken'
+          password: '${{ steps.auth.outputs.access_token }}'
+
+      # This example runs "docker login" directly to Artifact Registry.
+      # - run: |-
+      #     echo '${{ steps.auth.outputs.access_token }}' | docker login -u oauth2accesstoken --password-stdin https://REGION-docker.pkg.dev
+
+      - name: 'Build and push'
+        uses: 'docker/build-push-action@v3'
+        with:
+          context: 'keys'
+          file: 'keys/Dockerfile-keys'
+          tags: '${REGION}-docker.pkg.dev/${{ steps.auth.outputs.project_id }}/${REGISTRY}/keys:latest'
+          push: true

@@ -1,0 +1,7 @@
+bindings:
+- members:
+  - user:rato.josepedro4@gmail.com
+  - user:rdrslv00@gmail.com
+  - user:fred.teix2000@gmail.com
+  - user:daniel.jose.dias@outlook.com
+  role: roles/artifactregistry.repoAdmin

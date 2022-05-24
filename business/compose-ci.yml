@@ -1,0 +1,29 @@
+version: "3.3"
+
+services:
+  business-test:
+    container_name: business_service_test
+    build:
+      context: .
+      dockerfile: Dockerfile-business-ci
+    environment:
+      MONGO_DATABASE_URL: mongodb://business_mongodb_test
+      MONGO_DATABASE_NAME: business_test
+      MONGO_COLLECTION_NAME: business
+      PLACES_ENDPOINT: https://api.geoapify.com/v2/places
+      PLACES_API_KEY: <PLACES API KEY GOES HERE>
+    depends_on:
+      - business-mongodb-test
+    ports:
+      - "8080:8080"
+      - "6565:6565"
+
+  business-mongodb-test:
+    container_name: business_mongodb_test
+    build:
+      context: .
+      dockerfile: Dockerfile-mongo
+    environment:
+      - MONGO_INITDB_DATABASE=business_test
+    ports:
+      - "27017:27017"

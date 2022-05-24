@@ -52,9 +52,12 @@ class BusinessService(
     }
 
     private fun validateBusinessInput(business: Business): Boolean {
-        //TODO: make some validation if the coordinates are in New York
+        if (business.latitude !in -90.0..90.0 || business.longitude !in -180.0..180.0) {
+            throw BadRequestException("Invalid Coordinates supplied")
+        }
+
         if (business.address.isBlank()) {
-            throw BadRequestException("Name or Address were cannot be blank")
+            throw BadRequestException("Address cannot be blank")
         }
 
         if (!business.city.contains("New York", true)) {

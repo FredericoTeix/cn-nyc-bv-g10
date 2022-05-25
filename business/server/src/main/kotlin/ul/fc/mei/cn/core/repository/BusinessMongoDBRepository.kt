@@ -1,8 +1,10 @@
 package ul.fc.mei.cn.core.repository
 
 import com.mongodb.client.MongoCollection
+import com.mongodb.client.model.FindOneAndReplaceOptions
 import com.mongodb.client.model.FindOneAndUpdateOptions
 import com.mongodb.client.model.ReturnDocument
+import org.litote.kmongo.MongoOperator
 import org.litote.kmongo.MongoOperator.geometry
 import org.litote.kmongo.MongoOperator.near
 import org.litote.kmongo.MongoOperator.type
@@ -10,12 +12,15 @@ import org.litote.kmongo.deleteOneById
 import org.litote.kmongo.eq
 import org.litote.kmongo.find
 import org.litote.kmongo.findOneById
+import org.litote.kmongo.set
+import org.litote.kmongo.setTo
 import org.litote.kmongo.setValueOnInsert
 import org.litote.kmongo.updateOneById
 import org.litote.kmongo.upsert
 import org.springframework.stereotype.Component
 import ul.fc.mei.cn.core.common.NotFoundException
 import ul.fc.mei.cn.core.model.Business
+import ul.fc.mei.cn.core.model.Coordinates
 import ul.fc.mei.cn.core.model.DBBusiness
 import ul.fc.mei.cn.core.model.ModelBusiness
 import ul.fc.mei.cn.core.model.toBusiness
@@ -49,11 +54,24 @@ class BusinessMongoDBRepository(private val collection: MongoCollection<DBBusine
     }
 
     override fun updateBusiness(business: Business): Business {
-        return collection.findOneAndUpdate(
-            Business::id eq business.id,
-            setValueOnInsert(business.toDBModel()),
-            FindOneAndUpdateOptions().returnDocument(ReturnDocument.AFTER)
-        )?.toBusiness() ?: throw NotFoundException("Business with ID: ${business.id} not found")
+
+        val updateResult = collection.updateOne(
+            DBBusiness::id eq business.id,
+            set(
+                DBBusiness::name setTo business.name,
+                DBBusiness::address setTo business.address,
+                DBBusiness::city setTo business.city,
+                DBBusiness::location setTo Coordinates(
+                    coordinates = listOf(
+                        business.longitude,
+                        business.latitude
+                    )
+                )
+            )
+        )
+
+        if (updateResult.matchedCount <= 0) throw NotFoundException("Business with ID: ${business.id} not found")
+        return collection.findOneById(business.id)?.toBusiness()!!
     }
 
     override fun addBusiness(business: Business): Boolean {

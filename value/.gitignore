@@ -35,3 +35,7 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### not include auto generated code###
+value/proto/build/
+value/proto/gen/

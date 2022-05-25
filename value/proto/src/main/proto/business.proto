@@ -6,12 +6,13 @@ message Business {
   BusinessId id = 1;
   string name = 2;
   string address = 3;
-  double latitude = 4;
-  double longitude = 5;
+  string city = 4;
+  double latitude = 5;
+  double longitude = 6;
 }
 
 message BusinessId {
-  int64 id = 1;
+  string id = 1;
 }
 
 message UpdateBusinessRequest {
@@ -22,12 +23,25 @@ message UpdateBusinessRequest {
 message SearchBusinessRequest {
   double latitude = 1;
   double longitude = 2;
-  double radius = 3;
+  int32 radius = 3;
   int32 limit = 4;
   int32 skip = 5;
 }
 
 message SearchBusinessResponse {
+  oneof either {
+    BusinessList results = 1;
+    SearchBusinessError error = 2;
+  }
+
+  enum SearchBusinessError {
+    INVALID_PARAMS = 0;
+    DB_ACCESS_ERROR = 1;
+    UNKNOWN = 2;
+  }
+}
+
+message BusinessList {
   repeated Business results = 1;
 }
 
@@ -46,5 +60,5 @@ service BusinessService {
   rpc getBusiness(BusinessId) returns (Business);
   rpc updateBusiness(UpdateBusinessRequest) returns (Business);
   rpc deleteBusiness(BusinessId) returns (DeleteBusinessResponse);
-  rpc searchBusiness(SearchBusinessRequest) returns (DeleteBusinessResponse);
+  rpc searchBusiness(SearchBusinessRequest) returns (SearchBusinessResponse);
 }

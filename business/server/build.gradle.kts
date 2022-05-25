@@ -74,4 +74,3 @@ tasks.jar {
         attributes["Main-Class"] = "ul.fc.mei.cn.BusinessApplicationKt"
     }
 }
-

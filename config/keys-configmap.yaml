@@ -2,8 +2,9 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: keys-configmap
+  namespace: service
 data:
-  database_host: mongo-keys-service
+  database_host: mongo-keys-service.database
   database_port: "27017"
   database_name: api_keys
   acl.yaml: |

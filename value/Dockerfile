@@ -1,15 +1,22 @@
-# Use Openjdk:11-jdk as an image base
-FROM openjdk:11-jdk
+FROM openjdk:11-jdk as build
+WORKDIR /workspace/value
 
-# Expose container port nº8080
-EXPOSE 8080
+COPY gradlew .
+COPY gradle gradle
+COPY build.gradle* settings.gradle* ./
+RUN ./gradlew --version
 
-ENV TRIP 172.2.1.1
-ENV TRIP_PORT 50051
-ENV BUSINESS 192.0.0.10
-ENV BUSINESS_PORT 8080
+COPY proto proto
+COPY value value
+RUN target=/root/.gradle ./gradlew bootJar
 
-ADD value/build/libs/value-0.0.1-SNAPSHOT.jar value-0.0.1-SNAPSHOT.jar
+FROM adoptopenjdk/openjdk11:alpine as final
+RUN apk add --no-cache bash
 
-# Command to run the jar
-ENTRYPOINT ["java","-jar","/value-0.0.1-SNAPSHOT.jar"]
+WORKDIR /home
+RUN mkdir -p ./value
+
+COPY --from=build workspace/value/value/build/libs/value-0.0.1-SNAPSHOT.jar ./value/
+
+USER root
+ENTRYPOINT ["java","-jar","./value/value-0.0.1-SNAPSHOT.jar"]

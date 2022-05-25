@@ -33,6 +33,9 @@ kubectl apply -f config/mongo-business.yaml
 kubectl apply -f config/business-configmap.yaml
 kubectl apply -f config/business.yaml
 
+kubectl apply -f config/value-configmap.yaml
+kubectl apply -f config/value.yaml
+
 kubectl create secret tls ingress-secret --cert ingress/ingress.crt --key ingress/ingress.key
 
 printf "Waiting for ingress controller to initialize fully..."

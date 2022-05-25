@@ -15,7 +15,7 @@ class ValueService(
      * Get the value associated to a business in a given time range
      */
     suspend fun getBusinessValue(
-        id: Long,
+        id: String,
         start: LocalDateTime,
         end: LocalDateTime
     ): BusinessValue {
@@ -29,7 +29,7 @@ class ValueService(
         println("${id}: $start $end")
         val value = tripClient.getCountTripsInLocation(start, end, locationId)
 
-        return BusinessValue(id, value)
+        return BusinessValue(id.toString(), value)
     }
 
     /**

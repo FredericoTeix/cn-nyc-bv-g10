@@ -21,8 +21,8 @@ class ValueServiceTests {
 
     @Test
     fun testService() = runBlockingTest {
-        val value = service.getBusinessValue(0, LocalDateTime.now(), LocalDateTime.now())
-        assertEquals(0, value.id)
+        val value = service.getBusinessValue("0", LocalDateTime.now(), LocalDateTime.now())
+        assertEquals("0", value.id)
         assertEquals(0, value.value)
     }
 

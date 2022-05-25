@@ -1,14 +1,12 @@
 package pt.fcul.value.business
 
+import com.google.protobuf.Descriptors
 import io.grpc.ManagedChannel
 import io.grpc.ManagedChannelBuilder
 import java.io.Closeable
 import java.util.concurrent.TimeUnit
 import pt.fcul.value.Business
-import ul.fc.cn.proto.BusinessOuterClass
-import ul.fc.cn.proto.BusinessServiceGrpcKt
-import ul.fc.cn.proto.businessId
-import ul.fc.cn.proto.searchBusinessRequest
+import ul.fc.cn.proto.*
 
 class GRPCBusinessClient(address: String, port: Int) : BusinessClient, Closeable {
 
@@ -23,7 +21,7 @@ class GRPCBusinessClient(address: String, port: Int) : BusinessClient, Closeable
         channel.shutdown().awaitTermination(5, TimeUnit.SECONDS)
     }
 
-    override suspend fun getBusiness(businessId: Long): Business {
+    override suspend fun getBusiness(businessId: String): Business {
         // rpc getBusiness(BusinessId) returns (Business);
         val request = businessId {
             this.id = businessId
@@ -44,13 +42,16 @@ class GRPCBusinessClient(address: String, port: Int) : BusinessClient, Closeable
         val request = searchBusinessRequest {
             this.latitude = lat
             this.longitude = lon
-            this.radius = radius
+            this.radius = radius.toInt()
             this.limit = limit
             this.skip = skip
         }
 
+        val response = stub.searchBusiness(request)
+        if(response.hasError()) return listOf<Business>()
+
         print("[searchBusiness] lat:{$lat} lon:{$lon} rad:{$radius} limit:{$limit} skip:{$skip}")
-        return stub.searchBusiness(request).resultsList.map { it.dto() }
+        return response.results.resultsList.map{it.dto()}
     }
 
 }

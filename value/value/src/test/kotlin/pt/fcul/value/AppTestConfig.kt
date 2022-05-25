@@ -22,11 +22,11 @@ class AppTestConfig {
 
 class MockBusinessClient : BusinessClient {
     private val businesses = mapOf(
-        0L to Business(0, "b0", "a0", "c0", 0.0, 0.0),
-        1L to Business(1, "b1", "a1", "c1", 1.0, 1.0),
+        "0" to Business("0", "b0", "a0", "c0", 0.0, 0.0),
+        "1" to Business("1", "b1", "a1", "c1", 1.0, 1.0),
     )
 
-    override suspend fun getBusiness(businessId: Long): Business {
+    override suspend fun getBusiness(businessId: String): Business {
         // TODO can be null. maybe needs to change BusinessClient to return nullable Business
         return businesses[businessId]!!
     }

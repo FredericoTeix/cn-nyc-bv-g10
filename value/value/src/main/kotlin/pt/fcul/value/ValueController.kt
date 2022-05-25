@@ -16,7 +16,7 @@ class ValueController(
 
     @GetMapping("/value/business/{id}")
     suspend fun valueByBusiness(
-        @PathVariable id: Long,
+        @PathVariable id: String,
         @RequestParam("start_date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) start: LocalDateTime,
         @RequestParam("end_date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) end: LocalDateTime
     ) = service.getBusinessValue(id, start, end)
@@ -47,4 +47,8 @@ class ValueController(
     ) = service.getLocationValue(lat, lon, radius, start, end)
 //    ) = AreaValue(0, setOf("0", "1", "2"))
 
+    @GetMapping("/value/isAlive")
+    suspend fun isAlive() : Int{
+        return 200;
+    }
 }

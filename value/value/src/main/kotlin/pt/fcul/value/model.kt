@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
  */
 
 @Serializable
-data class BusinessValue(val id: Long, val value: Long)
+data class BusinessValue(val id: String, val value: Long)
 
 @Serializable
 data class TopBusinessesAtLocation(
@@ -28,7 +28,7 @@ data class Location(
 )
 
 data class Business(
-    val id: Long,
+    val id: String,
     val name: String,
     val address: String,
     val city: String,

@@ -19,10 +19,18 @@ spec:
         - name: prometheus
           image: prom/prometheus
           args:
+            - "--storage.tsdb.retention.time=12h"
             - "--config.file=/etc/prometheus/prometheus-cm.yaml"
             - "--storage.tsdb.path=/prometheus/"
           ports:
             - containerPort: 9090
+          resources:
+            requests:
+              cpu: 500m
+              memory: 500M
+            limits:
+              cpu: 1
+              memory: 1Gi
           volumeMounts:
             - name: config-volume
               mountPath: /etc/prometheus/prometheus-cm.yaml
@@ -36,8 +44,8 @@ spec:
             name: prometheus-cm
             defaultMode: 420
             items:
-            - key: prometheus-cm.yaml
-              path: prometheus-cm.yaml
+              - key: prometheus-cm.yaml
+                path: prometheus-cm.yaml
         - name: storage-volume
           emptyDir: {}
 ---
@@ -46,12 +54,15 @@ kind: Service
 metadata:
   name: prometheus-svc
   namespace: monitoring
+  annotations:
+    prometheus.io/scrape: 'true'
+    prometheus.io/port:   '9090'
 spec:
   type: NodePort
   selector:
     app: prometheus
   ports:
-  - name: promui
-    protocol: TCP
-    port: 9090
-    targetPort: 9090
+    - name: promui
+      protocol: TCP
+      port: 9090
+      targetPort: 9090

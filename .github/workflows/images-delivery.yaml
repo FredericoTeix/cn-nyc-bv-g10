@@ -1,0 +1,88 @@
+name: Docker Images Delivery
+
+on: [release]
+
+env:
+  REGION: europe-west1
+  REGISTRY: cntrips-registry
+
+jobs:
+  delivery:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 'Checkout'
+        uses: 'actions/checkout@v3'
+
+      - id: 'auth'
+        name: 'Authenticate to Google Cloud'
+        uses: 'google-github-actions/auth@v0'
+        with:
+          credentials_json: '${{ secrets.GOOGLE_CREDENTIALS }}'
+
+      - name: 'Authenticate docker'
+        # This example runs "docker login" directly to Artifact Registry.
+        run: |-
+          echo '${{ secrets.GOOGLE_CREDENTIALS }}' | docker login -u _json_key --password-stdin https://${{ env.REGION }}-docker.pkg.dev
+        # the following action didn't work, but there was other errors involved, maybe works
+        # uses: 'docker/login-action@v1'
+        # with:
+        #   registry: '${{ env.REGION }}-docker.pkg.dev'
+        #   username: 'oauth2accesstoken'
+        #   password: '${{ steps.auth.outputs.access_token }}'
+
+      - name: 'Build and push Keys'
+        uses: 'docker/build-push-action@v3'
+        with:
+          context: 'keys'
+          file: 'keys/Dockerfile-keys'
+          tags: '${{ env.REGION }}-docker.pkg.dev/${{ steps.auth.outputs.project_id }}/${{ env.REGISTRY }}/keys:latest'
+          push: true
+
+      - name: 'Build and push Keys MongoDB'
+        uses: 'docker/build-push-action@v3'
+        with:
+          context: 'keys'
+          file: 'keys/Dockerfile-mongo'
+          tags: '${{ env.REGION }}-docker.pkg.dev/${{ steps.auth.outputs.project_id }}/${{ env.REGISTRY }}/keysmongo:latest'
+          push: true
+
+      - name: 'Build and push Trips'
+        uses: 'docker/build-push-action@v3'
+        with:
+          context: '.'
+          file: 'trip/Dockerfile'
+          tags: '${{ env.REGION }}-docker.pkg.dev/${{ steps.auth.outputs.project_id }}/${{ env.REGISTRY }}/trips:latest'
+          push: true
+
+      - name: 'Build and push Trips MongoDB'
+        uses: 'docker/build-push-action@v3'
+        with:
+          context: '.'
+          file: 'trip/DockerfileMongo'
+          tags: '${{ env.REGION }}-docker.pkg.dev/${{ steps.auth.outputs.project_id }}/${{ env.REGISTRY }}/tripsmongo:latest'
+          push: true
+
+      - name: 'Build and push Business'
+        uses: 'docker/build-push-action@v3'
+        with:
+          context: 'business'
+          file: 'business/Dockerfile'
+          tags: '${{ env.REGION }}-docker.pkg.dev/${{ steps.auth.outputs.project_id }}/${{ env.REGISTRY }}/business:latest'
+          push: true
+
+      - name: 'Build and push Business MongoDB'
+        uses: 'docker/build-push-action@v3'
+        with:
+          context: 'business'
+          file: 'business/Dockerfile-mongo'
+          tags: '${{ env.REGION }}-docker.pkg.dev/${{ steps.auth.outputs.project_id }}/${{ env.REGISTRY }}/business-mongo:latest'
+          push: true
+
+      - name: 'Build and push Value'
+        uses: 'docker/build-push-action@v3'
+        with:
+          context: 'value'
+          file: 'value/Dockerfile'
+          tags: '${{ env.REGION }}-docker.pkg.dev/${{ steps.auth.outputs.project_id }}/${{ env.REGISTRY }}/value:latest'
+          push: true

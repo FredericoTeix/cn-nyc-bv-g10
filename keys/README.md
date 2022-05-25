@@ -6,7 +6,11 @@ Provides authentication and authorization features through API Keys, which can b
 and then consulted/revoked/refreshed/consumed by the owner of the key.  
 All API Keys are generated with a defined quota that limits the amount of requests that can be consumed.  
 The keys also have an associated scope, which delimits the possible actions that can be performed and
-which resources can be accessed by the key.
+which resources can be accessed by the key.  
+An admin key is already created.  
+```
+123e4567-e89b-42d3-a456-556642440000
+```
 
 ## Configuration
 

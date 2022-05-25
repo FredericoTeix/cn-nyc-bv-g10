@@ -2,8 +2,9 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: keys-configmap
+  namespace: service
 data:
-  database_host: mongo-keys-service
+  database_host: mongo-keys-service.database
   database_port: "27017"
   database_name: api_keys
   acl.yaml: |
@@ -39,3 +40,20 @@ data:
           PUT: 0
         CONSUMER:
           PUT: 10
+      /admin/business/load:
+        ADMIN:
+          GET: 1
+      /business/{business_id}:
+        ADMIN:
+          GET: 1
+          PUT: 1
+        CONSUMER:
+          GET: 1
+          PUT: 1
+      /business:
+        ADMIN:
+          GET: 1
+          POST: 1
+        CONSUMER:
+          GET: 1
+          POST: 1

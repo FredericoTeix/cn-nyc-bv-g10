@@ -1,6 +1,6 @@
 spring:
   application:
-    name: api-keys-service
+    name: api-business-service
 management:
   endpoints:
     web:

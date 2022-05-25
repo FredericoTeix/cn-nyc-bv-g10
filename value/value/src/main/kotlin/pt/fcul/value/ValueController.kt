@@ -1,58 +1,54 @@
 package pt.fcul.value
 
+import java.time.LocalDateTime
 import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import java.util.*
+
+const val RESULTS_COUNT = 100
 
 @RestController
-class ValueController {
-    @GetMapping("/business/{id}")
-    fun valueByBusiness( @PathVariable id:Int,
-                         @RequestParam("start_date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) start: Date,
-                         @RequestParam("end_date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) end: Date
-    ){
-        //TODO: Get the value associated to a business in a given time range
-        //  (1) Get business Location (Serviço do daniel)
-        //  (2) Count moves at Business Location from start_date until end_date (Serviço Rodrigo) and Return that value
-        println("${id}: $start $end")
+class ValueController(
+    val service: ValueService
+) {
+
+    @GetMapping("/value/business/{id}")
+    suspend fun valueByBusiness(
+        @PathVariable id: String,
+        @RequestParam("start_date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) start: LocalDateTime,
+        @RequestParam("end_date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) end: LocalDateTime
+    ) = service.getBusinessValue(id, start, end)
+//    ) = BusinessValue(1, 1)
+
+    @GetMapping("/value/top/businesses")
+    suspend fun topValueBusinesses(
+        @RequestParam("latitude") lat: Double,
+        @RequestParam("longitude") lon: Double,
+        @RequestParam("rad") radius: Double,
+        @RequestParam("num_results") n: Int?,
+        @RequestParam("start_date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) start: LocalDateTime,
+        @RequestParam("end_date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) end: LocalDateTime
+    ) = service.getTopBusiness(lat, lon, radius, n ?: RESULTS_COUNT, start, end)
+//    ) = TopBusinessesAtLocation(
+//        0.0, 1.0, 2.0, listOf(
+//            BusinessValue(0, 0), BusinessValue(1, 1), BusinessValue(2, 2)
+//        )
+//    )
+
+    @GetMapping("/value/location/radius")
+    suspend fun valueByLocationRadius(
+        @RequestParam("latitude") lat: Double,
+        @RequestParam("longitude") lon: Double,
+        @RequestParam("rad") radius: Double,
+        @RequestParam("start_date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) start: LocalDateTime,
+        @RequestParam("end_date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) end: LocalDateTime
+    ) = service.getLocationValue(lat, lon, radius, start, end)
+//    ) = AreaValue(0, setOf("0", "1", "2"))
+
+    @GetMapping("/value/isAlive")
+    suspend fun isAlive() : Int{
+        return 200;
     }
-
-    @GetMapping("/top")
-    fun topValueBusinesses( @RequestParam("num_results") n: Int,
-                            @RequestParam("start_date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) start: Date,
-                            @RequestParam("end_date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) end: Date,
-                            @RequestParam categories:Array<String>
-    ){
-        // TODO: Get the top valued businesses in a given time range
-        //  (1) LocationId com mais moves in a given time range (Serviço Rodrigo)
-        //  (2) Get Businesses from LocationId (Serviço Daniel) filtered by categories
-        //  (3) Return random N results
-    }
-
-    /*
-        // ----------- NOT AVAILABLE YET --------------
-        @GetMapping
-        fun valueByLocationRadius()
-        {
-            // TODO: Get the value associated to a location in a given time range defining
-            //  the search location by a coordinate and a radius
-        }
-
-        @GetMapping
-        fun valueByLocationSquare()
-        {
-            // TODO: Get the value associated to a location in a given time range defining
-            //  the search location by two coordinates
-        }
-
-        @GetMapping
-        fun valueByWalkTime()
-        {
-            // TODO: Get the value associated to a location in a given time range defining
-            //   the search location by a coordinate and time needed to get there by foot
-        }
-     */
 }

@@ -76,3 +76,4 @@ target/
 *.key
 *.crt
 *.csr
+*.p12

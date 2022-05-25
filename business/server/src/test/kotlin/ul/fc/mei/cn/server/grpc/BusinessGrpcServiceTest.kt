@@ -9,6 +9,8 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.annotation.DirtiesContext
+import org.springframework.test.context.ContextConfiguration
 import ul.fc.cn.proto.BusinessOuterClass.BusinessError.BusinessErrorType
 import ul.fc.cn.proto.BusinessOuterClass.DELETE_BUSINESS_RESULT
 import ul.fc.cn.proto.BusinessServiceGrpcKt
@@ -20,7 +22,7 @@ import ul.fc.mei.cn.core.repository.BusinessMongoDBRepository
 
 
 @SpringBootTest
-@ExperimentalCoroutinesApi
+@DirtiesContext
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class BusinessGrpcServiceTest {
 

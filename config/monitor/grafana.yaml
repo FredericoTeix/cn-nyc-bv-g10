@@ -34,16 +34,29 @@ spec:
         - name: grafana
           image: grafana/grafana
           ports:
-          - containerPort: 3000
-            name: http
-
+            - containerPort: 3000
+              name: http
+          resources:
+            limits:
+              memory: "1Gi"
+              cpu: "1000m"
+            requests:
+              memory: 500M
+              cpu: "500m"
           volumeMounts:
             - name: grafana-storage
               mountPath: /var/lib/grafana
+            - name: grafana-datasources
+              mountPath: /etc/grafana/provisioning/datasources
+              readOnly: false
       volumes:
         - name: grafana-storage
           persistentVolumeClaim:
             claimName: grafana-storage
+        - name: grafana-datasources
+          configMap:
+            defaultMode: 420
+            name: grafana-datasources
       securityContext:
         runAsNonRoot: true
         runAsUser: 65534
@@ -54,6 +67,9 @@ kind: Service
 metadata:
   name: grafana-service
   namespace: monitoring
+  annotations:
+    prometheus.io/scrape: 'true'
+    prometheus.io/port:   '3000'
 spec:
   type: LoadBalancer
   selector:

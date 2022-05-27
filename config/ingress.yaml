@@ -45,6 +45,6 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: business-load-service
+            name: business-service
             port:
               number: 8080

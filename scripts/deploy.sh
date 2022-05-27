@@ -36,9 +36,11 @@ kubectl apply -f config/mongo-keys.yaml
 kubectl apply -f config/keys-configmap.yaml
 kubectl apply -f config/keys.yaml
 
-kubectl apply -f config/prometheus-cm.yaml
-kubectl apply -f config/prometheus.yaml
-kubectl apply -f config/grafana.yaml
+kubectl apply -f config/monitor/role.yaml
+kubectl apply -f config/monitor/prometheus-cm.yaml
+kubectl apply -f config/monitor/prometheus.yaml
+kubectl apply -f config/monitor/grafana-cm.yaml
+kubectl apply -f config/monitor/grafana.yaml
 
 kubectl apply -f config/mongo-business.yaml
 kubectl apply -f config/business-configmap.yaml

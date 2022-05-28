@@ -5,31 +5,20 @@ import org.springframework.http.HttpMethod
 import org.springframework.web.util.UriTemplate
 
 data class ACLFile(
-    val endpoints: ACLFileEndpoints
-)
-
-data class ACLFileEndpoints(
-    val unauthenticated: Map<String, List<HttpMethod>>?,
-    val authorized: Map<String, Map<KeyScope, Map<HttpMethod, Int>>>?
+    val endpoints: Map<String, Map<HttpMethod, Map<KeyScope, Int>>>
 )
 
 fun ACLFile.toACL(): ACL {
-    val unauthenticated = endpoints.unauthenticated?.map { (path, methods) ->
+    val resources = endpoints.map { (path, subjects) ->
         val template = UriTemplate(path)
-
-        ACLUnauthenticated(template, methods)
-    } ?: emptyList()
-
-    val authorized = endpoints.authorized?.map { (path, subjects) ->
-        val template = UriTemplate(path)
-        val aclSubjects = subjects.map { (scope, methods) ->
-            ACLSubject(scope, methods)
+        val aclSubjects = subjects.map { (method, scopes) ->
+            ACLSubject(method, scopes)
         }
 
-        ACLAuthorized(template, aclSubjects)
-    } ?: emptyList()
+        ACLPathResource(template, aclSubjects)
+    }
 
-    return ACL(unauthenticated, authorized)
+    return ACL(resources)
 }
 
 fun String.parsePath(): String {
@@ -41,31 +30,20 @@ fun String.parsePath(): String {
 }
 
 data class ACL(
-    val unauthenticated: List<ACLUnauthenticated>,
-    val authorized: List<ACLAuthorized>
+    val endpoints: List<ACLPathResource>
 )
 
-data class ACLUnauthenticated(
-    val template: UriTemplate,
-    val methods: List<HttpMethod>
-)
-
-data class ACLAuthorized(
+data class ACLPathResource(
     val template: UriTemplate,
     val subjects: List<ACLSubject>
 )
 
 data class ACLSubject(
-    val scope: KeyScope,
-    val methods: Map<HttpMethod, Int>
+    val method: HttpMethod,
+    val scopes: Map<KeyScope, Int>
 )
 
-fun ACL.isUnauthenticated(path: String, method: HttpMethod): Boolean = unauthenticated
-    .firstOrNull { resource -> resource.template.matches(path.parsePath()) }
-    ?.methods?.contains(method) ?: false
-
-fun ACL.consume(path: String, method: HttpMethod, scope: KeyScope): Int? = authorized
+fun ACL.getResource(path: String, method: HttpMethod): ACLSubject? = endpoints
     .filter { resource -> resource.template.matches(path.parsePath()) }
     .flatMap { it.subjects }
-    .firstOrNull { it.scope == scope }
-    ?.methods?.get(method)
+    .firstOrNull { it.method == method }

@@ -11,8 +11,7 @@ import pt.fcul.keys.model.KeyConsume
 import pt.fcul.keys.model.KeyInfo
 import pt.fcul.keys.model.KeyInput
 import pt.fcul.keys.model.KeyScope
-import pt.fcul.keys.model.consume
-import pt.fcul.keys.model.isUnauthenticated
+import pt.fcul.keys.model.getResource
 import pt.fcul.keys.model.sha256
 import pt.fcul.keys.repository.KeyRepository
 import pt.fcul.keys.security.ApiAuthentication
@@ -81,15 +80,15 @@ class KeyService(
     }
 
     fun consumeKey(consume: KeyConsume) {
-        if (acl.isUnauthenticated(consume.path, consume.method)) {
-            return
-        }
+        // if endpoint is not on ACL, access is allowed
+        val resource = acl.getResource(consume.path, consume.method) ?: return
 
         val auth = getAuth()
         val hashedKey = auth.principal.password
         val currInfo = auth.keyInfo
 
-        val consumes = acl.consume(consume.path, consume.method, currInfo.scope) ?: throw ForbiddenAuthorization()
+        // if resource does not have users scope, access is allowed
+        val consumes = resource.scopes[currInfo.scope] ?: return
 
         if (currInfo.used + consumes >= currInfo.quota) {
             throw KeyQuotaExceededException(hashedKey, currInfo.quota)

@@ -19,27 +19,21 @@ An admin key is already created.
 API Keys can only have one of two possible scopes: ``ADMIN`` or ``CONSUMER``.  
 A file ``acl.yaml`` can be edited to configure which resources and actions can be performed by the key scopes. Each
 action can consume a different amount of usages.  
-The ``unauthenticated`` list contains the endpoints that don't require an API Key. By default, all endpoints require that an API Key is sent.  
-The ``authorized`` list acts as a whitelist, that contains the allowed endpoints. If a request is made from any endpoint not specified here, this service will respond with a 401 Unauthorized.   
+The ``authorized`` list contains the endpoints that require authentication and authorization. If a request is made from any endpoint not specified here, the access is allowed.   
 An example of this file is as follows:
 ```yaml
-endpoints:
-  unauthenticated: # endpoints in this list will not require an API key. by default all endpoints require a key
-    /kibana:
-      - 'GET'
-    authorized: # endpoints that require a specific scope and consume usage. endpoints not present here will get a 401
-      /trips:             # allowed resources are specified by its path only, without query parameters or any other URI property
-        ADMIN:            # every resource defines which scopes can access it and what operations can be made
-          GET": 0         # operations must correspond to a valid HTTP method
-          PUT: 0
-        CONSUMER:
-          GET: 3
-      /trips/{tid}:       # a path can also contain path parameters, following the template standard (surrounded by { })
-        ADMIN:
-          GET: 0
-          DELETE: 0
-        CONSUMER:
-          GET: 1
+endpoints:            # endpoints that require a specific scope and consume usage.
+  /trips:             # allowed resources are specified by its path only, without query parameters or any other URI property
+    GET:              # every resource defines which operations and scopes require authorization
+      CONSUMER: 3     # the number of usage consumptions is defined per scope
+  /trips/{tid}:       # a path can also contain path parameters, following the template standard (surrounded by { })
+    GET:
+      CONSUMER: 1
+    PUT:
+      ADMIN: 1
+  /key:
+    GET:
+      CONSUMER: 1
 ```
 
 

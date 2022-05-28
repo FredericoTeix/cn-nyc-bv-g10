@@ -63,6 +63,9 @@ spec:
             httpGet:
               path: /actuator/health
               port: 8080
+              httpHeaders:
+                - name: Accept
+                  value: application/json
           livenessProbe:
             initialDelaySeconds: 30
             timeoutSeconds: 3
@@ -71,6 +74,9 @@ spec:
             httpGet:
               path: /actuator/health
               port: 8080
+              httpHeaders:
+                - name: Accept
+                  value: application/json
           startupProbe:
             initialDelaySeconds: 30
             timeoutSeconds: 3
@@ -79,6 +85,9 @@ spec:
             httpGet:
               path: /actuator/health
               port: 8080
+              httpHeaders:
+                - name: Accept
+                  value: application/json
         volumes:
           - name: acl-volume
             configMap:

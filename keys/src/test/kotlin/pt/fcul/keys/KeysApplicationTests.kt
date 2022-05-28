@@ -43,16 +43,6 @@ class KeysApplicationTests {
             .andExpect {
                 status { isUnauthorized() }
             }
-
-        mock.get("/key/consume")
-            .andExpect {
-                status { isUnauthorized() }
-            }
-
-        mock.get("/key/refresh")
-            .andExpect {
-                status { isUnauthorized() }
-            }
     }
 
     @Test

@@ -8,12 +8,15 @@ spec:
   count: 2
   elasticsearchRef:
     name: elasticsearch
----
-kind: Service
-apiVersion: v1
-metadata:
-  name: kibana
-  namespace: service
-spec:
-  type: ExternalName
-  externalName: kibana-kb-http.elastic.svc.cluster.local
+  podTemplate:
+    spec:
+      containers:
+        - name: kibana
+          resources:
+            limits:
+              memory: 1Gi
+              cpu: 1
+  http:
+    tls:
+      selfSignedCertificate:
+        disabled: true

@@ -1,0 +1,19 @@
+apiVersion: kibana.k8s.elastic.co/v1
+kind: Kibana
+metadata:
+  name: kibana
+  namespace: elastic
+spec:
+  version: 8.2.2
+  count: 2
+  elasticsearchRef:
+    name: elasticsearch
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: kibana
+  namespace: service
+spec:
+  type: ExternalName
+  externalName: kibana-kb-http.elastic.svc.cluster.local

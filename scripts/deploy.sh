@@ -26,7 +26,13 @@ kubectl apply -f config/rbac/pod-readers.yaml
 # Start ingress controller (had to be done first because it is the one that takes the most time)
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.1.3/deploy/static/provider/cloud/deploy.yaml
 
-# Start cluster
+# Start elastic-stack
+kubectl create -f https://download.elastic.co/downloads/eck/2.2.0/crds.yaml
+kubectl apply -f https://download.elastic.co/downloads/eck/2.2.0/operator.yaml
+kubectl apply -f config/elasticsearch.yaml
+kubectl apply -f config/kibana.yaml
+
+# Start micro-services
 kubectl apply -f config/mongo-trips-secret.yaml
 kubectl apply -f config/mongo-trips-configmap.yaml
 kubectl apply -f config/mongo-trips.yaml
@@ -64,6 +70,13 @@ kubectl wait deployment -n monitoring \
   --for condition=Available=True \
   --timeout=360s
 }
+printf "Waiting for kibana to initialize fully..."
+{
+kubectl wait -n elastic \
+  elasticsearch/elasticsearch \
+  --for=condition=ElasticsearchIsReachable=True\
+  --timeout=360s
+}
 
 kubectl apply -f config/ingress.yaml
 
@@ -74,3 +87,8 @@ echo External IP - "${NGINX_INGRESS_IP}"
 
 GRAFANA_IP=$(kubectl get service grafana-service -n monitoring -ojson | jq -r '.status.loadBalancer.ingress[].ip')
 echo Grafana IP - "${GRAFANA_IP}"
+
+KIBANA_IP=$(kubectl get svc kibana-kb-http -n elastic -o jsonpath='{.status.loadBalancer.ingress[].ip}')
+KIBANA_PW=$(kubectl get secret elasticsearch-es-elastic-user -n elastic -o go-template='{{.data.elastic | base64decode }}')
+echo Kibana IP - "${KIBANA_IP}"
+echo Kibana password - "${KIBANA_PW}"

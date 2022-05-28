@@ -32,16 +32,17 @@ class AuthFilter(
                 return
             }
 
-            val apiKey = request.getHeader(API_KEY_HEADER) ?: throw UnauthorizedException()
-            val keyInfo = keyRepository
-                .runCatching {
-                    return@runCatching readKey(apiKey.sha256())
-                }
-                .getOrDefault(null) ?: throw UnauthorizedException()
+            val apiKey = request.getHeader(API_KEY_HEADER)
+            if (apiKey != null) {
+                val keyInfo = keyRepository
+                    .runCatching {
+                        return@runCatching readKey(apiKey.sha256())
+                    }
+                    .getOrDefault(null) ?: throw UnauthorizedException()
 
-            val authentication = ApiAuthentication(apiKey, keyInfo)
+                SecurityContextHolder.getContext().authentication = ApiAuthentication(apiKey, keyInfo)
+            }
 
-            SecurityContextHolder.getContext().authentication = authentication
             chain.doFilter(request, response)
         } catch (e: HttpException) {
             return handleException(request, response, e.status, e.httpHeaders)

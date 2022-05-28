@@ -87,10 +87,9 @@ class KeyService(
         val hashedKey = auth.principal.password
         val currInfo = auth.keyInfo
 
-        // if resource does not have users scope, access is allowed
-        val consumes = resource.scopes[currInfo.scope] ?: return
+        val consumes = resource.scopes[currInfo.scope] ?: throw ForbiddenAuthorization()
 
-        if (currInfo.used + consumes >= currInfo.quota) {
+        if (currInfo.used + consumes > currInfo.quota) {
             throw KeyQuotaExceededException(hashedKey, currInfo.quota)
         }
 

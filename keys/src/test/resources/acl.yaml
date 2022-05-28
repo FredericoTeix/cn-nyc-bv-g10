@@ -1,7 +1,10 @@
 endpoints:
   /trips:
     GET:
+      ADMIN: 0
       CONSUMER: 3
+    POST:
+      ADMIN: 0
   /trips/{tid}:
     GET:
       CONSUMER: 1
@@ -10,3 +13,4 @@ endpoints:
   /key:
     GET:
       CONSUMER: 1
+      ADMIN: 0

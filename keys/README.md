@@ -24,8 +24,9 @@ An example of this file is as follows:
 ```yaml
 endpoints:            # endpoints that require a specific scope and consume usage.
   /trips:             # allowed resources are specified by its path only, without query parameters or any other URI property
-    GET:              # every resource defines which operations and scopes require authorization
-      CONSUMER: 3     # the number of usage consumptions is defined per scope
+    GET:              # every resource defines which operations require authentication
+      CONSUMER: 3     # the authorization is defined per scope, specifying the number of usage consumptions
+      ADMIN: 0
   /trips/{tid}:       # a path can also contain path parameters, following the template standard (surrounded by { })
     GET:
       CONSUMER: 1
@@ -34,6 +35,7 @@ endpoints:            # endpoints that require a specific scope and consume usag
   /key:
     GET:
       CONSUMER: 1
+      ADMIN: 0
 ```
 
 

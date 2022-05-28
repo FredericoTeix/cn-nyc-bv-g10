@@ -5,12 +5,14 @@ import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import pt.fcul.keys.exceptions.ForbiddenAuthorization
 import pt.fcul.keys.exceptions.KeyQuotaExceededException
+import pt.fcul.keys.exceptions.UnauthorizedException
 import pt.fcul.keys.model.ACL
 import pt.fcul.keys.model.KeyConsume
 import pt.fcul.keys.model.KeyInfo
 import pt.fcul.keys.model.KeyInput
 import pt.fcul.keys.model.KeyScope
 import pt.fcul.keys.model.consume
+import pt.fcul.keys.model.isUnauthenticated
 import pt.fcul.keys.model.sha256
 import pt.fcul.keys.repository.KeyRepository
 import pt.fcul.keys.security.ApiAuthentication
@@ -22,8 +24,11 @@ class KeyService(
     val acl: ACL
 ) {
 
+    private fun getAuth() = SecurityContextHolder.getContext().authentication as? ApiAuthentication
+        ?: throw UnauthorizedException()
+
     fun generateKey(input: KeyInput): KeyInfo {
-        val auth = SecurityContextHolder.getContext().authentication as ApiAuthentication
+        val auth = getAuth()
         if (auth.keyInfo.scope != KeyScope.ADMIN) {
             throw ForbiddenAuthorization()
         }
@@ -38,14 +43,14 @@ class KeyService(
     }
 
     fun inspectKey(): KeyInfo {
-        val auth = SecurityContextHolder.getContext().authentication as ApiAuthentication
+        val auth = getAuth()
         val hashedKey = auth.principal.password
 
         return repo.readKey(hashedKey)
     }
 
     fun editKeyInfo(info: KeyInfo) {
-        val auth = SecurityContextHolder.getContext().authentication as ApiAuthentication
+        val auth = getAuth()
         if (auth.keyInfo.scope != KeyScope.ADMIN) {
             throw ForbiddenAuthorization()
         }
@@ -56,14 +61,14 @@ class KeyService(
     }
 
     fun revokeKey() {
-        val auth = SecurityContextHolder.getContext().authentication as ApiAuthentication
+        val auth = getAuth()
         val hashedKey = auth.principal.password
 
         repo.deleteKey(hashedKey)
     }
 
     fun refreshKey(): KeyInfo {
-        val auth = SecurityContextHolder.getContext().authentication as ApiAuthentication
+        val auth = getAuth()
         val oldHash = auth.principal.password
         val oldInfo = auth.keyInfo
 
@@ -76,7 +81,11 @@ class KeyService(
     }
 
     fun consumeKey(consume: KeyConsume) {
-        val auth = SecurityContextHolder.getContext().authentication as ApiAuthentication
+        if (acl.isUnauthenticated(consume.path, consume.method)) {
+            return
+        }
+
+        val auth = getAuth()
         val hashedKey = auth.principal.password
         val currInfo = auth.keyInfo
 

@@ -1,18 +1,22 @@
 endpoints:
-  /trips:
-    ADMIN:
-      GET: 0
-      PUT: 0
-    CONSUMER:
-      GET: 3
-  /trips/{tid}:
-    ADMIN:
-      GET: 0
-      DELETE: 0
-    CONSUMER:
-      GET: 1
-  /key:
-    ADMIN:
-      GET: 0
-    CONSUMER:
-      GET: 1
+  unauthenticated: # endpoints in this list will not require an API key. by default all endpoints require a key
+    /kibana:
+      - 'GET'
+  authorized: # endpoints that require a specific scope and consume usage. endpoints not present here will get a 401
+    /trips:
+      ADMIN:
+        GET: 0
+        PUT: 0
+      CONSUMER:
+        GET: 3
+    /trips/{tid}:
+      ADMIN:
+        GET: 0
+        DELETE: 0
+      CONSUMER:
+        GET: 1
+    /key:
+      ADMIN:
+        GET: 0
+      CONSUMER:
+        GET: 1

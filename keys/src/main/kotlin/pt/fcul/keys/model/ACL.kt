@@ -5,20 +5,31 @@ import org.springframework.http.HttpMethod
 import org.springframework.web.util.UriTemplate
 
 data class ACLFile(
-    val endpoints: Map<String, Map<KeyScope, Map<HttpMethod, Int>>>
+    val endpoints: ACLFileEndpoints
+)
+
+data class ACLFileEndpoints(
+    val unauthenticated: Map<String, List<HttpMethod>>?,
+    val authorized: Map<String, Map<KeyScope, Map<HttpMethod, Int>>>?
 )
 
 fun ACLFile.toACL(): ACL {
-    val resources = endpoints.map { (path, subjects) ->
+    val unauthenticated = endpoints.unauthenticated?.map { (path, methods) ->
+        val template = UriTemplate(path)
+
+        ACLUnauthenticated(template, methods)
+    } ?: emptyList()
+
+    val authorized = endpoints.authorized?.map { (path, subjects) ->
         val template = UriTemplate(path)
         val aclSubjects = subjects.map { (scope, methods) ->
             ACLSubject(scope, methods)
         }
 
-        ACLPathResource(template, aclSubjects)
-    }
+        ACLAuthorized(template, aclSubjects)
+    } ?: emptyList()
 
-    return ACL(resources)
+    return ACL(unauthenticated, authorized)
 }
 
 fun String.parsePath(): String {
@@ -30,10 +41,16 @@ fun String.parsePath(): String {
 }
 
 data class ACL(
-    val endpoints: List<ACLPathResource>
+    val unauthenticated: List<ACLUnauthenticated>,
+    val authorized: List<ACLAuthorized>
 )
 
-data class ACLPathResource(
+data class ACLUnauthenticated(
+    val template: UriTemplate,
+    val methods: List<HttpMethod>
+)
+
+data class ACLAuthorized(
     val template: UriTemplate,
     val subjects: List<ACLSubject>
 )
@@ -43,7 +60,11 @@ data class ACLSubject(
     val methods: Map<HttpMethod, Int>
 )
 
-fun ACL.consume(path: String, method: HttpMethod, scope: KeyScope): Int? = endpoints
+fun ACL.isUnauthenticated(path: String, method: HttpMethod): Boolean = unauthenticated
+    .firstOrNull { resource -> resource.template.matches(path.parsePath()) }
+    ?.methods?.contains(method) ?: false
+
+fun ACL.consume(path: String, method: HttpMethod, scope: KeyScope): Int? = authorized
     .filter { resource -> resource.template.matches(path.parsePath()) }
     .flatMap { it.subjects }
     .firstOrNull { it.scope == scope }

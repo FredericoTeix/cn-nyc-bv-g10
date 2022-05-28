@@ -1,6 +1,11 @@
 name: Docker Images Delivery
 
-on: [release]
+# on: [release]
+on:
+  push:
+    branches:
+      - keys-dev
+  release:
 
 env:
   REGION: europe-west1
@@ -13,6 +18,8 @@ jobs:
     steps:
       - name: 'Checkout'
         uses: 'actions/checkout@v3'
+        with:
+          ref: keys-dev
 
       - id: 'auth'
         name: 'Authenticate to Google Cloud'

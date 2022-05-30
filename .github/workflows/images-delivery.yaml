@@ -4,7 +4,7 @@ name: Docker Images Delivery
 on:
   push:
     branches:
-      - keys-dev
+      - main
   release:
 
 env:

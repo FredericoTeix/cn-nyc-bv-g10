@@ -19,11 +19,23 @@ data:
         static_configs:
           - targets: ['keys-service.service:8080']
 
+      - job_name: 'business-prom'
+        metrics_path: '/actuator/prometheus'
+        scrape_interval: 5s
+        static_configs:
+          - targets: ['business-service.service:8080']
+
       - job_name: 'trips-prom'
         metrics_path: '/metrics'
         scrape_interval: 5s
         static_configs:
           - targets: ['trips-service.service:8080']
+
+      - job_name: 'value-prom'
+        metrics_path: '/actuator/prometheus'
+        scrape_interval: 5s
+        static_configs:
+          - targets: ['value-service.service:8080']
 
       - job_name: kubernetes-nodes-cadvisor
         scrape_interval: 10s

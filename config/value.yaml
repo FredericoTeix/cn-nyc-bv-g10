@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: value-deployment
+  namespace: service
   labels:
     app: value
 spec:
@@ -17,7 +18,7 @@ spec:
         terminationGracePeriodSeconds: 5
         containers:
         - name: value
-          image: docker1test1cn/value:latest
+          image: europe-west1-docker.pkg.dev/fcul-cn/cntrips-registry/value:latest
           imagePullPolicy: Always
           ports:
           - name: http-port
@@ -79,6 +80,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: value-service
+  namespace: service
 spec:
   selector:
     app: value

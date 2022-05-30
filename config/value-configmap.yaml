@@ -3,7 +3,7 @@ kind: ConfigMap
 metadata:
   name: value-configmap
 data:
-  trips_host: trips-service # trips-service.service OR service.trips-service
+  trips_host: trips-service
   trips_port: "50051"
   business_host: business-service
   business_port: "6565"

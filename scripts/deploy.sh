@@ -32,6 +32,8 @@ kubectl create -f https://download.elastic.co/downloads/eck/2.2.0/crds.yaml
 kubectl apply -f https://download.elastic.co/downloads/eck/2.2.0/operator.yaml
 kubectl apply -f config/elasticsearch.yaml
 kubectl apply -f config/kibana.yaml
+kubectl apply -f config/fluentd-config.yaml
+kubectl apply -f config/fluentd-daemonset-elasticsearch-rbac.yaml
 
 # Start micro-services
 kubectl apply -f config/mongo-trips-secret.yaml

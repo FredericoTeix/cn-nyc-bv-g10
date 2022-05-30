@@ -78,6 +78,18 @@ jobs:
         working-directory: business
         run: chmod +x gradlew
 
+      - name: Change Value wrapper permissions
+        working-directory: value
+        run: chmod +x gradlew
+
+      - name: 'Build and push Value'
+        uses: 'docker/build-push-action@v3'
+        with:
+          context: 'value'
+          file: 'value/Dockerfile'
+          tags: '${{ env.REGION }}-docker.pkg.dev/${{ steps.auth.outputs.project_id }}/${{ env.REGISTRY }}/value:latest'
+          push: true
+
       - name: 'Build and push Business'
         uses: 'docker/build-push-action@v3'
         with:
@@ -92,16 +104,4 @@ jobs:
           context: 'business'
           file: 'business/Dockerfile-mongo'
           tags: '${{ env.REGION }}-docker.pkg.dev/${{ steps.auth.outputs.project_id }}/${{ env.REGISTRY }}/business-mongo:latest'
-          push: true
-
-      - name: Change Value wrapper permissions
-        working-directory: value
-        run: chmod +x gradlew
-
-      - name: 'Build and push Value'
-        uses: 'docker/build-push-action@v3'
-        with:
-          context: 'value'
-          file: 'value/Dockerfile'
-          tags: '${{ env.REGION }}-docker.pkg.dev/${{ steps.auth.outputs.project_id }}/${{ env.REGISTRY }}/value:latest'
           push: true

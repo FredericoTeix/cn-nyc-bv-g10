@@ -43,7 +43,7 @@ spec:
     spec:
         containers:
         - name: mongo-trips
-          image: ralexandre00/tripsmongo
+          image: europe-west1-docker.pkg.dev/fcul-cn/cntrips-registry/tripsmongo:latest
           imagePullPolicy: Always
           ports:
           - containerPort: 27017

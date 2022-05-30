@@ -9,4 +9,6 @@ bindings:
 - members:
   - serviceAccount:407430799832-compute@developer.gserviceaccount.com
   - serviceAccount:1048296788457-compute@developer.gserviceaccount.com
+  - serviceAccount:208716745802-compute@developer.gserviceaccount.com
+  - serviceAccount:containerregisty@cntrips2.iam.gserviceaccount.com
   role: roles/artifactregistry.reader

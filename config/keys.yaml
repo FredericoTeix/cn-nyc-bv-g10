@@ -18,7 +18,7 @@ spec:
         terminationGracePeriodSeconds: 5
         containers:
         - name: keys
-          image: zath/keys:latest
+          image: europe-west1-docker.pkg.dev/fcul-cn/cntrips-registry/keys:latest
           imagePullPolicy: Always
           ports:
           - name: http-port

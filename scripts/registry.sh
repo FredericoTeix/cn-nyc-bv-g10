@@ -47,6 +47,11 @@ gcloud artifacts repositories add-iam-policy-binding ${REGISTRY_NAME} \
  --member="serviceAccount:github-image-writer@${PROJECT}.iam.gserviceaccount.com" \
  --role=roles/artifactregistry.writer
 
+gcloud artifacts repositories add-iam-policy-binding ${REGISTRY_NAME} \
+--location=${REGION} \
+--member="serviceAccount:github-image-writer@${PROJECT}.iam.gserviceaccount.com" \
+--role=roles/artifactregistry.reader
+
 # Create github service account key
 gcloud iam service-accounts keys create gh-private.json \
  --iam-account=github-image-writer@${PROJECT}.iam.gserviceaccount.com

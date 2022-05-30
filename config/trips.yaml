@@ -17,7 +17,7 @@ spec:
     spec:
         containers:
         - name: trips
-          image: ralexandre00/trips:latest
+          image: europe-west1-docker.pkg.dev/fcul-cn/cntrips-registry/trips:latest
           imagePullPolicy: Always
           ports:
           - name: http-port

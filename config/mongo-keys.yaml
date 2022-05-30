@@ -44,7 +44,7 @@ spec:
         terminationGracePeriodSeconds: 10
         containers:
         - name: mongo-keys
-          image: zath/keysmongo
+          image: europe-west1-docker.pkg.dev/fcul-cn/cntrips-registry/keysmongo:latest
           imagePullPolicy: Always
           ports:
           - containerPort: 27017

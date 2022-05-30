@@ -48,8 +48,8 @@ spec:
               memory: 128Mi
               cpu: 100m
             limits:
-              memory: 256Mi
-              cpu: 200m
+              memory: 156Mi
+              cpu: 150m
           volumeMounts:
           - name: acl-volume
             mountPath: /home/app/acl.yaml
@@ -127,4 +127,4 @@ spec:
       name: cpu
       target:
         type: Utilization
-        averageUtilization: 50
+        averageUtilization: 20

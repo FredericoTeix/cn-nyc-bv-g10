@@ -45,19 +45,30 @@ kubectl apply -f config/mongo-keys.yaml
 kubectl apply -f config/keys-configmap.yaml
 kubectl apply -f config/keys.yaml
 
-kubectl apply -f config/monitor/role.yaml
-kubectl apply -f config/monitor/prometheus-cm.yaml
-kubectl apply -f config/monitor/prometheus.yaml
-kubectl apply -f config/monitor/grafana-cm.yaml
-kubectl apply -f config/monitor/grafana.yaml
-
 kubectl apply -f config/mongo-business.yaml
 kubectl apply -f config/business-configmap.yaml
 kubectl apply -f config/business.yaml
 
-
 kubectl apply -f config/value-configmap.yaml
 kubectl apply -f config/value.yaml
+
+# Start monitoring services. kube-state-metrics, prometheus and grafana
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/kube-state-metrics/master/examples/standard/cluster-role.yaml \
+              -f https://raw.githubusercontent.com/kubernetes/kube-state-metrics/master/examples/standard/cluster-role-binding.yaml \
+              -f https://raw.githubusercontent.com/kubernetes/kube-state-metrics/master/examples/standard/service-account.yaml \
+              -f https://raw.githubusercontent.com/kubernetes/kube-state-metrics/master/examples/standard/deployment.yaml \
+              -f https://raw.githubusercontent.com/kubernetes/kube-state-metrics/master/examples/standard/service.yaml
+kubectl apply -f config/monitor/role.yaml \
+              -f config/monitor/prometheus-cm.yaml \
+              -f config/monitor/prometheus.yaml
+kubectl apply -f config/monitor/grafana-cm.yaml \
+              -f config/monitor/grafana.yaml
+
+# k8 dashboard
+# kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.5.1/aio/deploy/recommended.yaml \
+#               -f config/monitor/dashboard-admin.yaml -n kubernetes-dashboard
+# DASHBOARD_TOKEN=$(kubectl -n kubernetes-dashboard get secret $(kubectl -n kubernetes-dashboard get sa/admin-user -o jsonpath="{.secrets[0].name}") -o go-template="{{.data.token | base64decode}}")
+# echo Dashboard Admin Token - "${DASHBOARD_TOKEN}"
 
 printf "Waiting for ingress controller to initialize fully..."
 {

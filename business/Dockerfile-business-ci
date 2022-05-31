@@ -2,7 +2,7 @@ FROM openjdk:11-jdk
 
 WORKDIR /home
 RUN mkdir -p ./business
-COPY . ./app
+COPY . ./business
 
 RUN tar -zxvf ./business/scripts/mongosh-0.13.2-linux-x64.tgz
 RUN mv bin/mongosh /usr/local/bin/

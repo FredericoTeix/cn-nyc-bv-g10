@@ -2,57 +2,58 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: keys-configmap
+  namespace: service
 data:
-  database_host: mongo-keys-service
+  database_host: mongo-keys-service.database
   database_port: "27017"
   database_name: api_keys
   acl.yaml: |
     endpoints:
       /trip:
-        ADMIN:
-          POST: 0
+        POST:
+          ADMIN: 0
       /trip/{trip_id}:
-        ADMIN:
-          PUT: 0
-          DELETE: 0
+        PUT:
+          ADMIN: 0
+        DELETE:
+          ADMIN: 0
       /trip/location/{location_id}:
-        ADMIN:
-          GET: 0
-        CONSUMER:
-          GET: 1
+        GET:
+          ADMIN: 0
+          CONSUMER: 1
       /tripCount/location/{location_id}:
-        ADMIN:
-          GET: 0
-        CONSUMER:
-          GET: 1
+        GET:
+          ADMIN: 0
+          CONSUMER: 1
       /key:
-        ADMIN:
-          POST: 0
-          GET: 0
-          PUT: 0
-          DELETE: 0
-        CONSUMER:
-          GET: 1
-          DELETE: 0
+        GET:
+          ADMIN: 0
+          CONSUMER: 1
+        DELETE:
+          ADMIN: 0
+          CONSUMER: 0
+        POST:
+          ADMIN: 0
+        PUT:
+          ADMIN: 0
       /key/refresh:
-        ADMIN:
-          PUT: 0
-        CONSUMER:
-          PUT: 10
+        PUT:
+          ADMIN: 0
+          CONSUMER: 10
       /admin/business/load:
-        ADMIN:
-          GET: 1
+        GET:
+          ADMIN: 1
       /business/{business_id}:
-        ADMIN:
-          GET: 1
-          PUT: 1
-        CONSUMER:
-          GET: 1
-          PUT: 1
+        GET:
+          ADMIN: 0
+          CONSUMER: 1
+        PUT:
+          ADMIN: 1
+          CONSUMER: 1
       /business:
-        ADMIN:
-          GET: 1
-          POST: 1
-        CONSUMER:
-          GET: 1
-          POST: 1
+        GET:
+          ADMIN: 0
+          CONSUMER: 1
+        POST:
+          ADMIN: 0
+          CONSUMER: 1

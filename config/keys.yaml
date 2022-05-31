@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: keys-deployment
+  namespace: service
   labels:
     app: keys
 spec:
@@ -17,7 +18,7 @@ spec:
         terminationGracePeriodSeconds: 5
         containers:
         - name: keys
-          image: zath/keys:latest
+          image: europe-west1-docker.pkg.dev/fcul-cn/cntrips-registry/keys:latest
           imagePullPolicy: Always
           ports:
           - name: http-port
@@ -55,21 +56,27 @@ spec:
             subPath: acl.yaml
             readOnly: true
           readinessProbe:
-            initialDelaySeconds: 15
+            initialDelaySeconds: 30
             timeoutSeconds: 3
             periodSeconds: 10
             failureThreshold: 3
             httpGet:
               path: /actuator/health
               port: 8080
+              httpHeaders:
+                - name: Accept
+                  value: application/json
           livenessProbe:
-            initialDelaySeconds: 15
+            initialDelaySeconds: 30
             timeoutSeconds: 3
             periodSeconds: 10
             failureThreshold: 3
             httpGet:
               path: /actuator/health
               port: 8080
+              httpHeaders:
+                - name: Accept
+                  value: application/json
           startupProbe:
             initialDelaySeconds: 30
             timeoutSeconds: 3
@@ -78,6 +85,9 @@ spec:
             httpGet:
               path: /actuator/health
               port: 8080
+              httpHeaders:
+                - name: Accept
+                  value: application/json
         volumes:
           - name: acl-volume
             configMap:
@@ -90,6 +100,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: keys-service
+  namespace: service
 spec:
   selector:
     app: keys

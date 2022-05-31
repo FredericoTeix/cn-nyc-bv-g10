@@ -1,0 +1,82 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: grafana-storage
+  namespace: monitoring
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana-deployment
+  namespace: monitoring
+  labels:
+    app: grafana
+    purpose: monitoring-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grafana
+      purpose: monitoring-service
+  template:
+    metadata:
+      labels:
+        app: grafana
+        purpose: monitoring-service
+    spec:
+      containers:
+        - name: grafana
+          image: grafana/grafana
+          ports:
+            - containerPort: 3000
+              name: http
+          resources:
+            limits:
+              memory: "1Gi"
+              cpu: "1000m"
+            requests:
+              memory: 500M
+              cpu: "500m"
+          volumeMounts:
+            - name: grafana-storage
+              mountPath: /var/lib/grafana
+            - name: grafana-datasources
+              mountPath: /etc/grafana/provisioning/datasources
+              readOnly: false
+      volumes:
+        - name: grafana-storage
+          persistentVolumeClaim:
+            claimName: grafana-storage
+        - name: grafana-datasources
+          configMap:
+            defaultMode: 420
+            name: grafana-datasources
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534
+        fsGroup: 472
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana-service
+  namespace: monitoring
+  annotations:
+    prometheus.io/scrape: 'true'
+    prometheus.io/port:   '3000'
+spec:
+  type: LoadBalancer
+  selector:
+    app: grafana
+    purpose: monitoring-service
+  ports:
+    - name: grafanaui
+      protocol: TCP
+      port: 80
+      targetPort: http

@@ -16,6 +16,9 @@ import pt.fcul.keys.model.KeyConsume
 import pt.fcul.keys.model.KeyInfo
 import pt.fcul.keys.model.KeyInput
 
+const val ORIGINAL_PATH_HEADER = "X-Auth-Request-Redirect"
+const val ORIGINAL_METHOD_HEADER = "X-Original-Method"
+
 @RestController
 class KeyController(
     val service: KeyService
@@ -58,8 +61,8 @@ class KeyController(
     @PutMapping(Links.ConsumeKey)
     fun consumeKey(
         @RequestBody consume: KeyConsume?,
-        @RequestHeader("X-Auth-Request-Redirect") originalPath: String?,
-        @RequestHeader("X-Original-Method") originalMethod: String?,
+        @RequestHeader(ORIGINAL_PATH_HEADER) originalPath: String?,
+        @RequestHeader(ORIGINAL_METHOD_HEADER) originalMethod: String?,
     ): ResponseEntity<Unit> {
         val keyConsume = consume ?: runCatching {
             KeyConsume(originalPath!!, HttpMethod.resolve(originalMethod)!!)

@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: trips-deployment
+  namespace: service
   labels:
     app: trips
 spec:
@@ -16,7 +17,7 @@ spec:
     spec:
         containers:
         - name: trips
-          image: ralexandre00/trips:latest
+          image: europe-west1-docker.pkg.dev/fcul-cn/cntrips-registry/trips:latest
           imagePullPolicy: Always
           ports:
           - name: http-port
@@ -76,6 +77,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: trips-service
+  namespace: service
 spec:
   selector:
     app: trips
@@ -89,6 +91,7 @@ apiVersion: autoscaling/v2beta2
 kind: HorizontalPodAutoscaler
 metadata:
   name: trips-scaler
+  namespace: service
 spec:
   scaleTargetRef:
     apiVersion: apps/v1

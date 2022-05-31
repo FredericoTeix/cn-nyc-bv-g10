@@ -77,3 +77,11 @@ target/
 *.crt
 *.csr
 *.p12
+
+
+# GRPC kotlin gen
+**/proto/gen
+
+# Ignore generated credentials from google-github-actions/auth
+gha-creds-*.json
+**/gh-private.json

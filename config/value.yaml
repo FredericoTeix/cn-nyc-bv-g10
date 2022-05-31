@@ -1,0 +1,110 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: value-deployment
+  namespace: service
+  labels:
+    app: value
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: value
+  template:
+    metadata:
+      labels:
+        app: value
+    spec:
+        terminationGracePeriodSeconds: 5
+        containers:
+        - name: value
+          image: europe-west1-docker.pkg.dev/fcul-cn/cntrips-registry/value:latest
+          imagePullPolicy: Always
+          ports:
+          - name: http-port
+            containerPort: 8080
+          env:
+          - name: BUSINESS
+            valueFrom:
+              configMapKeyRef:
+                name: value-configmap
+                key: business_host
+          - name: BUSINESS_PORT
+            valueFrom:
+              configMapKeyRef:
+                name: value-configmap
+                key: business_port
+          - name: TRIP
+            valueFrom:
+              configMapKeyRef:
+                name: value-configmap
+                key: trips_host
+          - name: TRIP_PORT
+            valueFrom:
+              configMapKeyRef:
+                name: value-configmap
+                key: trips_port
+          resources:
+            requests:
+              memory: 128Mi
+              cpu: 100m
+            limits:
+              memory: 256Mi
+              cpu: 200m
+          readinessProbe:
+            initialDelaySeconds: 15
+            timeoutSeconds: 3
+            periodSeconds: 10
+            failureThreshold: 3
+            httpGet:
+              path: /actuator/health
+              port: 8080
+          livenessProbe:
+            initialDelaySeconds: 15
+            timeoutSeconds: 3
+            periodSeconds: 10
+            failureThreshold: 3
+            httpGet:
+              path: /actuator/health
+              port: 8080
+          startupProbe:
+            initialDelaySeconds: 30
+            timeoutSeconds: 3
+            periodSeconds: 30
+            failureThreshold: 30
+            httpGet:
+              path: /actuator/health
+              port: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: value-service
+  namespace: service
+spec:
+  selector:
+    app: value
+  ports:
+    - name: http
+      protocol: TCP
+      port: 8080
+      targetPort: http-port
+---
+apiVersion: autoscaling/v2beta2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: value-scaler
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: value-deployment
+  minReplicas: 1
+  maxReplicas: 3
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 50

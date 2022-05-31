@@ -1,12 +1,14 @@
 package pt.fcul.value.business
 
-import com.google.protobuf.Descriptors
 import io.grpc.ManagedChannel
 import io.grpc.ManagedChannelBuilder
 import java.io.Closeable
 import java.util.concurrent.TimeUnit
 import pt.fcul.value.Business
-import ul.fc.cn.proto.*
+import ul.fc.cn.proto.BusinessOuterClass
+import ul.fc.cn.proto.BusinessServiceGrpc
+import ul.fc.cn.proto.businessId
+import ul.fc.cn.proto.searchBusinessRequest
 
 class GRPCBusinessClient(address: String, port: Int) : BusinessClient, Closeable {
 
@@ -15,13 +17,13 @@ class GRPCBusinessClient(address: String, port: Int) : BusinessClient, Closeable
         .usePlaintext()
         .build()
 
-    private val stub = BusinessServiceGrpcKt.BusinessServiceCoroutineStub(channel)
+    private val stub = BusinessServiceGrpc.newBlockingStub(channel)
 
     override fun close() {
         channel.shutdown().awaitTermination(5, TimeUnit.SECONDS)
     }
 
-    override suspend fun getBusiness(businessId: String): Business {
+    override fun getBusiness(businessId: String): Business {
         // rpc getBusiness(BusinessId) returns (Business);
         val request = businessId {
             this.id = businessId
@@ -31,7 +33,7 @@ class GRPCBusinessClient(address: String, port: Int) : BusinessClient, Closeable
         return stub.getBusiness(request).dto()
     }
 
-    override suspend fun searchBusiness(
+    override fun searchBusiness(
         lat: Double,
         lon: Double,
         radius: Double,

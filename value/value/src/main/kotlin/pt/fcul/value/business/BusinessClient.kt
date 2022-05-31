@@ -3,8 +3,8 @@ package pt.fcul.value.business
 import pt.fcul.value.Business
 
 interface BusinessClient {
-    suspend fun getBusiness(businessId: String): Business // ### TODO can be null. change to nullable
-    suspend fun searchBusiness(
+    fun getBusiness(businessId: String): Business // ### TODO can be null. change to nullable
+    fun searchBusiness(
         lat: Double,
         lon: Double,
         radius: Double,

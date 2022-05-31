@@ -5,9 +5,9 @@ import pt.fcul.value.Location
 
 interface TripClient {
     // TODO return should be nullable
-    suspend fun getLocationById(locationId: String): Location
-    suspend fun getLocationByCity(cName: String): String
-    suspend fun getCountTripsInLocation(
+    fun getLocationById(locationId: String): Location
+    fun getLocationByCity(cName: String): String
+    fun getCountTripsInLocation(
         startDate: LocalDateTime,
         endDate: LocalDateTime,
         locationId: String

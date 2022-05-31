@@ -76,3 +76,13 @@ data:
         - source_labels: [__meta_kubernetes_endpoints_name]
           regex: 'node-exporter'
           action: keep
+
+      - job_name: k8s-kube-state-metrics
+        honor_timestamps: true
+        metrics_path: /metrics
+        scheme: http
+        static_configs:
+          - targets: ['kube-state-metrics.kube-system:8080']
+        metric_relabel_configs:
+        - target_label: cluster
+          replacement: cntrips

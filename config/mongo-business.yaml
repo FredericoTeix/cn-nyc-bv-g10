@@ -44,7 +44,7 @@ spec:
         terminationGracePeriodSeconds: 10
         containers:
         - name: mongo-business
-          image: baitle/business-mongo
+          image: europe-west1-docker.pkg.dev/fcul-cn/cntrips-registry/business-mongo:latest
           imagePullPolicy: Always
           ports:
           - containerPort: 27017

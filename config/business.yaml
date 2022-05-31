@@ -18,7 +18,7 @@ spec:
         terminationGracePeriodSeconds: 5
         containers:
         - name: business
-          image: baitle/business:latest
+          image: europe-west1-docker.pkg.dev/fcul-cn/cntrips-registry/business:latest
           imagePullPolicy: Always
           ports:
           - name: http-port

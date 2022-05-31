@@ -26,12 +26,12 @@ class MockBusinessClient : BusinessClient {
         "1" to Business("1", "b1", "a1", "c1", 1.0, 1.0),
     )
 
-    override suspend fun getBusiness(businessId: String): Business {
+    override fun getBusiness(businessId: String): Business {
         // TODO can be null. maybe needs to change BusinessClient to return nullable Business
         return businesses[businessId]!!
     }
 
-    override suspend fun searchBusiness(
+    override fun searchBusiness(
         lat: Double,
         lon: Double,
         radius: Double,
@@ -53,18 +53,18 @@ class MockTripClient : TripClient {
         "1" to 1L
     )
 
-    override suspend fun getLocationById(locationId: String): Location {
+    override fun getLocationById(locationId: String): Location {
         return locations[locationId]!!
     }
 
-    override suspend fun getLocationByCity(cName: String): String {
+    override fun getLocationByCity(cName: String): String {
         // shouldn't all locations be in new york city ?
         return locations.values.find { loc ->
             loc.zone.equals(cName, ignoreCase = true)
         }?.locationId?.toString() ?: ""
     }
 
-    override suspend fun getCountTripsInLocation(
+    override fun getCountTripsInLocation(
         startDate: LocalDateTime,
         endDate: LocalDateTime,
         locationId: String

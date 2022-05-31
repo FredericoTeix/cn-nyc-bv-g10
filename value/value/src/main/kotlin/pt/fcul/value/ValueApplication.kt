@@ -25,16 +25,16 @@ class Configuration {
 
     @Bean
     fun getBusinessClient(): BusinessClient {
-        val address = System.getenv("BUSINESS")
-        val port = System.getenv("BUSINESS_PORT").toInt()
+        val address = System.getenv("BUSINESS") ?: "localhost"
+        val port = System.getenv("BUSINESS_PORT")?.toIntOrNull() ?: 5001
 
         return GRPCBusinessClient(address, port)
     }
 
     @Bean
     fun getTripClient(): TripClient {
-        val address = System.getenv("TRIP")
-        val port = System.getenv("TRIP_PORT").toInt()
+        val address = System.getenv("TRIP") ?: "localhost"
+        val port = System.getenv("TRIP_PORT")?.toIntOrNull() ?: 5001
 
         return GRPCTripClient(address, port)
     }

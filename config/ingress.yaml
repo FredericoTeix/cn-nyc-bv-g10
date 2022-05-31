@@ -48,3 +48,10 @@ spec:
             name: business-service
             port:
               number: 8080
+      - path: /value
+        pathType: Prefix
+        backend:
+          service:
+            name: value-service
+            port:
+              number: 8080

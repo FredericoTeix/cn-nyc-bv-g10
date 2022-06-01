@@ -17,6 +17,7 @@ kubectl create -f config/namespaces.yaml
 
 kubectl create secret tls ingress-secret --cert ingress/ingress.crt --key ingress/ingress.key
 kubectl create secret tls ingress-secret --cert ingress/ingress.crt --key ingress/ingress.key -n service
+kubectl create secret tls ingress-secret --cert ingress/ingress.crt --key ingress/ingress.key -n elastic
 kubectl create secret tls trip-secret --cert trip/trip.crt --key trip/trip.key -n service
 
 kubectl apply -f config/rbac/roles-service.yaml
@@ -49,8 +50,6 @@ kubectl apply -f config/business.yaml
 
 kubectl apply -f config/value-configmap.yaml
 kubectl apply -f config/value.yaml
-
-kubectl create secret tls ingress-secret --cert ingress/ingress.crt --key ingress/ingress.key
 
 printf "Waiting for ingress controller to initialize fully..."
 {

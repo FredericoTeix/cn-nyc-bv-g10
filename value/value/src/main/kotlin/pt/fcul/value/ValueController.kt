@@ -15,7 +15,7 @@ class ValueController(
 ) {
 
     @GetMapping("/value/business/{id}")
-    suspend fun valueByBusiness(
+    fun valueByBusiness(
         @PathVariable id: String,
         @RequestParam("start_date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) start: LocalDateTime,
         @RequestParam("end_date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) end: LocalDateTime
@@ -23,7 +23,7 @@ class ValueController(
 //    ) = BusinessValue(1, 1)
 
     @GetMapping("/value/top/businesses")
-    suspend fun topValueBusinesses(
+    fun topValueBusinesses(
         @RequestParam("latitude") lat: Double,
         @RequestParam("longitude") lon: Double,
         @RequestParam("rad") radius: Double,
@@ -38,7 +38,7 @@ class ValueController(
 //    )
 
     @GetMapping("/value/location/radius")
-    suspend fun valueByLocationRadius(
+    fun valueByLocationRadius(
         @RequestParam("latitude") lat: Double,
         @RequestParam("longitude") lon: Double,
         @RequestParam("rad") radius: Double,
@@ -48,7 +48,7 @@ class ValueController(
 //    ) = AreaValue(0, setOf("0", "1", "2"))
 
     @GetMapping("/value/isAlive")
-    suspend fun isAlive() : Int{
+    fun isAlive() : Int{
         return 200;
     }
 }

@@ -8,7 +8,7 @@ import java.time.LocalDateTime
 import java.time.ZoneOffset
 import java.util.concurrent.TimeUnit
 import pt.fcul.value.Location
-import trips.TripsGrpcKt
+import trips.TripsGrpc
 import trips.TripsOuterClass
 import trips.city
 import trips.getCountTripsInLocationRequest
@@ -21,13 +21,13 @@ class GRPCTripClient(address: String, port: Int) : TripClient, Closeable {
         .usePlaintext()
         .build()
 
-    private val stub = TripsGrpcKt.TripsCoroutineStub(channel)
+    private val stub = TripsGrpc.newBlockingStub(channel)
 
     override fun close() {
         channel.shutdown().awaitTermination(5, TimeUnit.SECONDS)
     }
 
-    override suspend fun getLocationById(locationId: String): Location {
+    override fun getLocationById(locationId: String): Location {
         // Find location description by ID
         // rpc GetLocationById(LocationID) returns (Location) {}
         val request = locationID {
@@ -38,7 +38,7 @@ class GRPCTripClient(address: String, port: Int) : TripClient, Closeable {
         return stub.getLocationById(request).dto()
     }
 
-    override suspend fun getCountTripsInLocation(
+    override fun getCountTripsInLocation(
         startDate: LocalDateTime,
         endDate: LocalDateTime,
         locationId: String
@@ -54,7 +54,7 @@ class GRPCTripClient(address: String, port: Int) : TripClient, Closeable {
         return stub.getCountTripsInLocation(request).count
     }
 
-    override suspend fun getLocationByCity(cName: String): String {
+    override fun getLocationByCity(cName: String): String {
         //rpc GetLocationByCity(City) returns (LocationID) {}
         val request = city {
             this.cityName = cName

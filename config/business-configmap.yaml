@@ -9,4 +9,4 @@ data:
   database_name: business
   collection_name: business
   places_endpoint: https://api.geoapify.com/v2/places
-  places_api_key: <PLACES API KEY GOES HERE>
+  places_api_key: 15853335f1294c08902b754e5ff6f3ae

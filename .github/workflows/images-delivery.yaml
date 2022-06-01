@@ -18,8 +18,14 @@ jobs:
     steps:
       - name: 'Checkout'
         uses: 'actions/checkout@v3'
-        with:
-          ref: keys-dev
+
+      - name: 'Create certificates'
+        run: |
+          # make file runnable, might not be necessary
+          chmod +x scripts/create_certs.sh
+
+          # run script
+          scripts/create_certs.sh
 
       - id: 'auth'
         name: 'Authenticate to Google Cloud'

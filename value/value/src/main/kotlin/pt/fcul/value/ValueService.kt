@@ -14,7 +14,7 @@ class ValueService(
     /**
      * Get the value associated to a business in a given time range
      */
-    suspend fun getBusinessValue(
+    fun getBusinessValue(
         id: String,
         start: LocalDateTime,
         end: LocalDateTime
@@ -35,7 +35,7 @@ class ValueService(
     /**
      *  Get the top valued businesses in a given time range, regarding some location
      */
-    suspend fun getTopBusiness(
+    fun getTopBusiness(
         lat: Double,
         lon: Double,
         radius: Double,
@@ -76,7 +76,7 @@ class ValueService(
         return TopBusinessesAtLocation(lat, lon, radius, sortedList)
     }
 
-    suspend fun getLocationValue(
+    fun getLocationValue(
         lat: Double,
         lon: Double,
         radius: Double,

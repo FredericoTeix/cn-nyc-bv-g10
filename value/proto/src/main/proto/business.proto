@@ -20,6 +20,26 @@ message UpdateBusinessRequest {
   Business business = 2;
 }
 
+message BusinessError {
+  BusinessErrorType type = 1;
+  string message = 2;
+
+  enum BusinessErrorType {
+    NOT_FOUND = 0;
+    CONFLICT = 1;
+    INVALID_PARAMS = 2;
+    DB_ACCESS_ERROR = 3;
+    UNKNOWN = 4;
+  }
+}
+
+message BusinessResult {
+  oneof either {
+    Business business = 1;
+    BusinessError error = 2;
+  }
+}
+
 message SearchBusinessRequest {
   double latitude = 1;
   double longitude = 2;
@@ -57,8 +77,8 @@ message DeleteBusinessResponse {
 
 service BusinessService {
   rpc addBusiness(Business) returns (BusinessId);
-  rpc getBusiness(BusinessId) returns (Business);
-  rpc updateBusiness(UpdateBusinessRequest) returns (Business);
+  rpc getBusiness(BusinessId) returns (BusinessResult);
+  rpc updateBusiness(UpdateBusinessRequest) returns (BusinessResult);
   rpc deleteBusiness(BusinessId) returns (DeleteBusinessResponse);
   rpc searchBusiness(SearchBusinessRequest) returns (SearchBusinessResponse);
 }

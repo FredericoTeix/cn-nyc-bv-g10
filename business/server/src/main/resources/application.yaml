@@ -9,3 +9,11 @@ management:
   metrics:
     tags:
       application: ${spring.application.name}
+server:
+  ssl:
+    key-store: business.p12
+    key-store-password: ""
+    key-store-type: pkcs12
+    key-alias: business
+    key-password: ""
+  port: 443

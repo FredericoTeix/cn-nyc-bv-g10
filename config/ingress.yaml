@@ -34,20 +34,45 @@ spec:
             name: keys-service
             port:
               number: 8080
+      - path: /value
+        pathType: Prefix
+        backend:
+          service:
+            name: value-service
+            port:
+              number: 8080
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: nginx-ingress-ssl
+  namespace: service
+  annotations:
+    nginx.ingress.kubernetes.io/auth-url: http://keys-service.service.svc.cluster.local:8080/key/consume
+    nginx.ingress.kubernetes.io/auth-method: PUT
+    nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+spec:
+  ingressClassName: nginx
+  tls:
+  - secretName: ingress-secret
+  rules:
+  - http:
+      paths:
       - path: /business
         pathType: Prefix
         backend:
           service:
             name: business-service
             port:
-              number: 8080
+              number: 443
       - path: /admin/business/load
         pathType: Prefix
         backend:
           service:
             name: business-service
             port:
-              number: 8080
+              number: 443
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress

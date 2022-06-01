@@ -35,7 +35,8 @@ kubectl apply -f config/kibana.yaml
 kubectl apply -f config/fluentd-config.yaml
 kubectl apply -f config/fluentd-daemonset-elasticsearch-rbac.yaml
 
-# Start micro-services
+
+# Start cluster
 kubectl apply -f config/mongo-trips-secret.yaml
 kubectl apply -f config/mongo-trips-configmap.yaml
 kubectl apply -f config/mongo-trips.yaml

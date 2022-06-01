@@ -20,7 +20,7 @@ class ValueServiceTests {
     lateinit var service: ValueService
 
     @Test
-    fun testService() = runBlockingTest {
+    fun testService() {
         val value = service.getBusinessValue("0", LocalDateTime.now(), LocalDateTime.now())
         assertEquals("0", value.id)
         assertEquals(0, value.value)

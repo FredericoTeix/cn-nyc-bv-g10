@@ -25,6 +25,11 @@ RUN mv ./bin/mongosh /usr/local/bin/
 RUN mv ./bin/mongocryptd-mongosh /usr/local/bin/
 
 COPY --from=build workspace/business/server/build/libs/server.jar ./business/
+COPY business.crt ./business/
+COPY business.csr ./business/
+COPY business.key ./business/
+COPY business.p12 ./business/
 
+WORKDIR /home/business
 USER root
-ENTRYPOINT ["sh", "./business/wait_db.sh","java","-jar","./business/server.jar"]
+ENTRYPOINT ["sh", "./wait_db.sh","java","-jar","./server.jar"]

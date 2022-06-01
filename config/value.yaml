@@ -47,14 +47,10 @@ spec:
           resources:
             requests:
               memory: 256Mi
-<<<<<<< HEAD
               cpu: 200m
             limits:
               memory: 1Gi
               cpu: 300m
-=======
-              cpu: 150m
->>>>>>> 7ae0b88d3f352a1363825521468233836c57e660
           readinessProbe:
             initialDelaySeconds: 15
             timeoutSeconds: 3

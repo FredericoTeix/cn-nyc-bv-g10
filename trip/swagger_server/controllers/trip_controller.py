@@ -10,7 +10,7 @@ from swagger_server.logic import basic_operations as bo
 from swagger_server import util
 
 
-def alive(body=None):  # noqa: E501
+def alive():  # noqa: E501
     return 'success'
 
 

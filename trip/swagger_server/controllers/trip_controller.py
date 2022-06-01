@@ -1,3 +1,5 @@
+import json
+
 import connexion
 import six
 
@@ -7,6 +9,9 @@ from swagger_server.models.trips import Trips  # noqa: E501
 from swagger_server.logic import basic_operations as bo 
 from swagger_server import util
 
+
+def alive(body=None):  # noqa: E501
+    return json.dumps({'success':True}), 200, {'ContentType':'application/json'}
 
 def add_trip(body=None):  # noqa: E501
     """Add a trip to the data used to calculate the value

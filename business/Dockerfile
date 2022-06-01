@@ -25,6 +25,7 @@ RUN mv ./bin/mongosh /usr/local/bin/
 RUN mv ./bin/mongocryptd-mongosh /usr/local/bin/
 
 COPY --from=build workspace/business/server/build/libs/server.jar ./business/
+
 COPY business.crt ./business/
 COPY business.csr ./business/
 COPY business.key ./business/

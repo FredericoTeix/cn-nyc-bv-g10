@@ -35,6 +35,7 @@ kubectl apply -f config/kibana.yaml
 kubectl apply -f config/fluentd-config.yaml
 kubectl apply -f config/fluentd-daemonset-elasticsearch-rbac.yaml
 
+
 # Start cluster
 kubectl apply -f config/mongo-trips-secret.yaml
 kubectl apply -f config/mongo-trips-configmap.yaml
@@ -45,19 +46,30 @@ kubectl apply -f config/mongo-keys.yaml
 kubectl apply -f config/keys-configmap.yaml
 kubectl apply -f config/keys.yaml
 
-kubectl apply -f config/monitor/role.yaml
-kubectl apply -f config/monitor/prometheus-cm.yaml
-kubectl apply -f config/monitor/prometheus.yaml
-kubectl apply -f config/monitor/grafana-cm.yaml
-kubectl apply -f config/monitor/grafana.yaml
-
 kubectl apply -f config/mongo-business.yaml
 kubectl apply -f config/business-configmap.yaml
 kubectl apply -f config/business.yaml
 
-
 kubectl apply -f config/value-configmap.yaml
 kubectl apply -f config/value.yaml
+
+# Start monitoring services. kube-state-metrics, prometheus and grafana
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/kube-state-metrics/master/examples/standard/cluster-role.yaml \
+              -f https://raw.githubusercontent.com/kubernetes/kube-state-metrics/master/examples/standard/cluster-role-binding.yaml \
+              -f https://raw.githubusercontent.com/kubernetes/kube-state-metrics/master/examples/standard/service-account.yaml \
+              -f https://raw.githubusercontent.com/kubernetes/kube-state-metrics/master/examples/standard/deployment.yaml \
+              -f https://raw.githubusercontent.com/kubernetes/kube-state-metrics/master/examples/standard/service.yaml
+kubectl apply -f config/monitor/role.yaml \
+              -f config/monitor/prometheus-cm.yaml \
+              -f config/monitor/prometheus.yaml
+kubectl apply -f config/monitor/grafana-cm.yaml \
+              -f config/monitor/grafana.yaml
+
+# k8 dashboard
+# kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.5.1/aio/deploy/recommended.yaml \
+#               -f config/monitor/dashboard-admin.yaml -n kubernetes-dashboard
+# DASHBOARD_TOKEN=$(kubectl -n kubernetes-dashboard get secret $(kubectl -n kubernetes-dashboard get sa/admin-user -o jsonpath="{.secrets[0].name}") -o go-template="{{.data.token | base64decode}}")
+# echo Dashboard Admin Token - "${DASHBOARD_TOKEN}"
 
 printf "Waiting for ingress controller to initialize fully..."
 {
@@ -73,6 +85,13 @@ kubectl wait deployment -n monitoring \
   --for condition=Available=True \
   --timeout=360s
 }
+printf "Waiting for kibana to initialize fully..."
+{
+kubectl wait -n elastic \
+  elasticsearch/elasticsearch \
+  --for=condition=ElasticsearchIsReachable=True\
+  --timeout=360s
+}
 
 kubectl apply -f config/ingress.yaml
 
@@ -83,3 +102,8 @@ echo External IP - "${NGINX_INGRESS_IP}"
 
 GRAFANA_IP=$(kubectl get service grafana-service -n monitoring -ojson | jq -r '.status.loadBalancer.ingress[].ip')
 echo Grafana IP - "${GRAFANA_IP}"
+
+KIBANA_IP=$(kubectl get svc kibana-kb-http -n elastic -o jsonpath='{.status.loadBalancer.ingress[].ip}')
+KIBANA_PW=$(kubectl get secret elasticsearch-es-elastic-user -n elastic -o go-template='{{.data.elastic | base64decode }}')
+echo Kibana IP - "${KIBANA_IP}"
+echo Kibana password - "${KIBANA_PW}"

@@ -19,6 +19,9 @@ jobs:
       - name: 'Checkout'
         uses: 'actions/checkout@v3'
 
+      - name: 'Create certificates'
+        run: sh scripts/create_certs.sh
+
       - id: 'auth'
         name: 'Authenticate to Google Cloud'
         uses: 'google-github-actions/auth@v0'

@@ -31,7 +31,7 @@ gcloud container clusters create ${CLUSTER_NAME} --zone ${REGION} --no-enable-ba
   --default-max-pods-per-node "110" \
   --no-enable-master-authorized-networks --addons HorizontalPodAutoscaling,HttpLoadBalancing,GcePersistentDiskCsiDriver \
   --enable-autoupgrade --enable-autorepair --max-surge-upgrade 1 --max-unavailable-upgrade 0 --enable-shielded-nodes \
-  --node-locations ${REGION} --enable-autoprovisioning --max-cpu 8 --max-memory 24
+  --node-locations ${REGION} --enable-autoprovisioning --max-cpu 8 --max-memory 32
 gcloud container clusters get-credentials ${CLUSTER_NAME} --zone ${REGION}
 kubectl create clusterrolebinding cluster-admin-binding --clusterrole=cluster-admin --user="${ACCOUNT}"
 

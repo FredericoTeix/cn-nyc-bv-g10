@@ -27,6 +27,14 @@ kubectl apply -f config/rbac/pod-readers.yaml
 # Start ingress controller (had to be done first because it is the one that takes the most time)
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.1.3/deploy/static/provider/cloud/deploy.yaml
 
+# Start elastic-stack
+kubectl create -f https://download.elastic.co/downloads/eck/2.2.0/crds.yaml
+kubectl apply -f https://download.elastic.co/downloads/eck/2.2.0/operator.yaml
+kubectl apply -f config/elasticsearch.yaml
+kubectl apply -f config/kibana.yaml
+kubectl apply -f config/fluentd-config.yaml
+kubectl apply -f config/fluentd-daemonset-elasticsearch-rbac.yaml
+
 # Start cluster
 kubectl apply -f config/mongo-trips-secret.yaml
 kubectl apply -f config/mongo-trips-configmap.yaml

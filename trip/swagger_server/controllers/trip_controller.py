@@ -11,6 +11,13 @@ from swagger_server import util
 
 
 def alive():  # noqa: E501
+    """Check if is alive
+
+     # noqa: E501
+
+
+    :rtype: None
+    """
     return 'success'
 
 

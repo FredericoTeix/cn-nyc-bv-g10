@@ -6,7 +6,7 @@ metadata:
   labels:
     app: keys
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: keys
@@ -45,11 +45,11 @@ spec:
             value: /home/app/acl.yaml
           resources:
             requests:
-              memory: 128Mi
-              cpu: 100m
-            limits:
               memory: 256Mi
               cpu: 200m
+            limits:
+              memory: 1Gi
+              cpu: 300m
           volumeMounts:
           - name: acl-volume
             mountPath: /home/app/acl.yaml
@@ -114,6 +114,7 @@ apiVersion: autoscaling/v2beta2
 kind: HorizontalPodAutoscaler
 metadata:
   name: keys-scaler
+  namespace: service
 spec:
   scaleTargetRef:
     apiVersion: apps/v1

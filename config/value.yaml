@@ -6,7 +6,7 @@ metadata:
   labels:
     app: value
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: value
@@ -46,11 +46,11 @@ spec:
                 key: trips_port
           resources:
             requests:
-              memory: 128Mi
-              cpu: 100m
-            limits:
               memory: 256Mi
               cpu: 200m
+            limits:
+              memory: 1Gi
+              cpu: 300m
           readinessProbe:
             initialDelaySeconds: 15
             timeoutSeconds: 3

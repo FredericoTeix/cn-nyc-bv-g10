@@ -5,7 +5,7 @@ metadata:
   namespace: elastic
 spec:
   version: 8.2.2
-  count: 2
+  count: 1
   elasticsearchRef:
     name: elasticsearch
   podTemplate:

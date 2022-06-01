@@ -8,7 +8,7 @@ spec:
   volumeClaimDeletePolicy: DeleteOnScaledownOnly
   nodeSets:
   - name: default
-    count: 2
+    count: 1
     config:
       node.store.allow_mmap: false
     volumeClaimTemplates:
@@ -20,4 +20,9 @@ spec:
         resources:
           requests:
             storage: 5Gi
+            cpu: 100m
+            memory: 1G
+          limits:
+            cpu: 200m
+            memory: 3500M
         storageClassName: standard

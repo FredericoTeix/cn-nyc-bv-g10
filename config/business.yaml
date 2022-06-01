@@ -6,7 +6,7 @@ metadata:
   labels:
     app: keys
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: business
@@ -60,11 +60,11 @@ spec:
             value: "mongodb://$(MONGO_HOST):$(MONGO_PORT)/"
           resources:
             requests:
-              memory: 128Mi
-              cpu: 100m
-            limits:
               memory: 256Mi
               cpu: 200m
+            limits:
+              memory: 1Gi
+              cpu: 300m
           readinessProbe:
             initialDelaySeconds: 15
             timeoutSeconds: 3

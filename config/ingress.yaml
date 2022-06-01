@@ -55,3 +55,23 @@ spec:
             name: value-service
             port:
               number: 8080
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: nginx-ingress
+  namespace: elastic
+spec:
+  ingressClassName: nginx
+  tls:
+  - secretName: ingress-secret
+  rules:
+  - http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: kibana-kb-http
+            port:
+              number: 5601

@@ -10,6 +10,8 @@ import ul.fc.cn.proto.BusinessServiceGrpc
 import ul.fc.cn.proto.businessId
 import ul.fc.cn.proto.searchBusinessRequest
 
+import ul.fc.cn.proto.BusinessOuterClass.*
+
 class GRPCBusinessClient(address: String, port: Int) : BusinessClient, Closeable {
 
     private val channel: ManagedChannel = ManagedChannelBuilder
@@ -30,7 +32,12 @@ class GRPCBusinessClient(address: String, port: Int) : BusinessClient, Closeable
         }
 
         print("[getBusiness] id:{$businessId}")
-        return stub.getBusiness(request).dto()
+        val response = stub.getBusiness(request)
+
+        return when (response.eitherCase) {
+            BusinessResult.EitherCase.BUSINESS -> response.business.dto()
+            else -> throw Exception() // should be proper exception.. but theres no exception handler.......
+        }
     }
 
     override fun searchBusiness(

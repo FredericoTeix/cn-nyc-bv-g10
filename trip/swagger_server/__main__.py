@@ -5,6 +5,7 @@ from concurrent import futures
 from pathlib import Path
 
 import connexion
+from gevent.pywsgi import WSGIServer
 import grpc
 from grpc_interceptor import ExceptionToStatusInterceptor
 from grpc_interceptor.exceptions import NotFound

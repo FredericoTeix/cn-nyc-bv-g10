@@ -47,10 +47,14 @@ spec:
           resources:
             requests:
               memory: 256Mi
+<<<<<<< HEAD
               cpu: 200m
             limits:
               memory: 1Gi
               cpu: 300m
+=======
+              cpu: 150m
+>>>>>>> 7ae0b88d3f352a1363825521468233836c57e660
           readinessProbe:
             initialDelaySeconds: 15
             timeoutSeconds: 3
@@ -94,6 +98,7 @@ apiVersion: autoscaling/v2beta2
 kind: HorizontalPodAutoscaler
 metadata:
   name: value-scaler
+  namespace: service
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
@@ -107,4 +112,4 @@ spec:
       name: cpu
       target:
         type: Utilization
-        averageUtilization: 50
+        averageUtilization: 20

@@ -19,6 +19,14 @@ jobs:
       - name: 'Checkout'
         uses: 'actions/checkout@v3'
 
+      - name: 'Create certificates'
+        run: |
+          # make file runnable, might not be necessary
+          chmod +x scripts/create_certs.sh
+
+          # run script
+          scripts/create_certs.sh
+
       - id: 'auth'
         name: 'Authenticate to Google Cloud'
         uses: 'google-github-actions/auth@v0'

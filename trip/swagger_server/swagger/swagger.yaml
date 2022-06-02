@@ -6,6 +6,16 @@ info:
     locations in New York City
   version: 1.0.0
 paths:
+  /trip/alive:
+    get:
+      tags:
+        - Trip
+      summary: Check if is alive
+      operationId: alive
+      responses:
+        '200':
+          description: OK
+      x-openapi-router-controller: swagger_server.controllers.rest_controller
   /trip:
     post:
       tags:

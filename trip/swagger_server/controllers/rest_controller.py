@@ -8,6 +8,17 @@ from swagger_server.controllers import operations as bo
 from swagger_server import util
 
 
+def alive():  # noqa: E501
+    """Check if is alive
+
+     # noqa: E501
+
+
+    :rtype: None
+    """
+    return 'success'
+
+
 def add_trip(body=None):  # noqa: E501
     """Add a trip to the data used to calculate the value
 

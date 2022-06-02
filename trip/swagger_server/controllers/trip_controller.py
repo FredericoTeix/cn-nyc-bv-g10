@@ -1,11 +1,24 @@
+import json
+
 import connexion
 import six
 
 from swagger_server.models.location import Location  # noqa: E501
 from swagger_server.models.trip import Trip  # noqa: E501
 from swagger_server.models.trips import Trips  # noqa: E501
-from swagger_server.logic import basic_operations as bo 
+from swagger_server.logic import basic_operations as bo
 from swagger_server import util
+
+
+def alive():  # noqa: E501
+    """Check if is alive
+
+     # noqa: E501
+
+
+    :rtype: None
+    """
+    return 'success'
 
 
 def add_trip(body=None):  # noqa: E501

@@ -62,7 +62,7 @@ spec:
             failureThreshold: 3
             httpGet:
               port: http-port
-              path: /trip/location/1
+              path: /trip/alive
           livenessProbe:
             initialDelaySeconds: 30
             timeoutSeconds: 3
@@ -78,7 +78,7 @@ spec:
             failureThreshold: 3
             httpGet:
               port: http-port
-              path: /trip/location/1
+              path: /trip/alive
         terminationGracePeriodSeconds: 5
 ---
 apiVersion: v1

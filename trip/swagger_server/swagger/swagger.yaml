@@ -15,6 +15,7 @@ paths:
       responses:
         '200':
           description: OK
+      x-openapi-router-controller: swagger_server.controllers.rest_controller
   /trip:
     post:
       tags:

@@ -56,7 +56,7 @@ spec:
               memory: 256Mi
               cpu: 150m
           readinessProbe:
-            initialDelaySeconds: 15
+            initialDelaySeconds: 30
             timeoutSeconds: 3
             periodSeconds: 10
             failureThreshold: 3
@@ -64,10 +64,18 @@ spec:
               port: http-port
               path: /trip/location/1
           livenessProbe:
-            initialDelaySeconds: 15
-            timeoutSeconds: 2
-            periodSeconds: 5
-            failureThreshold: 2
+            initialDelaySeconds: 30
+            timeoutSeconds: 3
+            periodSeconds: 10
+            failureThreshold: 3
+            httpGet:
+              port: http-port
+              path: /trip/location/1
+          startupProbe:
+            initialDelaySeconds: 30
+            timeoutSeconds: 3
+            periodSeconds: 10
+            failureThreshold: 3
             httpGet:
               port: http-port
               path: /trip/location/1

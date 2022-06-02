@@ -1,0 +1,52 @@
+config:
+  target: "https://34.65.165.120:443"
+  phases:
+    - duration: 60
+      arrivalRate: 5
+      name: Warm up
+    - duration: 120
+      arrivalRate: 5
+      rampTo: 50
+      name: Ramp up load
+    - duration: 300
+      arrivalRate: 50
+      name: Sustained load
+  tls:
+    rejectUnauthorized: false
+scenarios:
+  - name: "Add trip"
+    flow:
+      - post:
+          url: "/trip"
+          headers:
+            x-api-key: "123e4567-e89b-42d3-a456-556642440000"
+          json:
+            pickup_datetime: "2020-07-21T17:32:28Z"
+            dropoff_datetime: "2020-08-21T17:32:28Z"
+            pickup_location_id: 1
+            dropoff_location_id: 2
+            passenger_count: 5
+  - name: "Get location"
+    flow:
+      - get:
+          url: "/trip/location/1"
+          headers:
+            x-api-key: "123e4567-e89b-42d3-a456-556642440000"
+  - name: "Get trip count"
+    flow:
+      - get:
+          url: "/tripCount/location/1?start_date=2020-07-10T17:32:28Z&end_date=2020-08-30T17:32:28Z"
+          headers:
+            x-api-key: "123e4567-e89b-42d3-a456-556642440000"
+  - name: "Search businesses"
+    flow:
+      - get:
+          url: "/business/?longitude=-74.0060152&latitude=40.7127281&radius=10000&limit=20&skip=0"
+          headers:
+            x-api-key: "123e4567-e89b-42d3-a456-556642440000"
+  - name: "Get business"
+    flow:
+      - get:
+          url: "/business/?longitude=-74.0060152&latitude=40.7127281&radius=10000&limit=20&skip=0"
+          headers:
+            x-api-key: "123e4567-e89b-42d3-a456-556642440000"

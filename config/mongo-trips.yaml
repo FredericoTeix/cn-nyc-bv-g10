@@ -63,10 +63,10 @@ spec:
               name: mongo-trips-claim0
           resources:
             requests:
-              cpu: 75m
+              cpu: 200m
               memory: 256M
             limits:
-              cpu: 200m
+              cpu: 300m
               memory: 512M
           readinessProbe:
             initialDelaySeconds: 15

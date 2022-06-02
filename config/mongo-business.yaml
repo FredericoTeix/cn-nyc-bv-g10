@@ -86,10 +86,10 @@ spec:
               name: mongo-business-storage
           resources:
             requests:
-              cpu: 75m
+              cpu: 200m
               memory: 512M
             limits:
-              cpu: 200m
+              cpu: 300m
               memory: 1024M
           readinessProbe:
             initialDelaySeconds: 15

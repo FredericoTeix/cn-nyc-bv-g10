@@ -12,7 +12,7 @@ env:
   REGISTRY: cntrips-registry
 
 jobs:
-  delivery:
+  keys-delivery:
     runs-on: ubuntu-latest
 
     steps:
@@ -25,7 +25,7 @@ jobs:
           chmod +x scripts/create_certs.sh
 
           # run script
-          scripts/create_certs.sh
+          scripts/create_certs.sh keys
 
       - id: 'auth'
         name: 'Authenticate to Google Cloud'
@@ -64,6 +64,31 @@ jobs:
           tags: '${{ env.REGION }}-docker.pkg.dev/${{ steps.auth.outputs.project_id }}/${{ env.REGISTRY }}/keysmongo:latest'
           push: true
 
+  trips-delivery:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 'Checkout'
+        uses: 'actions/checkout@v3'
+
+      - name: 'Create certificates'
+        run: |
+          # make file runnable, might not be necessary
+          chmod +x scripts/create_certs.sh
+
+          # run script
+          scripts/create_certs.sh trip
+
+      - id: 'auth'
+        name: 'Authenticate to Google Cloud'
+        uses: 'google-github-actions/auth@v0'
+        with:
+          credentials_json: '${{ secrets.GOOGLE_CREDENTIALS }}'
+
+      - name: 'Authenticate docker'
+        run: |-
+          echo '${{ secrets.GOOGLE_CREDENTIALS }}' | docker login -u _json_key --password-stdin https://${{ env.REGION }}-docker.pkg.dev
+
       - name: 'Build and push Trips'
         uses: 'docker/build-push-action@v3'
         with:
@@ -80,9 +105,30 @@ jobs:
           tags: '${{ env.REGION }}-docker.pkg.dev/${{ steps.auth.outputs.project_id }}/${{ env.REGISTRY }}/tripsmongo:latest'
           push: true
 
-      - name: Change Business wrapper permissions
-        working-directory: business
-        run: chmod +x gradlew
+  value-delivery:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 'Checkout'
+        uses: 'actions/checkout@v3'
+
+      - name: 'Create certificates'
+        run: |
+          # make file runnable, might not be necessary
+          chmod +x scripts/create_certs.sh
+
+          # run script
+          scripts/create_certs.sh value
+
+      - id: 'auth'
+        name: 'Authenticate to Google Cloud'
+        uses: 'google-github-actions/auth@v0'
+        with:
+          credentials_json: '${{ secrets.GOOGLE_CREDENTIALS }}'
+
+      - name: 'Authenticate docker'
+        run: |-
+          echo '${{ secrets.GOOGLE_CREDENTIALS }}' | docker login -u _json_key --password-stdin https://${{ env.REGION }}-docker.pkg.dev
 
       - name: Change Value wrapper permissions
         working-directory: value
@@ -95,6 +141,34 @@ jobs:
           file: 'value/Dockerfile'
           tags: '${{ env.REGION }}-docker.pkg.dev/${{ steps.auth.outputs.project_id }}/${{ env.REGISTRY }}/value:latest'
           push: true
+
+  business-delivery:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 'Checkout'
+        uses: 'actions/checkout@v3'
+
+      - name: 'Create certificates'
+        run: |
+          # make file runnable, might not be necessary
+          chmod +x scripts/create_certs.sh
+
+          # run script
+          scripts/create_certs.sh business
+
+      - id: 'auth'
+        name: 'Authenticate to Google Cloud'
+        uses: 'google-github-actions/auth@v0'
+        with:
+          credentials_json: '${{ secrets.GOOGLE_CREDENTIALS }}'
+
+      - name: 'Authenticate docker'
+        run: |-
+          echo '${{ secrets.GOOGLE_CREDENTIALS }}' | docker login -u _json_key --password-stdin https://${{ env.REGION }}-docker.pkg.dev
+      - name: Change Business wrapper permissions
+        working-directory: business
+        run: chmod +x gradlew
 
       - name: 'Build and push Business'
         uses: 'docker/build-push-action@v3'
